@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lost Cities</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+          crossorigin="anonymous">
+    <link href="/style.css" rel="stylesheet">
+</head>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="lostcities.js"></script>
+
+<body>
+    <div id ="loginScreen" class="container">
+        <h1>Lost Cities</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input id="usernameBox" class="form-control" placeholder="Enter username">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="lobby" class="container">
+        <div class="row">
+            <div id="roomList" class="list-group col-9">
+            </div>
+
+            <div class="col-3">
+                <button id="createRoom">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert" class="alert" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>Well done!</strong> You've successfully read this important alert message.
+    </div>
+</body>
+</html>
