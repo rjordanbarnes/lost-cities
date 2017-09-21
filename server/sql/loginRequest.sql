@@ -1,0 +1,1 @@
+SELECT UserID, UserName FROM Users WHERE UserName=@username

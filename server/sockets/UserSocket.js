@@ -1,10 +1,11 @@
 const sql = require('seriate');
 
+// Authenticates if username is in SQL database.
 const loginRequest = function(userInfo){
     let self = this;
-    // Authenticates if username is in SQL database.
+
     sql.execute({
-        query: 'SELECT UserID, Name FROM Users WHERE Name=@username',
+        query: sql.fromFile("../sql/loginRequest"),
         params: {
             username: {
                 val: userInfo.username
@@ -15,9 +16,9 @@ const loginRequest = function(userInfo){
 
         if (self.socket.authenticated) {
             self.app.onlineUsers[self.socket.id] = results[0].UserID;
-            self.socket.emit('login success');
+            self.socket.emit('user login success');
         } else {
-            self.socket.emit('login failed', {error: 'Unable to login as ' + userInfo.username + '.'});
+            self.socket.emit('user login failed', {error: 'Unable to login as ' + userInfo.username + '.'});
         }
     }, function(err) {
         console.error(err);
@@ -29,6 +30,6 @@ module.exports = function(app, socket){
     this.socket = socket;
 
     this.handlers = {
-        'login request': loginRequest.bind(this)
+        'user login request': loginRequest.bind(this)
     };
 };

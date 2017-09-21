@@ -1,9 +1,3 @@
-// To DO:
-// Use classes instead of functions?
-// Make it so everything isn't available as this.whatever, maybe make them vars instead and use getters/setters. Look this up
-// Continue working on the display of rooms.
-// IMPORTANT: Refactor socket routing, including UserSocket.js. Use usertest.js as example.
-
 // External Modules
 const express = require('express');
 const expressApp = express();
@@ -13,9 +7,11 @@ const path = require('path');
 const sql = require('seriate');
 
 // My Modules
-const Player = require('./Player.js');
 const UserSocket = require('./sockets/UserSocket.js');
-const RoomController = new (require('./RoomController.js'))(io);
+const LobbySocket = require('./sockets/LobbySocket.js');
+const RoomSocket = require('./sockets/RoomSocket.js');
+const GameSocket = require('./sockets/GameSocket.js');
+
 
 // SQL
 const sqlConfig = {
@@ -32,7 +28,8 @@ expressApp.use(express.static(path.resolve(__dirname + '/../' + 'client')));
 // App variables
 const app = {
     connectedSockets: [], // Sockets
-    onlineUsers: {}       // socket.id, sql.UserID
+    onlineUsers: {},      // socket.id, sql.UserID
+    activeRooms: {}       // sql.RoomID, socket.id host
 };
 
 io.on('connection', function(socket) {
@@ -42,13 +39,17 @@ io.on('connection', function(socket) {
 
     const socketHandlers = {
         'user': new UserSocket(app, socket),
+        'lobby': new LobbySocket(app, socket),
+        'room' : new RoomSocket(app, socket),
+        'game' : new GameSocket(app, socket)
     };
 
     for (let category in socketHandlers) {
         let handler = socketHandlers[category].handlers;
         for (let event in handler) {
-            if (handler.hasOwnProperty(event))
+            if (handler.hasOwnProperty(event)) {
                 socket.on(event, handler[event]);
+            }
         }
     }
 

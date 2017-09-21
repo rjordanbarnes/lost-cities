@@ -15,13 +15,9 @@ $(function() {
         }
     }
 
-    $('#createRoom').click(function() {
-        socket.emit('room create');
-    });
-
     // Sends an authenticate request to server.
     $('#loginForm').submit(function () {
-        socket.emit('login request', {username: $('#usernameBox').val()});
+        socket.emit('user login request', {username: $('#usernameBox').val()});
         return false;
     });
 
@@ -29,8 +25,8 @@ $(function() {
 
     //// Socket Event Handlers ////
 
-    socket.on('login success', function () {
-        socket.emit('get active rooms');
+    socket.on('user login success', function () {
+        socket.emit('lobby get active rooms');
         $('#loginScreen').text('Authenticated!');
         // $('#loginScreen').hide(function() {
         //     for (let roomName in rooms) {
@@ -50,15 +46,11 @@ $(function() {
         // });
     });
 
-    socket.on('login failed', function (data) {
+    socket.on('user login failed', function (data) {
         displayAlert('danger', data.error);
     });
 
-    socket.on('room join granted', function (roomName) {
-        displayAlert('success', 'Joined ' + roomName);
-    });
-
-    socket.on('room join denied', function (roomName) {
-        displayAlert('danger', 'Can\'t join ' + roomName);
+    socket.on('lobby room list', function(data) {
+        console.log(data.rooms);
     });
 });
