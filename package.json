@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "^4.15.4",
-    "mssql": "^4.0.4",
+    "seriate": "^0.10.0",
     "socket.io": "^2.0.3"
   }
 }

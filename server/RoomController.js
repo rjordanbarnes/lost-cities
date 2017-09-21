@@ -10,7 +10,7 @@ function RoomController(io) {
     this.createRoom = function(socket){
         const newRoom = new Room(this.nextRoomID++);
         this.rooms[newRoom.name] = newRoom;
-        console.log(socket.player.username + " created room " + newRoom.name);
+        console.log(socket.player.username + ' created room ' + newRoom.name);
         this.joinRoom(socket, newRoom.name);
     };
 
@@ -29,7 +29,7 @@ function RoomController(io) {
                         // Join
                         socket.join(roomName, function () {
                             room.addPlayer(socket);
-                            console.log(socket.player.username + " joined room " + room.name);
+                            console.log(socket.player.username + ' joined room ' + room.name);
                             socket.emit('room join granted', roomName);
                         });
                         break;

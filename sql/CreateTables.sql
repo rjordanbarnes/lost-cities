@@ -1,7 +1,7 @@
 CREATE TABLE Users
 (
   UserID uniqueidentifier NOT NULL DEFAULT newid(),
-  Name nvarchar(25) NOT NULL
+  Name nvarchar(25) NOT NULL UNIQUE
 );
 
 CREATE TABLE Rooms
