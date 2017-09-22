@@ -1,5 +1,45 @@
 $(function() {
-    const socket = io();
+
+    //// Vue ////
+
+
+    Vue.component('room', {
+        props: ['roomID', 'roomName', 'roomHost', 'roomUserCount', 'isPasswordProtected'],
+        template: `<div class="room-container list-group-item list-group-item-action flex-column align-items-start">
+                       <div class="d-flex w-100 justify-content-end">
+                           <div class="mr-auto">
+                               <h3 class="mt-1">{{ roomName }}</h3>
+                               <h5 class="mb-1">{{ roomHost }}</h5>
+                           </div>
+        
+                           <h3 class="my-0 mx-4 align-self-center">{{ roomUserCount }}/2</h3>
+                           <button class="join-button my-1 btn btn-outline-primary btn-lg"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
+                       </div>
+                   </div>`
+    });
+
+    let vm = new Vue({
+        el: '#room-list',
+        data: {
+            rooms: []
+    // {roomID: 'GUID HERE',
+    //     roomName: 'Room Name',
+    //     roomHost: 'Keysi',
+    //     roomUserCount: 0,
+    //     roomPassword: true},
+    // {roomID: 'Another GUID',
+    //     roomName: 'Second Room',
+    //     roomHost: 'Jordy',
+    //     roomUserCount: 1,
+    //     roomPassword: false}
+        }
+    });
+
+
+    $('#refresh').click(function() {
+        socket.emit('lobby get active rooms');
+    });
+
 
     // Displays an alert with the given style and message.
     function displayAlert(style, msg) {
@@ -15,6 +55,13 @@ $(function() {
         }
     }
 
+
+    //// Socket.io ////
+
+    const socket = io();
+
+    //// Socket Even Emitters ////
+
     // Sends an authenticate request to server.
     $('#loginForm').submit(function () {
         socket.emit('user login request', {username: $('#usernameBox').val()});
@@ -22,28 +69,12 @@ $(function() {
     });
 
 
-
     //// Socket Event Handlers ////
 
     socket.on('user login success', function () {
         socket.emit('lobby get active rooms');
-        $('#loginScreen').text('Authenticated!');
-        // $('#loginScreen').hide(function() {
-        //     for (let roomName in rooms) {
-        //         if (rooms.hasOwnProperty(roomName)) {
-        //             $('#roomList').append(`<a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-        //                                 <div class="d-flex w-100 justify-content-between">
-        //                                     <h5 class="mb-1">${ roomName }</h5>
-        //                                     <small>3 days ago</small>
-        //                                 </div>
-        //                                 <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-        //                                 <small>Donec id elit non mi porta.</small>
-        //                             </a>`);
-        //         }
-        //     }
-        //
-        //     $('#lobby').show();
-        // });
+        $('#login-screen').hide();
+        $('#lobby').show();
     });
 
     socket.on('user login failed', function (data) {
@@ -51,6 +82,6 @@ $(function() {
     });
 
     socket.on('lobby room list', function(data) {
-        console.log(data.rooms);
+        vm.rooms = data.rooms;
     });
 });

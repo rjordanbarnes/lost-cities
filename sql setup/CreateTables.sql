@@ -7,7 +7,7 @@ IF OBJECT_ID('dbo.Rooms', 'U') IS NOT NULL
 CREATE TABLE Rooms
 (
   RoomID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT newid(),
-  Name nvarchar(25) NOT NULL,
+  RoomName nvarchar(25) NOT NULL,
   Password nvarchar(128) NULL,
   IsActive BIT NOT NULL
 );
@@ -15,7 +15,7 @@ CREATE TABLE Rooms
 CREATE TABLE Users
 (
   UserID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT newid(),
-  Name nvarchar(25) NOT NULL UNIQUE,
+  UserName nvarchar(25) NOT NULL UNIQUE,
   CurrentRoom uniqueidentifier FOREIGN KEY REFERENCES Rooms(RoomID),
   IsHost BIT NOT NULL DEFAULT 0
 );

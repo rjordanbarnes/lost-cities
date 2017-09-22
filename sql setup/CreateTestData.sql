@@ -1,6 +1,6 @@
 INSERT INTO Rooms (RoomName, Password, IsActive)
 VALUES ('The Best Room!', NULL, 1),
-       ('Second is Good', NULL, 1)
+       ('Second is Good', 'secret', 1)
 
 INSERT INTO Users (UserName, CurrentRoom, IsHost)
 VALUES ('Jordan', (SELECT RoomID FROM Rooms WHERE RoomName='The Best Room!'), 0),
