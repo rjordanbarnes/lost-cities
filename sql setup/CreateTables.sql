@@ -9,6 +9,7 @@ CREATE TABLE Rooms
   RoomID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT newid(),
   RoomName nvarchar(25) NOT NULL,
   Password nvarchar(128) NULL,
+  CreationDate datetime NOT NULL DEFAULT GETDATE(),
   IsActive BIT NOT NULL
 );
 

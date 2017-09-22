@@ -10,3 +10,4 @@ SELECT rm1.RoomID AS roomID,
 FROM Users 
 INNER JOIN Rooms rm1 ON (Users.CurrentRoom = rm1.RoomID)
 WHERE IsActive = 1 AND IsHost = 1
+ORDER BY rm1.CreationDate DESC
