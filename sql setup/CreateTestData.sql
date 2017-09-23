@@ -8,7 +8,8 @@ INSERT INTO Users (UserName, CurrentRoom, IsHost)
 VALUES ('Jordan', (SELECT RoomID FROM Rooms WHERE RoomName='The Newest Room'), 0),
        ('Keysi', (SELECT RoomID FROM Rooms WHERE RoomName='The Newest Room'), 1),
        ('Joshua', (SELECT RoomID FROM Rooms WHERE RoomName='The Oldest'), 1),
-       ('Timmy', (SELECT RoomID FROM Rooms WHERE RoomName='Middle Room'), 1)
+       ('Timmy', (SELECT RoomID FROM Rooms WHERE RoomName='Middle Room'), 1),
+       ('Rini', NULL, 0)
 
 SELECT * FROM Users
 SELECT * FROM Rooms

@@ -26,10 +26,9 @@ const loginRequest = function(userInfo){
     });
 };
 
-module.exports = function(app, socket, broadcaster){
+module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
-    this.broadcaster = broadcaster;
 
     this.handlers = {
         'user login request': loginRequest.bind(this)

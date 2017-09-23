@@ -1,7 +1,22 @@
 const sql = require('seriate');
 
 const getActiveRooms = function(roomInfo) {
-    this.broadcaster.broadcastActiveRooms();
+    let self = this;
+
+    sql.execute({
+        query: sql.fromFile("../sql/GetActiveRooms")
+    }).then(function (results) {
+        // Converts the returned bit 0 and 1 to Boolean values.
+        for (let i = 0; i < results.length; i++) {
+            results[i].roomID = i;
+            results[i].isPasswordProtected = Boolean(results[i].isPasswordProtected);
+        }
+
+        console.log('Broadcasting room list.');
+        self.socket.server.emit('lobby room list', {rooms: results})
+    }, function (err) {
+        console.error(err);
+    });
 };
 
 // Creates a new room.
@@ -29,6 +44,7 @@ const createRoom = function(roomInfo) {
                 }
             }
         }).then(function (results) {
+            self.socket.join(results.roomId)
             self.broadcaster.broadcastActiveRooms();
         }, function (err) {
             console.error(err);
@@ -36,10 +52,9 @@ const createRoom = function(roomInfo) {
     }
 };
 
-module.exports = function(app, socket, broadcaster){
+module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
-    this.broadcaster = broadcaster;
 
     this.handlers = {
         'lobby get active rooms': getActiveRooms.bind(this),
