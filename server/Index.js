@@ -7,6 +7,7 @@ const path = require('path');
 const sql = require('seriate');
 
 // My Modules
+const broadcaster = new (require('./sockets/Broadcaster.js'))(io);
 const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
 const RoomSocket = require('./sockets/RoomSocket.js');
@@ -38,10 +39,10 @@ io.on('connection', function(socket) {
     socket.authenticated = false;
 
     const socketHandlers = {
-        'user': new UserSocket(app, socket),
-        'lobby': new LobbySocket(app, socket),
-        'room' : new RoomSocket(app, socket),
-        'game' : new GameSocket(app, socket)
+        'user': new UserSocket(app, socket, broadcaster),
+        'lobby': new LobbySocket(app, socket, broadcaster),
+        'room' : new RoomSocket(app, socket, broadcaster),
+        'game' : new GameSocket(app, socket, broadcaster)
     };
 
     for (let category in socketHandlers) {

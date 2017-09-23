@@ -27,11 +27,6 @@ $(function() {
     });
 
 
-    $('#refresh').click(function() {
-        socket.emit('lobby get active rooms');
-    });
-
-
     // Displays an alert with the given style and message.
     function displayAlert(style, msg) {
         const alert = $('#alert');
@@ -68,8 +63,6 @@ $(function() {
     });
 
 
-
-
     //// Socket Event Handlers ////
 
     socket.on('user login success', function () {
@@ -82,6 +75,7 @@ $(function() {
     });
 
     socket.on('lobby room list', function(data) {
+        console.log(data.rooms);
         vm.rooms = data.rooms;
     });
 });
