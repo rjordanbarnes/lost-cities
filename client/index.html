@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Lost Cities</title>
 
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          rel="stylesheet"
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
           crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -19,34 +19,78 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.js"></script>
 <script src="lostcities.js"></script>
 
 <body>
     <div id="app">
 
-        <div id ="login-screen" class="container">
+        <div id ="login" class="container" v-if="currentScreen == 'login'">
             <h1>Lost Cities</h1>
-            <form id="loginForm">
+            <form id="login-form">
                 <div class="form-group">
                     <label>Username</label>
-                    <input id="usernameBox" class="form-control" placeholder="Enter username">
+                    <input id="username-box" class="form-control" placeholder="Enter username">
                 </div>
                 <button type="submit">Submit</button>
             </form>
         </div>
 
-        <div id="lobby" class="container">
+        <transition name="fade">
+        <div id="lobby" class="container" v-if="currentScreen == 'lobby'" v-cloak>
             <div class="row">
                 <div class="col-3">
-                    <button id="createRoom">Create</button>
+                    <button id="createRoom" type="button" data-toggle="modal" data-target="#create-room" >Create Room</button>
                     <button id="refresh">Refresh (Temp)</button>
                 </div>
                 <div id="room-list" class="list-group col-9">
-                    <room v-for="room in rooms" :key="room.roomID" :room-name="room.roomName" :room-host="room.roomHost" :room-user-count="room.roomUserCount" :is-password-protected="room.isPasswordProtected"></room>
+                    <room
+                            v-for="room in rooms"
+                            :key="room.roomId"
+                            :room-id="room.roomId"
+                            :room-name="room.roomName"
+                            :room-host="room.roomHost"
+                            :room-user-count="room.roomUserCount"
+                            :is-password-protected="room.isPasswordProtected">
+                    </room>
+                </div>
+            </div>
+            <div class="modal fade" id="create-room" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Create Room</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                            <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="create-room-name" class="form-control-label">Room Name:</label>
+                                        <input type="text" class="form-control" id="create-room-name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="create-room-password" class="form-control-label">Room Password:</label>
+                                        <input type="text" class="form-control" id="create-room-password">
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" id="create-room-button" class="btn btn-primary" data-dismiss="modal">Create</button>
+                            </div>
+                    </div>
                 </div>
             </div>
         </div>
+        </transition>
+
+
 
         <div id="alert" class="alert" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

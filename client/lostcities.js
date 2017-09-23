@@ -4,7 +4,7 @@ $(function() {
 
 
     Vue.component('room', {
-        props: ['roomID', 'roomName', 'roomHost', 'roomUserCount', 'isPasswordProtected'],
+        props: ['roomId', 'roomName', 'roomHost', 'roomUserCount', 'isPasswordProtected'],
         template: `<div class="room-container list-group-item list-group-item-action flex-column align-items-start">
                        <div class="d-flex w-100 justify-content-end">
                            <div class="mr-auto">
@@ -19,19 +19,10 @@ $(function() {
     });
 
     let vm = new Vue({
-        el: '#room-list',
+        el: '#app',
         data: {
-            rooms: []
-    // {roomID: 'GUID HERE',
-    //     roomName: 'Room Name',
-    //     roomHost: 'Keysi',
-    //     roomUserCount: 0,
-    //     roomPassword: true},
-    // {roomID: 'Another GUID',
-    //     roomName: 'Second Room',
-    //     roomHost: 'Jordy',
-    //     roomUserCount: 1,
-    //     roomPassword: false}
+            rooms: [],
+            currentScreen: 'login'
         }
     });
 
@@ -60,21 +51,30 @@ $(function() {
 
     const socket = io();
 
-    //// Socket Even Emitters ////
+    //// Socket Event Emitters ////
 
-    // Sends an authenticate request to server.
-    $('#loginForm').submit(function () {
-        socket.emit('user login request', {username: $('#usernameBox').val()});
+    // Sends an authenticate request.
+    $('#login-form').submit(function () {
+        socket.emit('user login request', {username: $('#username-box').val()});
         return false;
     });
+
+    // Sends a request to create a new room.
+    $(document).on('click', '#create-room-button', function(){
+        socket.emit('lobby create room', {roomName: $('#create-room-name').val(),
+                                          roomPassword: $('#create-room-password').val()});
+
+        return false;
+    });
+
+
 
 
     //// Socket Event Handlers ////
 
     socket.on('user login success', function () {
         socket.emit('lobby get active rooms');
-        $('#login-screen').hide();
-        $('#lobby').show();
+        vm.currentScreen = 'lobby';
     });
 
     socket.on('user login failed', function (data) {

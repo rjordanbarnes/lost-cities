@@ -20,10 +20,21 @@
     transition: all 0.5s ease-in-out;
 }
 
-#login-screen {
+#login {
     margin-top: 200px;
 }
 
-#lobby {
+
+/*  Vue  */
+
+[v-cloak] {
     display: none;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0
 }

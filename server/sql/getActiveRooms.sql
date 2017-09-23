@@ -1,5 +1,5 @@
 -- Room IDs, Room Names, Room Host, UserCount, IsPasswordProtected
-SELECT rm1.RoomID AS roomID,
+SELECT rm1.RoomID AS roomId,
        rm1.RoomName AS roomName,
        Users.UserName AS roomHost,
        (SELECT COUNT(UserName) FROM Users

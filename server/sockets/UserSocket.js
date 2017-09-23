@@ -5,7 +5,7 @@ const loginRequest = function(userInfo){
     let self = this;
 
     sql.execute({
-        query: sql.fromFile("../sql/loginRequest"),
+        query: sql.fromFile("../sql/LoginRequest"),
         params: {
             username: {
                 val: userInfo.username
@@ -16,7 +16,7 @@ const loginRequest = function(userInfo){
 
         if (self.socket.authenticated) {
             self.app.onlineUsers[self.socket.id] = results[0].UserID;
-            console.log(userInfo.username + " logged in.")
+            console.log(userInfo.username + " logged in.");
             self.socket.emit('user login success');
         } else {
             self.socket.emit('user login failed', {error: 'Unable to login as ' + userInfo.username + '.'});
