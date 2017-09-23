@@ -13,7 +13,7 @@ $(function() {
                            </div>
         
                            <h3 class="my-0 mx-4 align-self-center">{{ roomUserCount }}/2</h3>
-                           <button class="join-button my-1 btn btn-outline-primary btn-lg"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
+                           <button class="join-room-button my-1 btn btn-outline-primary btn-lg"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
                        </div>
                    </div>`
     });
@@ -22,6 +22,7 @@ $(function() {
         el: '#app',
         data: {
             rooms: [],
+            currentRoom:'',
             currentScreen: 'login'
         }
     });
@@ -51,6 +52,7 @@ $(function() {
     // Sends an authenticate request.
     $('#login-form').submit(function () {
         socket.emit('user login request', {username: $('#username-box').val()});
+
         return false;
     });
 
@@ -58,6 +60,12 @@ $(function() {
     $(document).on('click', '#create-room-button', function(){
         socket.emit('lobby create room', {roomName: $('#create-room-name').val(),
                                           roomPassword: $('#create-room-password').val()});
+
+        return false;
+    });
+
+    $(document).on('click', '#join-room-button', function(){
+        socket.emit('lobby join room', {roomName: $('#create-room-name').val()});
 
         return false;
     });
@@ -74,8 +82,11 @@ $(function() {
         displayAlert('danger', data.error);
     });
 
-    socket.on('lobby room list', function(data) {
-        console.log(data.rooms);
+    socket.on('lobby active rooms', function(data) {
+        vm.rooms = data.rooms;
+    });
+
+    socket.on('lobby join room success', function(data) {
         vm.rooms = data.rooms;
     });
 });

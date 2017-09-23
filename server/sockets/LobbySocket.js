@@ -1,21 +1,11 @@
-const sql = require('seriate');
+const sqlQueries = require('../sqlQueries.js');
 
 const getActiveRooms = function(roomInfo) {
     let self = this;
 
-    sql.execute({
-        query: sql.fromFile("../sql/GetActiveRooms")
-    }).then(function (results) {
-        // Converts the returned bit 0 and 1 to Boolean values.
-        for (let i = 0; i < results.length; i++) {
-            results[i].roomID = i;
-            results[i].isPasswordProtected = Boolean(results[i].isPasswordProtected);
-        }
-
+    sqlQueries.getActiveRooms(function(results) {
         console.log('Broadcasting room list.');
-        self.socket.server.emit('lobby room list', {rooms: results})
-    }, function (err) {
-        console.error(err);
+        self.socket.server.emit('lobby active rooms', {rooms: results})
     });
 };
 
@@ -23,33 +13,21 @@ const getActiveRooms = function(roomInfo) {
 const createRoom = function(roomInfo) {
     let self = this;
 
-    if(roomInfo.roomPassword.trim().length < 1) {
-        roomInfo.roomPassword = 'NULL'
-    }
+    // Associates the host's ID to the roomInfo for use in SQL query.
+    roomInfo.roomHostID = self.app.onlineUsers[self.socket.id];
 
-    if (roomInfo.roomName.trim().length < 1) {
-        // Error, names too short.
-    } else {
-        sql.execute({
-            query: sql.fromFile("../sql/CreateRoom"),
-            params: {
-                roomName: {
-                    val: roomInfo.roomName
-                },
-                roomPassword: {
-                    val: roomInfo.roomPassword
-                },
-                roomHostID: {
-                    val: self.app.onlineUsers[self.socket.id]
-                }
-            }
-        }).then(function (results) {
-            self.socket.join(results.roomId)
-            self.broadcaster.broadcastActiveRooms();
-        }, function (err) {
-            console.error(err);
+    // Creates room in SQL
+    sqlQueries.createRoom(roomInfo, function(results) {
+        // Host joins room channel.
+        self.socket.join(results.roomId);
+
+        // Updates room list for all sockets.
+        sqlQueries.getActiveRooms(function(results) {
+            console.log('Broadcasting room list.');
+            self.socket.server.emit('lobby active rooms', {rooms: results})
         });
-    }
+    });
+
 };
 
 module.exports = function(app, socket){
