@@ -15,7 +15,7 @@ const loginRequest = function(userInfo){
         self.socket.authenticated = results.length > 0
 
         if (self.socket.authenticated) {
-            self.app.onlineUsers[self.socket.id] = results[0].UserID;
+            self.app.onlineUsers[self.socket.id] = results[0].UserId;
             console.log(userInfo.username + " logged in.");
             self.socket.emit('user login success');
         } else {

@@ -1,8 +1,8 @@
 const sql = require('seriate');
 
 module.exports = {
-    // Creates a room in SQL using the supplied Room Info.
-    createRoom(roomInfo, callback) {
+    // Creates a room in SQL using the supplied Room Info, making the supplied user the host.
+    createRoom(userInfo, roomInfo, callback) {
         let self = this;
 
         if(roomInfo.roomPassword.trim().length < 1) {
@@ -21,8 +21,8 @@ module.exports = {
                     roomPassword: {
                         val: roomInfo.roomPassword
                     },
-                    roomHostID: {
-                        val: roomInfo.roomHostID
+                    roomHostId: {
+                        val: userInfo.userId
                     }
                 }
             }).then(function (results) {
@@ -39,12 +39,28 @@ module.exports = {
         }).then(function (results) {
             // Converts the returned bit 0 and 1 to Boolean values.
             for (let i = 0; i < results.length; i++) {
-                results[i].roomID = i;
                 results[i].isPasswordProtected = Boolean(results[i].isPasswordProtected);
             }
 
             callback(results);
+        }, function (err) {
+            console.error(err);
+        });
+    },
 
+    joinRoom(userInfo, roomInfo, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/JoinRoom"),
+            params: {
+                userId: {
+                    val: userInfo.userId
+                },
+                roomId: {
+                    val: roomInfo.roomId
+                }
+            }
+        }).then(function (results) {
+            callback(results);
         }, function (err) {
             console.error(err);
         });

@@ -28,8 +28,8 @@ expressApp.use(express.static(path.resolve(__dirname + '/../' + 'client')));
 // App variables
 const app = {
     connectedSockets: [], // Sockets
-    onlineUsers: {},      // socket.id, sql.UserID
-    activeRooms: {}       // sql.RoomID, socket.id host
+    onlineUsers: {},      // socket.id, sql.UserId
+    activeRooms: {}       // sql.RoomId, socket.id host
 };
 
 io.on('connection', function(socket) {

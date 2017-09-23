@@ -13,13 +13,14 @@ const getActiveRooms = function(roomInfo) {
 const createRoom = function(roomInfo) {
     let self = this;
 
-    // Associates the host's ID to the roomInfo for use in SQL query.
-    roomInfo.roomHostID = self.app.onlineUsers[self.socket.id];
+    // Builds info about user for the SQL query.
+    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
     // Creates room in SQL
-    sqlQueries.createRoom(roomInfo, function(results) {
+    sqlQueries.createRoom(userInfo, roomInfo, function(results) {
         // Host joins room channel.
-        self.socket.join(results.roomId);
+        self.socket.join(results[0].roomId);
+        console.log('Created room ' + results[0].roomId);
 
         // Updates room list for all sockets.
         sqlQueries.getActiveRooms(function(results) {
