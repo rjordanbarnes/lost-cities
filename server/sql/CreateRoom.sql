@@ -1,3 +1,4 @@
+-- Creates a new room and returns the new room's Id
 DECLARE @newId UNIQUEIDENTIFIER
 SET @newId = NEWID()
 

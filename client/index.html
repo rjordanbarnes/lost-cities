@@ -49,7 +49,7 @@
                     <button id="createRoom" type="button" data-toggle="modal" data-target="#create-room" >Create Room</button>
                 </div>
                 <div id="room-list" class="list-group col-9">
-                    <room
+                    <room-container
                             v-for="room in rooms"
                             :key="room.roomId"
                             :room-id="room.roomId"
@@ -57,7 +57,7 @@
                             :room-host="room.roomHost"
                             :room-user-count="room.roomUserCount"
                             :is-password-protected="room.isPasswordProtected">
-                    </room>
+                    </room-container>
                 </div>
             </div>
             <div class="modal fade" id="create-room" tabindex="-1" role="dialog">
@@ -89,7 +89,10 @@
         </div>
         </transition>
 
-
+        <transition name="fade">
+        <room id="room" class="container" :current-room="currentRoom" v-if="currentScreen == 'room'" v-cloak>
+        </room>
+        </transition>
 
         <div id="alert" class="alert" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

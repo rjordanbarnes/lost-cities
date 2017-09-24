@@ -1,9 +1,10 @@
 $(function() {
+    const socket = io();
 
     //// Vue ////
 
 
-    Vue.component('room', {
+    Vue.component('room-container', {
         props: ['roomId', 'roomName', 'roomHost', 'roomUserCount', 'isPasswordProtected'],
         template: `<div class="room-container list-group-item list-group-item-action flex-column align-items-start">
                        <div class="d-flex w-100 justify-content-end">
@@ -13,8 +14,40 @@ $(function() {
                            </div>
         
                            <h3 class="my-0 mx-4 align-self-center">{{ roomUserCount }}/2</h3>
-                           <button class="join-room-button my-1 btn btn-outline-primary btn-lg"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
+                           <button class="join-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="joinRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
                        </div>
+                   </div>`,
+        methods: {
+            joinRoom: function(roomId){
+                socket.emit('lobby join room', {roomId: roomId});
+            }
+        }
+    });
+
+    Vue.component('room', {
+        props: ['currentRoom'],
+        template: `<div>
+                        <h1 class="text-center my-4">{{ currentRoom.roomName }}</h1>
+                        <div class="row">
+                            <div id="room-chat" class="col-4">
+                                Chat Box Here
+                            </div>
+                            <div class="col-8">
+                                <ul class="room-player-list list-group">
+                                    <li class="list-group-item"><h2>{{ currentRoom.players[0].username }}</h2></li>
+                                    <li class="list-group-item" v-if="currentRoom.players.length <= 1">
+                                        <h2 class="text-muted">Empty</h2>
+                                    </li>
+                                    <li class="list-group-item list-group-item-success" v-else>
+                                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span>Ready</span></h2>
+                                    </li>
+                                </ul>
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="button" class="btn btn-secondary">Quit</button>
+                                    <button type="button" class="btn btn-success ml-2">Ready Up</button>
+                                </div>
+                            </div>
+                        </div>
                    </div>`
     });
 
@@ -22,8 +55,8 @@ $(function() {
         el: '#app',
         data: {
             rooms: [],
-            currentRoom:'',
-            currentScreen: 'login'
+            currentScreen: 'login',
+            currentRoom:{}
         }
     });
 
@@ -45,8 +78,6 @@ $(function() {
 
     //// Socket.io ////
 
-    const socket = io();
-
     //// Socket Event Emitters ////
 
     // Sends an authenticate request.
@@ -60,12 +91,6 @@ $(function() {
     $(document).on('click', '#create-room-button', function(){
         socket.emit('lobby create room', {roomName: $('#create-room-name').val(),
                                           roomPassword: $('#create-room-password').val()});
-
-        return false;
-    });
-
-    $(document).on('click', '#join-room-button', function(){
-        socket.emit('lobby join room', {roomName: $('#create-room-name').val()});
 
         return false;
     });
@@ -87,6 +112,7 @@ $(function() {
     });
 
     socket.on('lobby join room success', function(data) {
-        vm.rooms = data.rooms;
+        vm.currentRoom = data;
+        vm.currentScreen = 'room';
     });
 });

@@ -1,10 +1,32 @@
 const sql = require('seriate');
 
 module.exports = {
+
+
+    //// Login ////
+
+
+    loginRequest(userInfo, callback){
+        sql.execute({
+            query: sql.fromFile("./sql/LoginRequest"),
+            params: {
+                username: {
+                    val: userInfo.username
+                }
+            }
+        }).then(function(results) {
+            callback(results);
+        }, function(err) {
+            console.error(err);
+        });
+    },
+
+
+    //// Lobby ////
+
+
     // Creates a room in SQL using the supplied Room Info, making the supplied user the host.
     createRoom(userInfo, roomInfo, callback) {
-        let self = this;
-
         if(roomInfo.roomPassword.trim().length < 1) {
             roomInfo.roomPassword = 'NULL'
         }
@@ -32,6 +54,7 @@ module.exports = {
             });
         }
     },
+
     // Gets the currently active rooms.
     getActiveRooms(callback) {
         sql.execute({
@@ -48,6 +71,35 @@ module.exports = {
         });
     },
 
+    // Returns a the list of players in the given room.
+    getRoomDetails(roomInfo, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/GetRoomDetails"),
+            params: {
+                roomId: {
+                    val: roomInfo.roomId
+                }
+            }
+        }).then(function (results) {
+            // Restructure results into JS object
+            let players = [];
+            for (let i = 0; i < results.length; i++) {
+                players[i] = {userId: results[i].userId,
+                              username: results[i].username,
+                              isHost: results[i].isHost}
+            }
+            let structuredResults = {roomId: results[0].roomId,
+                                     roomName: results[0].roomName,
+                                     isPasswordProtected: results[0].isPasswordProtected,
+                                     players: players};
+
+            callback(structuredResults);
+        }, function (err) {
+            console.error(err);
+        });
+    },
+
+    // Makes the user join the given room.
     joinRoom(userInfo, roomInfo, callback) {
         sql.execute({
             query: sql.fromFile("./sql/JoinRoom"),
@@ -60,7 +112,7 @@ module.exports = {
                 }
             }
         }).then(function (results) {
-            callback(results);
+            callback();
         }, function (err) {
             console.error(err);
         });
