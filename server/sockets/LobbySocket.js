@@ -16,23 +16,30 @@ const createRoom = function(roomInfo) {
     // Builds info about user for the SQL query.
     let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
-    // Creates room in SQL
-    sqlQueries.createRoom(userInfo, roomInfo, function(results) {
-        // Host joins room channel.
-        self.socket.join(results[0].roomId);
-        console.log('Created room ' + results[0].roomId);
+	if(roomInfo.roomPassword.trim().length < 1) {
+		roomInfo.roomPassword = 'NULL'
+	}
 
-        // Updates room list for all sockets.
-        sqlQueries.getActiveRooms(function(results) {
-            console.log('Broadcasting room list.');
-            self.socket.server.emit('lobby active rooms', {rooms: results})
-        });
+	if (roomInfo.roomName.trim().length < 1) {
+		// Error, names too short.
+	} else {
+		// Creates room in SQL
+		sqlQueries.createRoom(userInfo, roomInfo, function (results) {
+			// Host joins room channel.
+			self.socket.join(results[0].roomId);
+			console.log('Created room ' + results[0].roomId);
 
-        sqlQueries.getRoomDetails(results[0], function (results) {
-            self.socket.server.in(results.roomId).emit('room update', results);
-        });
-    });
+			// Updates room list for all sockets.
+			sqlQueries.getActiveRooms(function (results) {
+				console.log('Broadcasting room list.');
+				self.socket.server.emit('lobby active rooms', {rooms: results})
+			});
 
+			sqlQueries.getRoomDetails(results[0], function (results) {
+				self.socket.server.in(results.roomId).emit('room update', results);
+			});
+		});
+	}
 };
 
 const joinRoom = function(roomInfo) {

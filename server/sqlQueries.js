@@ -27,32 +27,24 @@ module.exports = {
 
     // Creates a room in SQL using the supplied Room Info, making the supplied user the host.
     createRoom(userInfo, roomInfo, callback) {
-        if(roomInfo.roomPassword.trim().length < 1) {
-            roomInfo.roomPassword = 'NULL'
-        }
-
-        if (roomInfo.roomName.trim().length < 1) {
-            // Error, names too short.
-        } else {
-            sql.execute({
-                query: sql.fromFile("./sql/CreateRoom"),
-                params: {
-                    roomName: {
-                        val: roomInfo.roomName
-                    },
-                    roomPassword: {
-                        val: roomInfo.roomPassword
-                    },
-                    roomHostId: {
-                        val: userInfo.userId
-                    }
+        sql.execute({
+            query: sql.fromFile("./sql/CreateRoom"),
+            params: {
+                roomName: {
+                    val: roomInfo.roomName
+                },
+                roomPassword: {
+                    val: roomInfo.roomPassword
+                },
+                roomHostId: {
+                    val: userInfo.userId
                 }
-            }).then(function (results) {
-                callback(results);
-            }, function (err) {
-                console.error(err);
-            });
-        }
+            }
+        }).then(function (results) {
+            callback(results);
+        }, function (err) {
+            console.error(err);
+        });
     },
 
     // Gets the currently active rooms.
