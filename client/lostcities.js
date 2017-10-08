@@ -34,17 +34,20 @@ $(function() {
                             </div>
                             <div class="col-8">
                                 <ul class="room-player-list list-group">
-                                    <li class="list-group-item"><h2>{{ currentRoom.players[0].username }}</h2></li>
+                                    <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[0].isReady }">
+                                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[0].username }}<span v-if="currentRoom.players[0].isReady">Ready</span></h2>
+                                    </li>
+                                    
                                     <li class="list-group-item" v-if="currentRoom.players.length <= 1">
                                         <h2 class="text-muted">Empty</h2>
                                     </li>
-                                    <li class="list-group-item list-group-item-success" v-else>
-                                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span>Ready</span></h2>
+                                    <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[1].isReady }" v-else>
+                                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span v-if="currentRoom.players[1].isReady">Ready</span></h2>
                                     </li>
                                 </ul>
                                 <div class="d-flex justify-content-end mt-4">
                                     <button type="button" id="quit-room-button" class="btn btn-secondary">Quit</button>
-                                    <button type="button" class="btn btn-success ml-2">Ready Up</button>
+                                    <button type="button" id="ready-room-button" class="btn btn-success ml-2">Ready Up</button>
                                 </div>
                             </div>
                         </div>
@@ -104,6 +107,17 @@ $(function() {
 		return false;
 	});
 
+	// Used to toggle the user's ready status.
+	$(document).on('click', '#ready-room-button', function(){
+		socket.emit('ready toggle');
+
+		// Set the proper text for the Ready Button
+		let readyButton = $('#ready-room-button');
+		readyButton.text((readyButton.text() === 'Ready Up' ? 'Unready' : 'Ready Up'));
+		readyButton.toggleClass('btn-success btn-danger');
+
+		return false;
+	});
 
     //// Socket Event Handlers ////
 

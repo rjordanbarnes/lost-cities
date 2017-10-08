@@ -1,5 +1,5 @@
 UPDATE Users
-SET CurrentRoom = NULL
+SET CurrentRoom = NULL, IsReady = 0
 WHERE CurrentRoom = @roomId
 
 UPDATE Rooms

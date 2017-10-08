@@ -29,11 +29,27 @@ const leaveRoom = function(){
 	});
 };
 
+const readyToggle = function() {
+	let self = this;
+
+	let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+
+	sqlQueries.readyToggle(userInfo, function(results) {
+		let roomInfo = {roomId: results[0].CurrentRoom};
+
+        // Notify others in the room that someone is ready.
+        sqlQueries.getRoomDetails(roomInfo, function (results) {
+            self.socket.server.in(roomInfo.roomId).emit('room update', results);
+        });
+	});
+};
+
 module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
 
     this.handlers = {
-		'leave room': leaveRoom.bind(this)
+		'leave room': leaveRoom.bind(this),
+        'ready toggle': readyToggle.bind(this)
     };
 };

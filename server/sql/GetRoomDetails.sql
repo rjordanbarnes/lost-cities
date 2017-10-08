@@ -1,6 +1,7 @@
 SELECT UserId AS userId,
        Username AS username,
        IsHost AS isHost,
+       IsReady AS isReady,
        rm1.RoomId AS roomId,
        rm1.RoomName AS roomName,
        (SELECT CASE WHEN LEN(rm2.Password) > 0 THEN 1 ELSE 0 END FROM Rooms rm2

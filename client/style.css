@@ -24,6 +24,10 @@
     margin-top: 200px;
 }
 
+#ready-room-button {
+    width: 95px;
+}
+
 #room {
     max-width: 790px;
 }

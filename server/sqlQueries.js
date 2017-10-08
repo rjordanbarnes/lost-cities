@@ -54,7 +54,7 @@ module.exports = {
         }).then(function (results) {
             // Converts the returned bit 0 and 1 to Boolean values.
             for (let i = 0; i < results.length; i++) {
-                results[i].isPasswordProtected = Boolean(results[i].isPasswordProtected);
+                results[i].isPasswordProtected = results[i].isPasswordProtected === 1;
             }
 
             callback(results);
@@ -75,14 +75,17 @@ module.exports = {
         }).then(function (results) {
             // Restructure results into JS object
             let players = [];
+
             for (let i = 0; i < results.length; i++) {
                 players[i] = {userId: results[i].userId,
                               username: results[i].username,
-                              isHost: results[i].isHost}
+                              isHost: results[i].isHost,
+							  isReady: results[i].isReady}
             }
+
             let structuredResults = {roomId: results[0].roomId,
                                      roomName: results[0].roomName,
-                                     isPasswordProtected: results[0].isPasswordProtected,
+                                     isPasswordProtected: results[0].isPasswordProtected === 1,
                                      players: players};
 
             callback(structuredResults);
@@ -141,5 +144,22 @@ module.exports = {
 		}, function (err) {
 			console.error(err);
 		});
-	}
+	},
+
+	// Toggles the user's ready state.
+	readyToggle(userInfo, callback) {
+		sql.execute({
+			query: sql.fromFile("./sql/ReadyToggle"),
+			params: {
+				userId: {
+					val: userInfo.userId
+				}
+			}
+		}).then(function (results) {
+			// Sends the room the user's in back.
+			callback(results);
+		}, function (err) {
+			console.error(err);
+		});
+	},
 };
