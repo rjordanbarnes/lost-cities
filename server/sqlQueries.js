@@ -116,5 +116,38 @@ module.exports = {
         }, function (err) {
             console.error(err);
         });
-    }
+    },
+
+    // Specified user leaves whatever room they're in.
+    leaveRoom(userInfo, callback) {
+		sql.execute({
+			query: sql.fromFile("./sql/LeaveRoom"),
+			params: {
+				userId: {
+					val: userInfo.userId
+				}
+			}
+		}).then(function (results) {
+		    // Sends the room the user left back.
+			callback(results);
+		}, function (err) {
+			console.error(err);
+		});
+    },
+
+	// Shuts a certain room down.
+	shutdownRoom(roomInfo, callback) {
+		sql.execute({
+			query: sql.fromFile("./sql/ShutdownRoom"),
+			params: {
+				roomId: {
+					val: roomInfo.roomId
+				}
+			}
+		}).then(function () {
+			callback();
+		}, function (err) {
+			console.error(err);
+		});
+	}
 };

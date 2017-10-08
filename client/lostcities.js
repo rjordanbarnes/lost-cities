@@ -43,7 +43,7 @@ $(function() {
                                     </li>
                                 </ul>
                                 <div class="d-flex justify-content-end mt-4">
-                                    <button type="button" class="btn btn-secondary">Quit</button>
+                                    <button type="button" id="quit-room-button" class="btn btn-secondary">Quit</button>
                                     <button type="button" class="btn btn-success ml-2">Ready Up</button>
                                 </div>
                             </div>
@@ -95,6 +95,15 @@ $(function() {
         return false;
     });
 
+    // Leaves the current room.
+	$(document).on('click', '#quit-room-button', function(){
+		socket.emit('leave room');
+		vm.currentRoom = {};
+		vm.currentScreen = 'lobby';
+
+		return false;
+	});
+
 
     //// Socket Event Handlers ////
 
@@ -111,8 +120,13 @@ $(function() {
         vm.rooms = data.rooms;
     });
 
-    socket.on('lobby join room success', function(data) {
+    socket.on('room update', function(data) {
         vm.currentRoom = data;
         vm.currentScreen = 'room';
+    });
+
+    socket.on('room shutdown', function() {
+		vm.currentRoom = {};
+		vm.currentScreen = 'lobby';
     });
 });

@@ -1,4 +1,4 @@
-const sql = require('seriate');
+const sqlQueries = require('../sqlQueries.js');
 
 const loginRequest = function(userInfo){
 

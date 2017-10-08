@@ -42,7 +42,6 @@
             </form>
         </div>
 
-        <transition name="fade">
         <div id="lobby" class="container" v-if="currentScreen == 'lobby'" v-cloak>
             <div class="row">
                 <div class="col-3">
@@ -87,12 +86,9 @@
                 </div>
             </div>
         </div>
-        </transition>
 
-        <transition name="fade">
         <room id="room" class="container" :current-room="currentRoom" v-if="currentScreen == 'room'" v-cloak>
         </room>
-        </transition>
 
         <div id="alert" class="alert" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

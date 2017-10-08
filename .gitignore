@@ -50,4 +50,4 @@ node_modules
 .idea
 
 # SQL
-sql/backups
+sql setup/backups

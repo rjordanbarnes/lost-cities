@@ -29,7 +29,7 @@ const createRoom = function(roomInfo) {
         });
 
         sqlQueries.getRoomDetails(results[0], function (results) {
-            self.socket.server.in(results.roomId).emit('lobby join room success', results);
+            self.socket.server.in(results.roomId).emit('room update', results);
         });
     });
 
@@ -59,7 +59,7 @@ const joinRoom = function(roomInfo) {
 
                 // Gets the room's players and other room info to broadcast to channel.
                 sqlQueries.getRoomDetails(roomInfo, function (results) {
-                    self.socket.server.in(roomInfo.roomId).emit('lobby join room success', results);
+                    self.socket.server.in(roomInfo.roomId).emit('room update', results);
                 });
             });
         }
