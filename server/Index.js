@@ -11,6 +11,7 @@ const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
 const RoomSocket = require('./sockets/RoomSocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
+const sqlQueries = require('./sqlQueries.js');
 
 
 // SQL
@@ -31,28 +32,31 @@ const app = {
     onlineUsers: {}       // socket.id, sql.UserId
 };
 
-io.on('connection', function(socket) {
-    console.log('Socket connected.');
-    app.connectedSockets.push(socket);
-    socket.authenticated = false;
+// Shuts down all active rooms on server start.
+sqlQueries.shutdownAllRooms(function() {
+    io.on('connection', function(socket) {
+        console.log('Socket connected.');
+        app.connectedSockets.push(socket);
+        socket.authenticated = false;
 
-    const socketHandlers = {
-        'user': new UserSocket(app, socket),
-        'lobby': new LobbySocket(app, socket),
-        'room' : new RoomSocket(app, socket),
-        'game' : new GameSocket(app, socket)
-    };
+        const socketHandlers = {
+            'user': new UserSocket(app, socket),
+            'lobby': new LobbySocket(app, socket),
+            'room' : new RoomSocket(app, socket),
+            'game' : new GameSocket(app, socket)
+        };
 
-    for (let category in socketHandlers) {
-        let handler = socketHandlers[category].handlers;
-        for (let event in handler) {
-            if (handler.hasOwnProperty(event)) {
-                socket.on(event, handler[event]);
+        for (let category in socketHandlers) {
+            let handler = socketHandlers[category].handlers;
+            for (let event in handler) {
+                if (handler.hasOwnProperty(event)) {
+                    socket.on(event, handler[event]);
+                }
             }
         }
-    }
-});
+    });
 
-http.listen(8889, function() {
-    console.log('Listening on *:8889');
+    http.listen(8889, function() {
+        console.log('Listening on *:8889');
+    });
 });

@@ -2,6 +2,18 @@ const sql = require('seriate');
 
 module.exports = {
 
+    //// Maintenance ////
+
+    shutdownAllRooms(callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/ShutdownAllRooms")
+        }).then(function(results) {
+            callback(results);
+        }, function(err) {
+            console.error(err);
+        });
+    },
+
 
     //// Login ////
 
