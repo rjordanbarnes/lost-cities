@@ -32,7 +32,7 @@ const app = {
 };
 
 io.on('connection', function(socket) {
-    console.log('Socket connected.')
+    console.log('Socket connected.');
     app.connectedSockets.push(socket);
     socket.authenticated = false;
 

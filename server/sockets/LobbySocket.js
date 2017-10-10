@@ -1,6 +1,6 @@
 const sqlQueries = require('../sqlQueries.js');
 
-const broadcastActiveRooms = function(roomInfo) {
+const broadcastActiveRooms = function() {
     let self = this;
 
     sqlQueries.getActiveRooms(function(results) {
@@ -16,30 +16,30 @@ const createRoom = function(roomInfo) {
     // Builds info about user for the SQL query.
     let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
-	if(roomInfo.roomPassword.trim().length < 1) {
-		roomInfo.roomPassword = 'NULL'
-	}
+    if(roomInfo.roomPassword.trim().length < 1) {
+        roomInfo.roomPassword = 'NULL'
+    }
 
-	if (roomInfo.roomName.trim().length < 1) {
-		// Error, names too short.
-	} else {
-		// Creates room in SQL
-		sqlQueries.createRoom(userInfo, roomInfo, function (results) {
-			// Host joins room channel.
-			self.socket.join(results[0].roomId);
-			console.log('Created room ' + results[0].roomId);
+    if (roomInfo.roomName.trim().length < 1) {
+        // Error, names too short.
+    } else {
+        // Creates room in SQL
+        sqlQueries.createRoom(userInfo, roomInfo, function (results) {
+            // Host joins room channel.
+            self.socket.join(results[0].roomId);
+            console.log('Created room ' + results[0].roomId);
 
-			// Updates room list for all sockets.
-			sqlQueries.getActiveRooms(function (results) {
-				console.log('Broadcasting room list.');
-				self.socket.server.emit('lobby active rooms', {rooms: results})
-			});
+            // Updates room list for all sockets.
+            sqlQueries.getActiveRooms(function (results) {
+                console.log('Broadcasting room list.');
+                self.socket.server.emit('lobby active rooms', {rooms: results})
+            });
 
-			sqlQueries.getRoomDetails(results[0], function (results) {
-				self.socket.server.in(results.roomId).emit('room update', results);
-			});
-		});
-	}
+            sqlQueries.getRoomDetails(results[0], function (results) {
+                self.socket.server.in(results.roomId).emit('room update', results);
+            });
+        });
+    }
 };
 
 const joinRoom = function(roomInfo) {

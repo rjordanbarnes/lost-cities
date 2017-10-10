@@ -93,31 +93,32 @@ $(function() {
     // Sends a request to create a new room.
     $(document).on('click', '#create-room-button', function(){
         socket.emit('lobby create room', {roomName: $('#create-room-name').val(),
-                                          roomPassword: $('#create-room-password').val()});
+            roomPassword: $('#create-room-password').val()});
 
         return false;
     });
 
     // Leaves the current room.
-	$(document).on('click', '#quit-room-button', function(){
-		socket.emit('leave room');
-		vm.currentRoom = {};
-		vm.currentScreen = 'lobby';
+    $(document).on('click', '#quit-room-button', function(){
+        socket.emit('leave room');
+        vm.currentRoom = {};
+        vm.currentScreen = 'lobby';
 
-		return false;
-	});
+        return false;
+    });
 
-	// Used to toggle the user's ready status.
-	$(document).on('click', '#ready-room-button', function(){
-		socket.emit('ready toggle');
+    // Used to toggle the user's ready status.
+    $(document).on('click', '#ready-room-button', function(){
+        socket.emit('ready toggle');
 
-		// Set the proper text for the Ready Button
-		let readyButton = $('#ready-room-button');
-		readyButton.text((readyButton.text() === 'Ready Up' ? 'Unready' : 'Ready Up'));
-		readyButton.toggleClass('btn-success btn-danger');
+        // Set the proper text for the Ready Button
+        let readyButton = $('#ready-room-button');
+        readyButton.text((readyButton.text() === 'Ready Up' ? 'Unready' : 'Ready Up'));
+        readyButton.toggleClass('btn-success btn-danger');
 
-		return false;
-	});
+        return false;
+    });
+
 
     //// Socket Event Handlers ////
 
@@ -140,7 +141,7 @@ $(function() {
     });
 
     socket.on('room shutdown', function() {
-		vm.currentRoom = {};
-		vm.currentScreen = 'lobby';
+        vm.currentRoom = {};
+        vm.currentScreen = 'lobby';
     });
 });

@@ -78,15 +78,15 @@ module.exports = {
 
             for (let i = 0; i < results.length; i++) {
                 players[i] = {userId: results[i].userId,
-                              username: results[i].username,
-                              isHost: results[i].isHost,
-							  isReady: results[i].isReady}
+                    username: results[i].username,
+                    isHost: results[i].isHost,
+                    isReady: results[i].isReady}
             }
 
             let structuredResults = {roomId: results[0].roomId,
-                                     roomName: results[0].roomName,
-                                     isPasswordProtected: results[0].isPasswordProtected === 1,
-                                     players: players};
+                roomName: results[0].roomName,
+                isPasswordProtected: results[0].isPasswordProtected === 1,
+                players: players};
 
             callback(structuredResults);
         }, function (err) {
@@ -106,7 +106,7 @@ module.exports = {
                     val: roomInfo.roomId
                 }
             }
-        }).then(function (results) {
+        }).then(function () {
             callback();
         }, function (err) {
             console.error(err);
@@ -115,51 +115,51 @@ module.exports = {
 
     // Specified user leaves whatever room they're in.
     leaveRoom(userInfo, callback) {
-		sql.execute({
-			query: sql.fromFile("./sql/LeaveRoom"),
-			params: {
-				userId: {
-					val: userInfo.userId
-				}
-			}
-		}).then(function (results) {
-		    // Sends the room the user left back.
-			callback(results);
-		}, function (err) {
-			console.error(err);
-		});
+        sql.execute({
+            query: sql.fromFile("./sql/LeaveRoom"),
+            params: {
+                userId: {
+                    val: userInfo.userId
+                }
+            }
+        }).then(function (results) {
+            // Sends the room the user left back.
+            callback(results);
+        }, function (err) {
+            console.error(err);
+        });
     },
 
-	// Shuts a certain room down.
-	shutdownRoom(roomInfo, callback) {
-		sql.execute({
-			query: sql.fromFile("./sql/ShutdownRoom"),
-			params: {
-				roomId: {
-					val: roomInfo.roomId
-				}
-			}
-		}).then(function () {
-			callback();
-		}, function (err) {
-			console.error(err);
-		});
-	},
+    // Shuts a certain room down.
+    shutdownRoom(roomInfo, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/ShutdownRoom"),
+            params: {
+                roomId: {
+                    val: roomInfo.roomId
+                }
+            }
+        }).then(function () {
+            callback();
+        }, function (err) {
+            console.error(err);
+        });
+    },
 
-	// Toggles the user's ready state.
-	readyToggle(userInfo, callback) {
-		sql.execute({
-			query: sql.fromFile("./sql/ReadyToggle"),
-			params: {
-				userId: {
-					val: userInfo.userId
-				}
-			}
-		}).then(function (results) {
-			// Sends the room the user's in back.
-			callback(results);
-		}, function (err) {
-			console.error(err);
-		});
-	},
+    // Toggles the user's ready state.
+    readyToggle(userInfo, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/ReadyToggle"),
+            params: {
+                userId: {
+                    val: userInfo.userId
+                }
+            }
+        }).then(function (results) {
+            // Sends the room the user's in back.
+            callback(results);
+        }, function (err) {
+            console.error(err);
+        });
+    },
 };
