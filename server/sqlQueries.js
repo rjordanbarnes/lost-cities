@@ -113,6 +113,10 @@ module.exports = {
         });
     },
 
+
+    //// Room ////
+
+
     // Specified user leaves whatever room they're in.
     leaveRoom(userInfo, callback) {
         sql.execute({

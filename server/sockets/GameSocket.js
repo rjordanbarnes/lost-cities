@@ -1,4 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
+const Broadcasts = require('./Broadcasts.js');
 
 const loginRequest = function(userInfo){
 

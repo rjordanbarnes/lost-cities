@@ -1,4 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
+const Broadcasts = require('./Broadcasts.js');
 
 const leaveRoom = function(){
     let self = this;
@@ -9,17 +10,15 @@ const leaveRoom = function(){
         let roomInfo = {roomId: results[0].CurrentRoom};
         self.socket.leave(roomInfo.roomId);
 
-        // Updates room list for all sockets.
-        sqlQueries.getActiveRooms(function (results) {
-            console.log('Broadcasting room list.');
-            self.socket.server.emit('lobby active rooms', {rooms: results});
-        });
+        Broadcasts.refreshRoomList(self.socket);
 
         if (results[0].IsHost) {
             // Shutdown the room if the user was the host of the room.
             sqlQueries.shutdownRoom(roomInfo, function () {
                 self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
                 self.socket.server.in(roomInfo.roomId).emit('room shutdown');
+
+                Broadcasts.refreshRoomList(self.socket);
             });
         } else {
             // Notify others in the room if someone other than the host left.

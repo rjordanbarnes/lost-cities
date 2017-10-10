@@ -1,12 +1,10 @@
 const sqlQueries = require('../sqlQueries.js');
+const Broadcasts = require('./Broadcasts.js');
 
 const broadcastActiveRooms = function() {
     let self = this;
 
-    sqlQueries.getActiveRooms(function(results) {
-        console.log('Broadcasting room list.');
-        self.socket.server.emit('lobby active rooms', {rooms: results})
-    });
+    Broadcasts.refreshRoomList(self.socket);
 };
 
 // Creates a new room.
@@ -29,11 +27,7 @@ const createRoom = function(roomInfo) {
             self.socket.join(results[0].roomId);
             console.log('Created room ' + results[0].roomId);
 
-            // Updates room list for all sockets.
-            sqlQueries.getActiveRooms(function (results) {
-                console.log('Broadcasting room list.');
-                self.socket.server.emit('lobby active rooms', {rooms: results})
-            });
+            Broadcasts.refreshRoomList(self.socket);
 
             sqlQueries.getRoomDetails(results[0], function (results) {
                 self.socket.server.in(results.roomId).emit('room update', results);
@@ -58,11 +52,7 @@ const joinRoom = function(roomInfo) {
                 // Joins room's socket.io channel.
                 self.socket.join(roomInfo.roomId);
 
-                // Updates room list for all sockets.
-                sqlQueries.getActiveRooms(function (results) {
-                    console.log('Broadcasting room list.');
-                    self.socket.server.emit('lobby active rooms', {rooms: results});
-                });
+                Broadcasts.refreshRoomList(self.socket);
 
                 // Gets the room's players and other room info to broadcast to channel.
                 sqlQueries.getRoomDetails(roomInfo, function (results) {

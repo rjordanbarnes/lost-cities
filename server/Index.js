@@ -51,20 +51,6 @@ io.on('connection', function(socket) {
             }
         }
     }
-
-    socket.on('disconnect',function(){
-        console.log('Socket disconnected.');
-
-        // Removes connected socket.
-        let socketIndex = app.connectedSockets.indexOf(socket);
-        if (socketIndex >= 0)
-            app.connectedSockets.splice(socketIndex, 1);
-
-        // Removes online user if associated with the socket.
-        if (app.onlineUsers.hasOwnProperty(socket.id))
-            delete app.onlineUsers[socket.id];
-
-    });
 });
 
 http.listen(8889, function() {
