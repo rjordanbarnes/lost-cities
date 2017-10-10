@@ -1,5 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
-const Broadcast = require('./Broadcast.js');
+const Broadcast = require('./SocketHelpers.js').Broadcast;
 
 // Authenticates if username is in SQL database.
 const loginRequest = function(userInfo){

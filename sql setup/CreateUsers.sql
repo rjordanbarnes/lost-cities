@@ -7,4 +7,4 @@ VALUES ('Jordan'),
        ('Salem')
 
 SELECT * FROM Users
-SELECT * FROM Rooms
+SELECT * FROM Rooms ORDER BY CreationDate DESC

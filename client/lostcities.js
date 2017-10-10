@@ -131,6 +131,11 @@ $(function() {
         displayAlert('danger', data.error);
     });
 
+    socket.on('user unauthenticated', function() {
+        vm.currentRoom = {};
+        vm.currentScreen = 'login';
+    });
+
     socket.on('lobby active rooms', function(data) {
         vm.rooms = data.rooms;
     });

@@ -1,6 +1,6 @@
 const sqlQueries = require('../sqlQueries.js');
 
-module.exports = {
+module.exports.Broadcast = {
     refreshRoomList(socket) {
         // Updates room list for all sockets.
         sqlQueries.getActiveRooms(function (results) {
@@ -14,5 +14,16 @@ module.exports = {
         sqlQueries.getRoomDetails(roomInfo, function (results) {
             socket.server.in(roomInfo.roomId).emit('room update', results);
         });
+    }
+};
+
+module.exports.Validations = {
+    isAuthenticated(socket) {
+        if (!socket.authenticated) {
+            socket.emit('server error', {error: 'Must be logged in.'});
+            socket.emit('user unauthenticated');
+        }
+
+        return socket.authenticated;
     }
 };
