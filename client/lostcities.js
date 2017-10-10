@@ -127,7 +127,7 @@ $(function() {
         vm.currentScreen = 'lobby';
     });
 
-    socket.on('user login failed', function (data) {
+    socket.on('server error', function (data) {
         displayAlert('danger', data.error);
     });
 

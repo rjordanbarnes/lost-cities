@@ -20,8 +20,8 @@ const createRoom = function(roomInfo) {
         roomInfo.roomPassword = 'NULL'
     }
 
-    if (roomInfo.roomName.trim().length < 1) {
-        // Error, names too short.
+    if (roomInfo.roomName.trim().length < 4 || roomInfo.roomName.trim().length > 20) {
+        self.socket.emit('server error', {error: 'Room name must be between 4 and 20 characters.'});
     } else {
         // Creates room in SQL
         sqlQueries.createRoom(userInfo, roomInfo, function (results) {
@@ -51,7 +51,7 @@ const joinRoom = function(roomInfo) {
     sqlQueries.getRoomDetails(roomInfo, function(results) {
 
         if (results.players.length > 1) {
-            // Room's full
+            self.socket.emit('server error', {error: 'Room is full.'});
         } else {
             // Joins room in SQL.
             sqlQueries.joinRoom(userInfo, roomInfo, function () {

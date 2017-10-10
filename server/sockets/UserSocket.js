@@ -12,7 +12,7 @@ const loginRequest = function(userInfo){
             console.log(userInfo.username + " logged in.");
             self.socket.emit('user login success');
         } else {
-            self.socket.emit('user login failed', {error: 'Unable to login as ' + userInfo.username + '.'});
+            self.socket.emit('server error', {error: 'Unable to login as ' + userInfo.username + '.'});
         }
     });
 };
