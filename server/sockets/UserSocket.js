@@ -21,39 +21,41 @@ const loginRequest = function(userInfo){
 const disconnectUser = function() {
     let self = this;
 
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    console.log('Socket disconnected.');
 
-    sqlQueries.leaveRoom(userInfo, function(results) {
-        Broadcast.refreshRoomList(self.socket);
+    // If the user is authenticated, handle disconnecting user.
+    if (self.socket.authenticated) {
+        let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
-        // If the user was in a room, properly shutdowns their rooms and games.
-        if (results[0]) {
-            let roomInfo = {roomId: results[0].CurrentRoom};
+        sqlQueries.leaveRoom(userInfo, function(results) {
+            Broadcast.refreshRoomList(self.socket);
 
-            if (results[0].IsHost) {
-                // Shutdown the room if the user was the host of the room.
-                sqlQueries.shutdownRoom(roomInfo, function () {
-                    self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
-                    self.socket.server.in(roomInfo.roomId).emit('room shutdown');
+            // If the user was in a room, properly shutdowns their rooms and games.
+            if (results[0]) {
+                let roomInfo = {roomId: results[0].CurrentRoom};
 
-                    Broadcast.refreshRoomList(self.socket);
-                });
-            } else {
-                Broadcast.refreshRoomDetails(socket, roomInfo);
+                if (results[0].IsHost) {
+                    // Shutdown the room if the user was the host of the room.
+                    sqlQueries.shutdownRoom(roomInfo, function () {
+                        self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
+                        self.socket.server.in(roomInfo.roomId).emit('room shutdown');
+
+                        Broadcast.refreshRoomList(self.socket);
+                    });
+                } else {
+                    Broadcast.refreshRoomDetails(self.socket, roomInfo);
+                }
             }
-        }
+        });
 
-        // Removes connected socket.
-        let socketIndex = self.app.connectedSockets.indexOf(self.socket);
-        if (socketIndex >= 0)
-            self.app.connectedSockets.splice(socketIndex, 1);
+        delete self.app.onlineUsers[self.socket.id];
+    }
 
-        // Removes online user if associated with the socket.
-        if (self.app.onlineUsers.hasOwnProperty(self.socket.id))
-            delete self.app.onlineUsers[self.socket.id];
 
-        console.log('Socket disconnected.');
-    });
+    // Removes connected socket.
+    let socketIndex = self.app.connectedSockets.indexOf(self.socket);
+    if (socketIndex >= 0)
+        self.app.connectedSockets.splice(socketIndex, 1);
 };
 
 module.exports = function(app, socket){

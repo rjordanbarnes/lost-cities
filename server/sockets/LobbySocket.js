@@ -11,16 +11,19 @@ const broadcastActiveRooms = function() {
 const createRoom = function(roomInfo) {
     let self = this;
 
-    // Builds info about user for the SQL query.
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    roomInfo.roomName = roomInfo.roomName.trim();
 
     if(roomInfo.roomPassword.trim().length < 1) {
         roomInfo.roomPassword = 'NULL'
     }
 
-    if (roomInfo.roomName.trim().length < 4 || roomInfo.roomName.trim().length > 20) {
+    if (!self.socket.authenticated) {
+        self.socket.emit('server error', {error: 'Must be logged in.'});
+    } else if (roomInfo.roomName.length < 4 || roomInfo.roomName.length > 20) {
         self.socket.emit('server error', {error: 'Room name must be between 4 and 20 characters.'});
     } else {
+        let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+
         // Creates room in SQL
         sqlQueries.createRoom(userInfo, roomInfo, function (results) {
             // Host joins room channel.
@@ -28,7 +31,7 @@ const createRoom = function(roomInfo) {
             console.log('Created room ' + results[0].roomId);
 
             Broadcast.refreshRoomList(self.socket);
-            Broadcast.refreshRoomDetails(socket, results[0]);
+            Broadcast.refreshRoomDetails(self.socket, results[0]);
         });
     }
 };
@@ -36,24 +39,28 @@ const createRoom = function(roomInfo) {
 const joinRoom = function(roomInfo) {
     let self = this;
 
-    // Builds info about user for the SQL query.
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    if (!self.socket.authenticated) {
+        self.socket.emit('server error', {error: 'Must be logged in.'});
+    } else {
+        // Builds info about user for the SQL query.
+        let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
-    sqlQueries.getRoomDetails(roomInfo, function(results) {
+        sqlQueries.getRoomDetails(roomInfo, function(results) {
 
-        if (results.players.length > 1) {
-            self.socket.emit('server error', {error: 'Room is full.'});
-        } else {
-            // Joins room in SQL.
-            sqlQueries.joinRoom(userInfo, roomInfo, function () {
-                // Joins room's socket.io channel.
-                self.socket.join(roomInfo.roomId);
+            if (results.players.length > 1) {
+                self.socket.emit('server error', {error: 'Room is full.'});
+            } else {
+                // Joins room in SQL.
+                sqlQueries.joinRoom(userInfo, roomInfo, function () {
+                    // Joins room's socket.io channel.
+                    self.socket.join(roomInfo.roomId);
 
-                Broadcast.refreshRoomList(self.socket);
-                Broadcast.refreshRoomDetails(socket, roomInfo);
-            });
-        }
-    });
+                    Broadcast.refreshRoomList(self.socket);
+                    Broadcast.refreshRoomDetails(self.socket, roomInfo);
+                });
+            }
+        });
+    }
 };
 
 module.exports = function(app, socket){
