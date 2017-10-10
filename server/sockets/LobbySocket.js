@@ -1,10 +1,10 @@
 const sqlQueries = require('../sqlQueries.js');
-const Broadcasts = require('./Broadcasts.js');
+const Broadcast = require('./Broadcast.js');
 
 const broadcastActiveRooms = function() {
     let self = this;
 
-    Broadcasts.refreshRoomList(self.socket);
+    Broadcast.refreshRoomList(self.socket);
 };
 
 // Creates a new room.
@@ -27,11 +27,8 @@ const createRoom = function(roomInfo) {
             self.socket.join(results[0].roomId);
             console.log('Created room ' + results[0].roomId);
 
-            Broadcasts.refreshRoomList(self.socket);
-
-            sqlQueries.getRoomDetails(results[0], function (results) {
-                self.socket.server.in(results.roomId).emit('room update', results);
-            });
+            Broadcast.refreshRoomList(self.socket);
+            Broadcast.refreshRoomDetails(socket, results[0]);
         });
     }
 };
@@ -52,12 +49,8 @@ const joinRoom = function(roomInfo) {
                 // Joins room's socket.io channel.
                 self.socket.join(roomInfo.roomId);
 
-                Broadcasts.refreshRoomList(self.socket);
-
-                // Gets the room's players and other room info to broadcast to channel.
-                sqlQueries.getRoomDetails(roomInfo, function (results) {
-                    self.socket.server.in(roomInfo.roomId).emit('room update', results);
-                });
+                Broadcast.refreshRoomList(self.socket);
+                Broadcast.refreshRoomDetails(socket, roomInfo);
             });
         }
     });

@@ -1,5 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
-const Broadcasts = require('./Broadcasts.js');
+const Broadcast = require('./Broadcast.js');
 
 // Authenticates if username is in SQL database.
 const loginRequest = function(userInfo){
@@ -24,7 +24,7 @@ const disconnectUser = function() {
     let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
 
     sqlQueries.leaveRoom(userInfo, function(results) {
-        Broadcasts.refreshRoomList(self.socket);
+        Broadcast.refreshRoomList(self.socket);
 
         // If the user was in a room, properly shutdowns their rooms and games.
         if (results[0]) {
@@ -36,13 +36,10 @@ const disconnectUser = function() {
                     self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
                     self.socket.server.in(roomInfo.roomId).emit('room shutdown');
 
-                    Broadcasts.refreshRoomList(self.socket);
+                    Broadcast.refreshRoomList(self.socket);
                 });
             } else {
-                // Notify others in the room if someone other than the host left.
-                sqlQueries.getRoomDetails(roomInfo, function (results) {
-                    self.socket.server.in(roomInfo.roomId).emit('room update', results);
-                });
+                Broadcast.refreshRoomDetails(socket, roomInfo);
             }
         }
 

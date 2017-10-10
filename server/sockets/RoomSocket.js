@@ -1,5 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
-const Broadcasts = require('./Broadcasts.js');
+const Broadcast = require('./Broadcast.js');
 
 const leaveRoom = function(){
     let self = this;
@@ -10,7 +10,7 @@ const leaveRoom = function(){
         let roomInfo = {roomId: results[0].CurrentRoom};
         self.socket.leave(roomInfo.roomId);
 
-        Broadcasts.refreshRoomList(self.socket);
+        Broadcast.refreshRoomList(self.socket);
 
         if (results[0].IsHost) {
             // Shutdown the room if the user was the host of the room.
@@ -18,13 +18,10 @@ const leaveRoom = function(){
                 self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
                 self.socket.server.in(roomInfo.roomId).emit('room shutdown');
 
-                Broadcasts.refreshRoomList(self.socket);
+                Broadcast.refreshRoomList(self.socket);
             });
         } else {
-            // Notify others in the room if someone other than the host left.
-            sqlQueries.getRoomDetails(roomInfo, function (results) {
-                self.socket.server.in(roomInfo.roomId).emit('room update', results);
-            });
+            Broadcast.refreshRoomDetails(socket, roomInfo);
         }
     });
 };
@@ -37,10 +34,7 @@ const readyToggle = function() {
     sqlQueries.readyToggle(userInfo, function(results) {
         let roomInfo = {roomId: results[0].CurrentRoom};
 
-        // Notify others in the room that someone is ready.
-        sqlQueries.getRoomDetails(roomInfo, function (results) {
-            self.socket.server.in(roomInfo.roomId).emit('room update', results);
-        });
+        Broadcast.refreshRoomDetails(socket, roomInfo);
     });
 };
 
