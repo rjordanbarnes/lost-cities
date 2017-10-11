@@ -2,18 +2,18 @@ const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 
 // Authenticates if username is in SQL database.
-const loginRequest = function(userInfo){
+const loginRequest = function(username){
     let self = this;
 
-    sqlQueries.loginRequest(userInfo, function(results) {
-        self.socket.authenticated = results.length > 0;
+    sqlQueries.loginUser(username, function(User) {
+        self.socket.authenticated = User.Exists;
 
         if (self.socket.authenticated) {
-            self.app.onlineUsers[self.socket.id] = results[0].UserId;
-            console.log(userInfo.username + " logged in.");
+            self.app.onlineUsers[self.socket.id] = User.UserId;
+            console.log(username + " logged in.");
             self.socket.emit('user login success');
         } else {
-            self.socket.emit('server error', {error: 'Unable to login as ' + userInfo.username + '.'});
+            self.socket.emit('server error', {error: 'Unable to login as ' + username + '.'});
         }
     });
 };

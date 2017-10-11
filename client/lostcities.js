@@ -85,7 +85,7 @@ $(function() {
 
     // Sends an authenticate request.
     $('#login-form').submit(function () {
-        socket.emit('user login request', {username: $('#username-box').val()});
+        socket.emit('user login request', $('#username-box').val());
 
         return false;
     });

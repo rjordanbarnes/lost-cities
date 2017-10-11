@@ -18,16 +18,21 @@ module.exports = {
     //// Login ////
 
 
-    loginRequest(userInfo, callback){
+    // Logs in the specified user.
+    // Returns UserId and if the user Exists
+    loginUser(username, callback){
         sql.execute({
-            query: sql.fromFile("./sql/LoginRequest"),
+            query: sql.fromFile("./sql/GetUserId"),
             params: {
                 username: {
-                    val: userInfo.username
+                    val: username
                 }
             }
         }).then(function(results) {
-            callback(results);
+            // If there were no results found, set Exists to false.
+            (0 in results) ? results[0].Exists = true : results[0] = {Exists: false};
+
+            callback(results[0]);
         }, function(err) {
             console.error(err);
         });
