@@ -171,17 +171,17 @@ module.exports = {
     },
 
     // Toggles the user's ready state.
-    readyToggle(userInfo, callback) {
+    // Returns the room that the user is in.
+    readyToggle(userId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/ReadyToggle"),
             params: {
                 userId: {
-                    val: userInfo.userId
+                    val: userId
                 }
             }
         }).then(function (results) {
-            // Sends the room the user's in back.
-            callback(results);
+            callback(results[0]);
         }, function (err) {
             console.error(err);
         });

@@ -2,46 +2,44 @@ const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
 
+// Causes the socket to leave the room they're in.
 const leaveRoom = function(){
-    let self = this;
+    const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    const userId = self.app.onlineUsers[self.socket.id];
 
-    sqlQueries.leaveRoom(userInfo, function (results) {
-        let roomInfo = {roomId: results[0].CurrentRoom};
-        self.socket.leave(roomInfo.roomId);
-
+    sqlQueries.leaveRoom(userId, function (User) {
         Broadcast.refreshRoomList(self.socket);
 
-        if (results[0].IsHost) {
+        if (User.IsHost) {
             // Shutdown the room if the user was the host of the room.
-            sqlQueries.shutdownRoom(roomInfo, function () {
-                self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
-                self.socket.server.in(roomInfo.roomId).emit('room shutdown');
+            sqlQueries.shutdownRoom(User.CurrentRoom, function () {
+                self.socket.server.in(User.CurrentRoom).emit('server error', {error: 'The host left.'});
+                self.socket.server.in(User.CurrentRoom).emit('room shutdown');
 
                 Broadcast.refreshRoomList(self.socket);
             });
-        } else {
-            Broadcast.refreshRoomDetails(self.socket, roomInfo);
+        } else if (User.CurrentRoom) {
+            // Let the other clients know if the user was in their room.
+            Broadcast.refreshRoomDetails(self.socket, User.CurrentRoom);
         }
     });
 };
 
+// Toggles the user's ready status.
 const readyToggle = function() {
-    let self = this;
+    const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    const userId = self.app.onlineUsers[self.socket.id];
 
-    sqlQueries.readyToggle(userInfo, function (results) {
-        let roomInfo = {roomId: results[0].CurrentRoom};
-
-        Broadcast.refreshRoomDetails(self.socket, roomInfo);
+    sqlQueries.readyToggle(userId, function (User) {
+        Broadcast.refreshRoomDetails(self.socket, User.CurrentRoom);
     });
 };
 
