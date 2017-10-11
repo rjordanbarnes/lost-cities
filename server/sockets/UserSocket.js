@@ -29,11 +29,13 @@ const disconnectSocket = function() {
         const userId = self.app.onlineUsers[self.socket.id];
 
         sqlQueries.leaveRoom(userId, function(User) {
+            console.log(User.Username + " left room.");
             Broadcast.refreshRoomList(self.socket);
 
             if (User.IsHost) {
                 // Shutdown the room if the user was the host of the room.
                 sqlQueries.shutdownRoom(User.CurrentRoom, function () {
+                    console.log(User.Username + " shutdown room.");
                     self.socket.server.in(User.CurrentRoom).emit('server error', {error: 'The host left.'});
                     self.socket.server.in(User.CurrentRoom).emit('room shutdown');
 

@@ -176,7 +176,7 @@ module.exports = {
     },
 
     // Toggles the user's ready state.
-    // Returns the room that the user is in.
+    // Returns the room that the user is in and the user's Username.
     readyToggle(userId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/ReadyToggle"),

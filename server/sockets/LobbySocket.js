@@ -28,9 +28,9 @@ const createRoom = function(roomInput) {
         const userId = self.app.onlineUsers[self.socket.id];
 
         sqlQueries.createRoom(userId, roomInput.roomName, roomInput.roomPassword, function (NewRoom) {
+            console.log('Created room ' + roomInput.roomName);
             // Host joins room channel.
             self.socket.join(NewRoom.roomId);
-            console.log('Created room ' + roomInput.roomName);
 
             Broadcast.refreshRoomList(self.socket);
             Broadcast.refreshRoomDetails(self.socket, NewRoom.roomId);
@@ -53,6 +53,7 @@ const joinRoom = function(roomId) {
             self.socket.emit('server error', {error: 'Room is full.'});
         } else {
             sqlQueries.joinRoom(userId, roomId, function () {
+                console.log('User joined room ' + Room.roomName);
                 // Joins room's socket.io channel.
                 self.socket.join(roomId);
 

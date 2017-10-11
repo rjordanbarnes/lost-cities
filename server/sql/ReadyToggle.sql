@@ -3,5 +3,5 @@ UPDATE Users
 SET IsReady = IsReady ^ 1
 WHERE UserId = @userId
 
-SELECT CurrentRoom FROM Users
+SELECT Username, CurrentRoom FROM Users
 WHERE UserId = @userId
