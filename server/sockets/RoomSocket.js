@@ -17,8 +17,8 @@ const leaveRoom = function(){
         if (User.IsHost) {
             // Shutdown the room if the user was the host of the room.
             sqlQueries.shutdownRoom(User.CurrentRoom, function () {
-                self.socket.server.in(User.CurrentRoom).emit('server error', {error: 'The host left.'});
-                self.socket.server.in(User.CurrentRoom).emit('room shutdown');
+                self.socket.broadcast.to(User.CurrentRoom).emit('server error', {error: 'The host left.'});
+                self.socket.broadcast.to(User.CurrentRoom).emit('room shutdown');
 
                 Broadcast.refreshRoomList(self.socket);
             });
