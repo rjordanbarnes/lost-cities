@@ -50,7 +50,7 @@ const disconnectSocket = function() {
 
 
     // Removes connected socket.
-    let socketIndex = self.app.connectedSockets.indexOf(self.socket);
+    const socketIndex = self.app.connectedSockets.indexOf(self.socket);
     if (socketIndex >= 0)
         self.app.connectedSockets.splice(socketIndex, 1);
 };

@@ -2,15 +2,16 @@ const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
 
+// Broadcasts the active rooms to all users.
 const broadcastActiveRooms = function() {
-    let self = this;
+    const self = this;
 
     Broadcast.refreshRoomList(self.socket);
 };
 
-// Creates a new room.
+// Creates a new room with the current socket as the host.
 const createRoom = function(roomInfo) {
-    let self = this;
+    const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
         return;
@@ -24,41 +25,39 @@ const createRoom = function(roomInfo) {
     if (roomInfo.roomName.length < 4 || roomInfo.roomName.length > 20) {
         self.socket.emit('server error', {error: 'Room name must be between 4 and 20 characters.'});
     } else {
-        let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+        const userId = self.app.onlineUsers[self.socket.id];
 
-        // Creates room in SQL
-        sqlQueries.createRoom(userInfo, roomInfo, function (results) {
+        sqlQueries.createRoom(userId, roomInfo.roomName, roomInfo.roomPassword, function (Room) {
             // Host joins room channel.
-            self.socket.join(results[0].roomId);
-            console.log('Created room ' + results[0].roomId);
+            self.socket.join(Room.roomId);
+            console.log('Created room ' + Room.roomName);
 
             Broadcast.refreshRoomList(self.socket);
-            Broadcast.refreshRoomDetails(self.socket, results[0]);
+            Broadcast.refreshRoomDetails(self.socket, Room.roomId);
         });
     }
 };
 
-const joinRoom = function(roomInfo) {
-    let self = this;
+// Causes the current socket to join the specified room.
+const joinRoom = function(roomId) {
+    const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    // Builds info about user for the SQL query.
-    let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+    const userId = self.app.onlineUsers[self.socket.id];
 
-    sqlQueries.getRoomDetails(roomInfo, function(results) {
+    sqlQueries.getRoomDetails(roomId, function(Room) {
 
-        if (results.players.length > 1) {
+        if (Room.players.length > 1) {
             self.socket.emit('server error', {error: 'Room is full.'});
         } else {
-            // Joins room in SQL.
-            sqlQueries.joinRoom(userInfo, roomInfo, function () {
+            sqlQueries.joinRoom(userId, roomId, function () {
                 // Joins room's socket.io channel.
-                self.socket.join(roomInfo.roomId);
+                self.socket.join(roomId);
 
                 Broadcast.refreshRoomList(self.socket);
-                Broadcast.refreshRoomDetails(self.socket, roomInfo);
+                Broadcast.refreshRoomDetails(self.socket, roomId);
             });
         }
     });

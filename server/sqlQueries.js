@@ -43,22 +43,41 @@ module.exports = {
 
 
     // Creates a room in SQL using the supplied Room Info, making the supplied user the host.
-    createRoom(userInfo, roomInfo, callback) {
+    // Returns the new room's ID.
+    createRoom(userId, roomName, roomPassword, callback) {
         sql.execute({
             query: sql.fromFile("./sql/CreateRoom"),
             params: {
                 roomName: {
-                    val: roomInfo.roomName
+                    val: roomName
                 },
                 roomPassword: {
-                    val: roomInfo.roomPassword
+                    val: roomPassword
                 },
                 roomHostId: {
-                    val: userInfo.userId
+                    val: userId
                 }
             }
         }).then(function (results) {
-            callback(results);
+            callback(results[0]);
+        }, function (err) {
+            console.error(err);
+        });
+    },
+
+    // Makes the user join the given room.
+    joinRoom(userId, roomId) {
+        sql.execute({
+            query: sql.fromFile("./sql/JoinRoom"),
+            params: {
+                userId: {
+                    val: userId
+                },
+                roomId: {
+                    val: roomId
+                }
+            }
+        }).then(function () {
         }, function (err) {
             console.error(err);
         });
@@ -80,7 +99,8 @@ module.exports = {
         });
     },
 
-    // Returns a the list of players in the given room.
+    // Returns detailed information about the specified room.
+    // Returns the Players in the room, roomId, roomName, and whether the room is password protected.
     getRoomDetails(roomId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetRoomDetails"),
@@ -106,25 +126,6 @@ module.exports = {
                 players: players};
 
             callback(structuredResults);
-        }, function (err) {
-            console.error(err);
-        });
-    },
-
-    // Makes the user join the given room.
-    joinRoom(userInfo, roomInfo, callback) {
-        sql.execute({
-            query: sql.fromFile("./sql/JoinRoom"),
-            params: {
-                userId: {
-                    val: userInfo.userId
-                },
-                roomId: {
-                    val: roomInfo.roomId
-                }
-            }
-        }).then(function () {
-            callback();
         }, function (err) {
             console.error(err);
         });

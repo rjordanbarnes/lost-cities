@@ -3,9 +3,9 @@ const sqlQueries = require('../sqlQueries.js');
 module.exports.Broadcast = {
     refreshRoomList(socket) {
         // Updates room list for all sockets.
-        sqlQueries.getActiveRooms(function (results) {
+        sqlQueries.getActiveRooms(function (RoomList) {
             console.log('Broadcasting room list.');
-            socket.server.emit('lobby active rooms', {rooms: results});
+            socket.server.emit('lobby active rooms', {rooms: RoomList});
         });
     },
 

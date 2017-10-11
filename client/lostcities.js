@@ -19,7 +19,7 @@ $(function() {
                    </div>`,
         methods: {
             joinRoom: function(roomId){
-                socket.emit('lobby join room', {roomId: roomId});
+                socket.emit('lobby join room', roomId);
             }
         }
     });
