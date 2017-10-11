@@ -53,7 +53,6 @@ const joinRoom = function(roomId) {
             self.socket.emit('server error', {error: 'Room is full.'});
         } else {
             sqlQueries.joinRoom(userId, roomId, function () {
-                console.log("Here");
                 // Joins room's socket.io channel.
                 self.socket.join(roomId);
 

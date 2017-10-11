@@ -12,6 +12,7 @@ const leaveRoom = function(){
     const userId = self.app.onlineUsers[self.socket.id];
 
     sqlQueries.leaveRoom(userId, function (User) {
+        self.socket.leave(User.CurrentRoom);
         Broadcast.refreshRoomList(self.socket);
 
         if (User.IsHost) {
