@@ -81,12 +81,12 @@ module.exports = {
     },
 
     // Returns a the list of players in the given room.
-    getRoomDetails(roomInfo, callback) {
+    getRoomDetails(roomId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetRoomDetails"),
             params: {
                 roomId: {
-                    val: roomInfo.roomId
+                    val: roomId
                 }
             }
         }).then(function (results) {
@@ -134,34 +134,36 @@ module.exports = {
     //// Room ////
 
 
-    // Specified user leaves whatever room they're in.
-    leaveRoom(userInfo, callback) {
+    // Specified user leaves whatever room they're currently in.
+    // Returns the user's name, the room they were in, and if they were the host.
+    leaveRoom(userId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/LeaveRoom"),
             params: {
                 userId: {
-                    val: userInfo.userId
+                    val: userId
                 }
             }
         }).then(function (results) {
-            // Sends the room the user left back.
-            callback(results);
+            if (results[0].CurrentRoom === null)
+                results[0].CurrentRoom = false;
+
+            callback(results[0]);
         }, function (err) {
             console.error(err);
         });
     },
 
     // Shuts a certain room down.
-    shutdownRoom(roomInfo, callback) {
+    shutdownRoom(roomId) {
         sql.execute({
             query: sql.fromFile("./sql/ShutdownRoom"),
             params: {
                 roomId: {
-                    val: roomInfo.roomId
+                    val: roomId
                 }
             }
         }).then(function () {
-            callback();
         }, function (err) {
             console.error(err);
         });

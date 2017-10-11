@@ -1,4 +1,4 @@
-SELECT CurrentRoom, IsHost FROM Users
+SELECT Username, CurrentRoom, IsHost FROM Users
 WHERE UserId = @userId
 
 UPDATE Users

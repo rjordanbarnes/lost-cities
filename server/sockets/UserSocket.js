@@ -3,7 +3,7 @@ const Broadcast = require('./SocketHelpers.js').Broadcast;
 
 // Authenticates if username is in SQL database.
 const loginRequest = function(username){
-    let self = this;
+    const self = this;
 
     sqlQueries.loginUser(username, function(User) {
         self.socket.authenticated = User.Exists;
@@ -18,33 +18,30 @@ const loginRequest = function(username){
     });
 };
 
-const disconnectUser = function() {
-    let self = this;
+// Performs cleanup when a socket disconnects.
+const disconnectSocket = function() {
+    const self = this;
 
     console.log('Socket disconnected.');
 
-    // If the user is authenticated, handle disconnecting user.
+    // If the socket is authenticated, handle disconnecting the user.
     if (self.socket.authenticated) {
-        let userInfo = {userId: self.app.onlineUsers[self.socket.id]};
+        const userId = self.app.onlineUsers[self.socket.id];
 
-        sqlQueries.leaveRoom(userInfo, function(results) {
+        sqlQueries.leaveRoom(userId, function(User) {
             Broadcast.refreshRoomList(self.socket);
 
-            // If the user was in a room, properly shutdowns their rooms and games.
-            if (results[0]) {
-                let roomInfo = {roomId: results[0].CurrentRoom};
+            if (User.IsHost) {
+                // Shutdown the room if the user was the host of the room.
+                sqlQueries.shutdownRoom(User.CurrentRoom, function () {
+                    self.socket.server.in(User.CurrentRoom).emit('server error', {error: 'The host left.'});
+                    self.socket.server.in(User.CurrentRoom).emit('room shutdown');
 
-                if (results[0].IsHost) {
-                    // Shutdown the room if the user was the host of the room.
-                    sqlQueries.shutdownRoom(roomInfo, function () {
-                        self.socket.server.in(roomInfo.roomId).emit('server error', {error: 'The host left.'});
-                        self.socket.server.in(roomInfo.roomId).emit('room shutdown');
-
-                        Broadcast.refreshRoomList(self.socket);
-                    });
-                } else {
-                    Broadcast.refreshRoomDetails(self.socket, roomInfo);
-                }
+                    Broadcast.refreshRoomList(self.socket);
+                });
+            } else if (User.CurrentRoom) {
+                // Let the other clients know if the user was in their room.
+                Broadcast.refreshRoomDetails(self.socket, User.CurrentRoom);
             }
         });
 
@@ -64,6 +61,6 @@ module.exports = function(app, socket){
 
     this.handlers = {
         'user login request': loginRequest.bind(this),
-        'disconnect': disconnectUser.bind(this)
+        'disconnect': disconnectSocket.bind(this)
     };
 };

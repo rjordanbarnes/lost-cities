@@ -9,10 +9,10 @@ module.exports.Broadcast = {
         });
     },
 
-    refreshRoomDetails(socket, roomInfo) {
+    refreshRoomDetails(socket, roomId) {
         // Refresh an individual room's details for all users in the room.
-        sqlQueries.getRoomDetails(roomInfo, function (results) {
-            socket.server.in(roomInfo.roomId).emit('room update', results);
+        sqlQueries.getRoomDetails(roomId, function (results) {
+            socket.server.in(roomId).emit('room update', results);
         });
     }
 };
