@@ -10,30 +10,30 @@ const broadcastActiveRooms = function() {
 };
 
 // Creates a new room with the current socket as the host.
-const createRoom = function(roomInfo) {
+const createRoom = function(roomInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    roomInfo.roomName = roomInfo.roomName.trim();
+    roomInput.roomName = roomInput.roomName.trim();
 
-    if(roomInfo.roomPassword.trim().length < 1) {
-        roomInfo.roomPassword = 'NULL'
+    if(roomInput.roomPassword.trim().length < 1) {
+        roomInput.roomPassword = 'NULL'
     }
 
-    if (roomInfo.roomName.length < 4 || roomInfo.roomName.length > 20) {
+    if (roomInput.roomName.length < 4 || roomInput.roomName.length > 20) {
         self.socket.emit('server error', {error: 'Room name must be between 4 and 20 characters.'});
     } else {
         const userId = self.app.onlineUsers[self.socket.id];
 
-        sqlQueries.createRoom(userId, roomInfo.roomName, roomInfo.roomPassword, function (Room) {
+        sqlQueries.createRoom(userId, roomInput.roomName, roomInput.roomPassword, function (NewRoom) {
             // Host joins room channel.
-            self.socket.join(Room.roomId);
-            console.log('Created room ' + Room.roomName);
+            self.socket.join(NewRoom.roomId);
+            console.log('Created room ' + roomInput.roomName);
 
             Broadcast.refreshRoomList(self.socket);
-            Broadcast.refreshRoomDetails(self.socket, Room.roomId);
+            Broadcast.refreshRoomDetails(self.socket, NewRoom.roomId);
         });
     }
 };
@@ -53,6 +53,7 @@ const joinRoom = function(roomId) {
             self.socket.emit('server error', {error: 'Room is full.'});
         } else {
             sqlQueries.joinRoom(userId, roomId, function () {
+                console.log("Here");
                 // Joins room's socket.io channel.
                 self.socket.join(roomId);
 

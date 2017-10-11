@@ -4,6 +4,7 @@ module.exports = {
 
     //// Maintenance ////
 
+    // Shuts down all currently active rooms.
     shutdownAllRooms(callback) {
         sql.execute({
             query: sql.fromFile("./sql/ShutdownAllRooms")
@@ -66,7 +67,7 @@ module.exports = {
     },
 
     // Makes the user join the given room.
-    joinRoom(userId, roomId) {
+    joinRoom(userId, roomId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/JoinRoom"),
             params: {
@@ -78,22 +79,24 @@ module.exports = {
                 }
             }
         }).then(function () {
+            callback();
         }, function (err) {
             console.error(err);
         });
     },
 
     // Gets the currently active rooms.
+    // Returns the room IDs, Names, Hosts, User Counts, and whether the room is password protected.
     getActiveRooms(callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetActiveRooms")
-        }).then(function (results) {
+        }).then(function (Rooms) {
             // Converts the returned bit 0 and 1 to Boolean values.
-            for (let i = 0; i < results.length; i++) {
-                results[i].isPasswordProtected = results[i].isPasswordProtected === 1;
+            for (let i = 0; i < Rooms.length; i++) {
+                Rooms[i].isPasswordProtected = Rooms[i].isPasswordProtected === 1;
             }
 
-            callback(results);
+            callback(Rooms);
         }, function (err) {
             console.error(err);
         });
@@ -110,22 +113,23 @@ module.exports = {
                 }
             }
         }).then(function (results) {
-            // Restructure results into JS object
             let players = [];
 
+            // Place room players into an array.
             for (let i = 0; i < results.length; i++) {
                 players[i] = {userId: results[i].userId,
-                    username: results[i].username,
-                    isHost: results[i].isHost,
-                    isReady: results[i].isReady}
+                              username: results[i].username,
+                              isHost: results[i].isHost,
+                              isReady: results[i].isReady}
             }
 
-            let structuredResults = {roomId: results[0].roomId,
-                roomName: results[0].roomName,
-                isPasswordProtected: results[0].isPasswordProtected === 1,
-                players: players};
+            // Structure the results
+            const roomDetails = {roomId: results[0].roomId,
+                                 roomName: results[0].roomName,
+                                 isPasswordProtected: results[0].isPasswordProtected === 1,
+                                 players: players};
 
-            callback(structuredResults);
+            callback(roomDetails);
         }, function (err) {
             console.error(err);
         });
@@ -156,7 +160,7 @@ module.exports = {
     },
 
     // Shuts a certain room down.
-    shutdownRoom(roomId) {
+    shutdownRoom(roomId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/ShutdownRoom"),
             params: {
@@ -165,6 +169,7 @@ module.exports = {
                 }
             }
         }).then(function () {
+            callback();
         }, function (err) {
             console.error(err);
         });
