@@ -14,11 +14,11 @@ $(function() {
                            </div>
         
                            <h3 class="my-0 mx-4 align-self-center">{{ roomUserCount }}/2</h3>
-                           <button class="join-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="joinRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
+                           <button class="join-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="onJoinRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
                        </div>
                    </div>`,
         methods: {
-            joinRoom: function(roomId){
+            onJoinRoom: function(roomId){
                 socket.emit('lobby join room', roomId);
             }
         }
@@ -57,9 +57,28 @@ $(function() {
     let vm = new Vue({
         el: '#app',
         data: {
-            rooms: [],
+            // Global
             currentScreen: 'login',
-            currentRoom:{}
+            currentRoom:{},
+
+            // Login Screen
+            enteredUsername: '',
+
+            // Lobby
+            rooms: [],
+            enteredRoomName: '',
+            enteredRoomPassword: ''
+        },
+        methods: {
+            // Sends an authenticate request.
+            onLogin: function() {
+                socket.emit('user login request', this.enteredUsername);
+            },
+            // Sends a request to create a new room.
+            onCreateRoom: function() {
+                socket.emit('lobby create room', {roomName: this.enteredRoomName,
+                                                  roomPassword: this.enteredRoomPassword});
+            }
         }
     });
 
@@ -82,21 +101,6 @@ $(function() {
     //// Socket.io ////
 
     //// Socket Event Emitters ////
-
-    // Sends an authenticate request.
-    $('#login-form').submit(function () {
-        socket.emit('user login request', $('#username-box').val());
-
-        return false;
-    });
-
-    // Sends a request to create a new room.
-    $(document).on('click', '#create-room-button', function(){
-        socket.emit('lobby create room', {roomName: $('#create-room-name').val(),
-            roomPassword: $('#create-room-password').val()});
-
-        return false;
-    });
 
     // Leaves the current room.
     $(document).on('click', '#quit-room-button', function(){
