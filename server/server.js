@@ -2,6 +2,7 @@
 const express = require('express');
 const expressApp = express();
 const http = require('http').Server(expressApp);
+const history = require('connect-history-api-fallback');
 const io = require('socket.io')(http);
 const path = require('path');
 const sql = require('seriate');
@@ -22,6 +23,9 @@ const sqlConfig = {
     'database': 'LostCities',
 };
 sql.setDefaultConfig(sqlConfig);
+
+// Redirects paths to main Index file to allow Vue Router to route
+expressApp.use(history());
 
 // Tells Express to serve everything in the client folder as static content (html, js, css, etc)
 expressApp.use(express.static(path.resolve(__dirname + '/../' + 'client')));

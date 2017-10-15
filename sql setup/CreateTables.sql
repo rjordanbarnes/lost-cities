@@ -1,3 +1,5 @@
+USE LostCities
+
 IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
   DROP TABLE dbo.Users
 

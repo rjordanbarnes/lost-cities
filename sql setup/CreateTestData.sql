@@ -1,3 +1,5 @@
+USE LostCities
+
 INSERT INTO Rooms (RoomName, Password, CreationDate, IsActive)
 VALUES ('The Newest Room', NULL, DEFAULT, 1),
        ('The Oldest', 'secret', '2017-09-21 11:45:37.200', 1),
@@ -13,4 +15,4 @@ VALUES ('Jordan', (SELECT RoomID FROM Rooms WHERE RoomName='The Newest Room'), 0
        ('Salem', NULL, 0)
 
 SELECT * FROM Users
-SELECT * FROM Rooms
+SELECT * FROM Rooms ORDER BY CreationDate DESC
