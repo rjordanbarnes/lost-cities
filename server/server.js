@@ -42,7 +42,7 @@ sqlQueries.shutdownAllRooms(function() {
         console.log('Socket connected.');
         app.connectedSockets.push(socket);
         socket.authenticated = false;
-        socket.emit('token request');
+
 
         const socketHandlers = {
             'user': new UserSocket(app, socket),
@@ -59,6 +59,8 @@ sqlQueries.shutdownAllRooms(function() {
                 }
             }
         }
+
+        socket.emit('token request');
     });
 
     http.listen(8889, function() {
