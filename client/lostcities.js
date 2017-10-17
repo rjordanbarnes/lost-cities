@@ -182,7 +182,7 @@ $(function() {
 
 
     const routes = [
-        {path: '/', redirect: '/login'},
+        {path: '/', redirect: '/lobby'},
         {path: '/login', component: Login},
         {path: '/lobby', component: Lobby},
         {path: '/room/:roomid', component: Room},
