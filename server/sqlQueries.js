@@ -39,6 +39,25 @@ module.exports = {
         });
     },
 
+    // Verifies that the User ID that was in the token exists.
+    verifyToken(userId, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/VerifyToken"),
+            params: {
+                userId: {
+                    val: userId
+                }
+            }
+        }).then(function(results) {
+            // If there were no results found, set Exists to false.
+            (0 in results) ? results[0].Exists = true : results[0] = {Exists: false};
+
+            callback(results[0]);
+        }, function(err) {
+            console.error(err);
+        });
+    },
+
 
     //// Lobby ////
 

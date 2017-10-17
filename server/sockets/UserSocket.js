@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 
@@ -9,11 +10,37 @@ const loginRequest = function(username){
         self.socket.authenticated = User.Exists;
 
         if (self.socket.authenticated) {
+            const profile = {
+                userId: User.UserId,
+                username: username
+            };
+
+            // Send JWT Token
+            const token = jwt.sign(profile, 'SECRET', { expiresIn: 60*60 });
+
+            self.socket.emit('new jwt token',{token: token});
+
+
             self.app.onlineUsers[self.socket.id] = User.UserId;
             console.log(username + " logged in.");
             self.socket.emit('user login success');
         } else {
             self.socket.emit('server error', {error: 'Unable to login as ' + username + '.'});
+        }
+    });
+};
+
+const tokenAuthRequest = function(token) {
+    const self = this;
+
+    const userId = jwt.verify(token, 'SECRET').userId;
+
+    sqlQueries.verifyToken(userId, function(User) {
+        self.socket.authenticated = User.Exists;
+
+        if (self.socket.authenticated) {
+            self.app.onlineUsers[self.socket.id] = User.UserId;
+            console.log(User.Username + " token authenticated.");
         }
     });
 };
@@ -63,6 +90,7 @@ module.exports = function(app, socket){
 
     this.handlers = {
         'user login request': loginRequest.bind(this),
+        'token auth request': tokenAuthRequest.bind(this),
         'disconnect': disconnectSocket.bind(this)
     };
 };

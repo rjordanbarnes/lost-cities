@@ -242,6 +242,14 @@ $(function() {
 
     //// Socket Event Handlers ////
 
+    socket.on('new jwt token', function(data) {
+        localStorage.setItem('token', data.token);
+    });
+
+    socket.on('token request', function() {
+        socket.emit('token auth request', localStorage.getItem('token'));
+    });
+
     socket.on('server error', function (data) {
         displayAlert('danger', data.error);
     });
