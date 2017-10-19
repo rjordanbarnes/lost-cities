@@ -28,7 +28,7 @@ sql.setDefaultConfig(sqlConfig);
 expressApp.use(history());
 
 // Tells Express to serve everything in the client folder as static content (html, js, css, etc)
-expressApp.use(express.static(path.resolve(__dirname + '/../' + 'client')));
+expressApp.use(express.static(path.resolve(__dirname + '/../' + 'dist')));
 
 // App variables
 const app = {

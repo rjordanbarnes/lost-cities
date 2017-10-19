@@ -33,16 +33,22 @@ const loginRequest = function(username){
 const tokenAuthRequest = function(token) {
     const self = this;
 
-    const userId = jwt.verify(token, 'SECRET').userId;
+    jwt.verify(token, 'SECRET', function(err, decoded) {
+        if (err) {
+            console.log("Expired");
+        } else {
+            sqlQueries.verifyToken(decoded.userId, function(User) {
+                self.socket.authenticated = User.Exists;
 
-    sqlQueries.verifyToken(userId, function(User) {
-        self.socket.authenticated = User.Exists;
-
-        if (self.socket.authenticated) {
-            self.app.onlineUsers[self.socket.id] = User.UserId;
-            console.log(User.Username + " token authenticated.");
+                if (self.socket.authenticated) {
+                    self.app.onlineUsers[self.socket.id] = User.UserId;
+                    console.log(User.Username + " token authenticated.");
+                }
+            });
         }
     });
+
+
 };
 
 // Performs cleanup when a socket disconnects.

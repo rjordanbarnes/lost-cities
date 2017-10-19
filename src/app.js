@@ -1,5 +1,14 @@
+import 'bootstrap';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+Vue.use(VueRouter)
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './css/style.css'
+
+const socket = require('socket.io-client')();
+
 $(function() {
-    const socket = io();
 
     //// Vue ////
 
@@ -157,9 +166,6 @@ $(function() {
             onReadyToggle() {
                 socket.emit('ready toggle');
                 this.isReady = !this.isReady;
-
-                let readyButton = $('#ready-room-button');
-                readyButton.text();
             }
         },
         created() {
