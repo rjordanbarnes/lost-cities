@@ -1,7 +1,7 @@
 import 'bootstrap';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/style.css'

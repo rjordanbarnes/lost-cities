@@ -51,3 +51,5 @@ node_modules
 
 # SQL
 sql setup/backups
+
+/dist/bundle.js
