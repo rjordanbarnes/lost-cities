@@ -1,14 +1,13 @@
 const webpack = require("webpack");
 
 module.exports = {
-    entry: ['./src/app.js',
+    entry: ['../src/app.js',
             'webpack/hot/dev-server',
             'webpack-hot-middleware/client'],
     output: {
         path: '/',
         filename: 'bundle.js',
         publicPath: 'http://localhost:8889/'
-        // filename: './dist/bundle.js'
     },
     resolve: {
         alias: {
