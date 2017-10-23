@@ -46,8 +46,6 @@ module.exports = {
                             ];
                         }
                     }
-                }, {
-                    loader: 'sass-loader' // compiles SASS to CSS
                 }]
             }
         ]
