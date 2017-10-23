@@ -1,3 +1,5 @@
+USE LostCities
+
 INSERT INTO Users (Username)
 VALUES ('Jordan'),
        ('Keysi'),

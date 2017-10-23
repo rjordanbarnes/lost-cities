@@ -26,7 +26,7 @@
     "webpack-hot-middleware": "^2.20.0"
   },
   "scripts": {
-    "build": "webpack -p --progress",
+    "build": "webpack -p --progress --config config/webpack.config.js",
     "server": "node ./server/index.js",
     "watch": "webpack -p --watch --progress"
   }
