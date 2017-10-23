@@ -18,7 +18,6 @@ const RoomSocket = require('./sockets/RoomSocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
 const sqlQueries = require('./sqlQueries.js');
 
-
 // SQL
 const sqlConfig = require('../config/sql.config.js');
 sql.setDefaultConfig(sqlConfig);
