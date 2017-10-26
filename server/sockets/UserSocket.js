@@ -3,7 +3,7 @@ const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 
 // Authenticates if username is in SQL database.
-const loginRequest = function(username){
+const requestLogin = function(username){
     const self = this;
 
     sqlQueries.loginUser(username, function(User) {
@@ -18,19 +18,19 @@ const loginRequest = function(username){
             // Send JWT Token
             const token = jwt.sign(profile, 'SECRET', { expiresIn: 60*60 });
 
-            self.socket.emit('new jwt token',{token: token});
+            self.socket.emit('userNewToken',{token: token});
 
 
             self.app.onlineUsers[self.socket.id] = User.UserId;
             console.log(username + " logged in.");
-            self.socket.emit('user login success');
+            self.socket.emit('userLoginSuccess');
         } else {
-            self.socket.emit('server error', {error: 'Unable to login as ' + username + '.'});
+            self.socket.emit('generalError', {error: 'Unable to login as ' + username + '.'});
         }
     });
 };
 
-const tokenAuthRequest = function(token) {
+const verifyToken = function(token) {
     const self = this;
 
     jwt.verify(token, 'SECRET', function(err, decoded) {
@@ -43,12 +43,13 @@ const tokenAuthRequest = function(token) {
                 if (self.socket.authenticated) {
                     self.app.onlineUsers[self.socket.id] = User.UserId;
                     console.log(User.Username + " token authenticated.");
+                } else {
+                    // Token's not legit
+                    console.log("Invalid token request.")
                 }
             });
         }
     });
-
-
 };
 
 // Performs cleanup when a socket disconnects.
@@ -69,8 +70,8 @@ const disconnectSocket = function() {
                 // Shutdown the room if the user was the host of the room.
                 sqlQueries.shutdownRoom(User.CurrentRoom, function () {
                     console.log(User.Username + " shutdown room.");
-                    self.socket.server.in(User.CurrentRoom).emit('server error', {error: 'The host left.'});
-                    self.socket.server.in(User.CurrentRoom).emit('room shutdown');
+                    self.socket.server.in(User.CurrentRoom).emit('generalError', {error: 'The host left.'});
+                    self.socket.server.in(User.CurrentRoom).emit('roomShutdown');
 
                     Broadcast.refreshRoomList(self.socket);
                 });
@@ -95,8 +96,8 @@ module.exports = function(app, socket){
     this.socket = socket;
 
     this.handlers = {
-        'user login request': loginRequest.bind(this),
-        'token auth request': tokenAuthRequest.bind(this),
+        'userRequestLogin': requestLogin.bind(this),
+        'userVerifyToken': verifyToken.bind(this),
         'disconnect': disconnectSocket.bind(this)
     };
 };

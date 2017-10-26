@@ -1,5 +1,5 @@
 <template>
-    <div id ="login" class="container">
+    <div id="login" class="container">
         <h1>Lost Cities</h1>
         <form id="login-form" @submit.prevent="onLogin">
             <div class="form-group">
@@ -18,19 +18,21 @@
                 enteredUsername: ''
             }
         },
+        sockets: {
+            userLoginSuccess() {
+                this.$router.push('lobby');
+            }
+        },
         methods: {
             onLogin() {
-                socket.emit('user login request', this.enteredUsername);
-            },
-            created() {
-                socket.on('user login success', () => {
-                    this.$router.push('lobby');
-                })
+                this.$socket.emit('userRequestLogin', this.enteredUsername);
             }
         }
     }
 </script>
 
-<style>
-
+<style scoped>
+    #login {
+        margin-top: 200px;
+    }
 </style>

@@ -2,14 +2,8 @@
 const express = require('express');
 const expressApp = express();
 const http = require('http').Server(expressApp);
-const history = require('connect-history-api-fallback');
 const io = require('socket.io')(http);
-const path = require('path');
 const sql = require('seriate');
-const webpack = require('webpack');
-const webpackDevMiddleware = require("webpack-dev-middleware");
-const webpackConfig = require('../config/webpack.dev.js');
-const compiler = webpack(webpackConfig);
 
 // My Modules
 const UserSocket = require('./sockets/UserSocket.js');
@@ -22,17 +16,6 @@ const sqlQueries = require('./sqlQueries.js');
 const sqlConfig = require('../config/sql.config.js');
 sql.setDefaultConfig(sqlConfig);
 
-// Redirects paths to main Index file to allow Vue Router to route
-expressApp.use(history());
-
-// Tells Express to serve everything in the client folder as static content (html, js, css, etc)
-expressApp.use(express.static(path.resolve(__dirname + '/../' + 'dist')));
-
-// Webpack
-expressApp.use(webpackDevMiddleware(compiler, {
-    noInfo: true, publicPath: webpackConfig.output.publicPath, stats: {colors: true}
-}));
-expressApp.use(require("webpack-hot-middleware")(compiler));
 
 // App variables
 const app = {
@@ -64,7 +47,7 @@ sqlQueries.shutdownAllRooms(function() {
             }
         }
 
-        socket.emit('token request');
+        socket.emit('userRequestToken');
     });
 
     http.listen(8889, function() {

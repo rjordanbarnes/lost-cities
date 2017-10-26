@@ -22,7 +22,7 @@
         },
         methods: {
             onJoinRoom(roomId){
-                router.push('room/' + roomId);
+                this.$router.push('room/' + roomId);
             }
         }
 
@@ -32,5 +32,9 @@
 <style scoped>
     .list-group-item {
         margin: 10px 0;
+    }
+
+    .join-room-button {
+        width: 90px;
     }
 </style>

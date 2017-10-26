@@ -17,13 +17,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# =========================
-# Operating System Files
-# =========================
-
 # OSX
-# =========================
-
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -43,13 +37,23 @@ Temporary Items
 .apdisk
 *.psd
 
-# Node
-node_modules
-
-# JetBrains
+# Editor directories and files
 .idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# SQL
-sql setup/backups
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-/dist/bundle.js
+# Node
+node_modules/
+
+# Project
+server/database setup/backups/
+dist/
+config/sql.config.js

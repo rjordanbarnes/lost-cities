@@ -5,7 +5,7 @@ module.exports.Broadcast = {
     refreshRoomList(socket) {
         sqlQueries.getActiveRooms(function (RoomList) {
             console.log('Broadcasted room list.');
-            socket.server.emit('lobby active rooms', {rooms: RoomList});
+            socket.server.emit('lobbyRoomList', {rooms: RoomList});
         });
     },
 
@@ -13,7 +13,7 @@ module.exports.Broadcast = {
     refreshRoomDetails(socket, roomId) {
         sqlQueries.getRoomDetails(roomId, function (Room) {
             console.log('Sent room details for ' + Room.roomName);
-            socket.server.in(roomId).emit('room update', Room);
+            socket.server.in(roomId).emit('roomUpdate', Room);
         });
     }
 };
@@ -23,8 +23,7 @@ module.exports.Validations = {
     isAuthenticated(socket) {
         if (!socket.authenticated) {
             console.log('Unauthenticated socket request.');
-            socket.emit('server error', {error: 'Must be logged in.'});
-            socket.emit('user unauthenticated');
+            socket.emit('generalError', {error: 'Must be logged in.'});
         }
 
         return socket.authenticated;
