@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
+const tokenConfig = require('../../config/token.config.js');
 
 // Authenticates if username is in SQL database.
 const requestLogin = function(username){
@@ -10,14 +11,8 @@ const requestLogin = function(username){
         self.socket.authenticated = User.Exists;
 
         if (self.socket.authenticated) {
-            const profile = {
-                userId: User.UserId,
-                username: username
-            };
-
             // Send JWT Token
-            const token = jwt.sign(profile, 'SECRET', { expiresIn: 60*60 });
-
+            const token = createToken(User.UserId, username);
             self.socket.emit('userNewToken',{token: token});
 
 
@@ -30,22 +25,28 @@ const requestLogin = function(username){
     });
 };
 
+// Checks if the passed token is valid.
 const verifyToken = function(token) {
     const self = this;
 
-    jwt.verify(token, 'SECRET', function(err, decoded) {
+    jwt.verify(token, tokenConfig.secret, function(err, decoded) {
         if (err) {
-            console.log("Expired");
+            console.log("Expired or invalid token.");
         } else {
             sqlQueries.verifyToken(decoded.userId, function(User) {
                 self.socket.authenticated = User.Exists;
 
                 if (self.socket.authenticated) {
                     self.app.onlineUsers[self.socket.id] = User.UserId;
+
+                    // Refresh the token
+                    const token = createToken(User.UserId, User.Username);
+                    self.socket.emit('userNewToken',{token: token});
+
                     console.log(User.Username + " token authenticated.");
                 } else {
-                    // Token's not legit
-                    console.log("Invalid token request.")
+                    // User information in token doesn't exist.
+                    console.log("Invalid token request for " + User.Username + ".")
                 }
             });
         }
@@ -101,3 +102,15 @@ module.exports = function(app, socket){
         'disconnect': disconnectSocket.bind(this)
     };
 };
+
+
+//// Helpers ////
+
+function createToken(userId, username) {
+    const profile = {
+        userId: userId,
+        username: username
+    };
+
+    return jwt.sign(profile, tokenConfig.secret, { expiresIn: tokenConfig.expiration });
+}
