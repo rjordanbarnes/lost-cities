@@ -65,7 +65,6 @@ const disconnectSocket = function() {
 
         sqlQueries.leaveRoom(userId, function(User) {
             console.log(User.Username + " left room.");
-            Broadcast.refreshRoomList(self.socket);
 
             if (User.IsHost) {
                 // Shutdown the room if the user was the host of the room.

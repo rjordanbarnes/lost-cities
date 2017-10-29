@@ -60,8 +60,10 @@
                 enteredRoomPassword: ''
             }
         },
-        created() {
-            this.$socket.emit('lobbyGetRooms');
+        mounted() {
+            if (this.rooms.length === 0) {
+                this.$socket.emit('lobbyGetRooms');
+            }
         },
         sockets: {
             lobbyRoomList(data) {

@@ -69,7 +69,6 @@ const leave = function(){
     sqlQueries.leaveRoom(userId, function (User) {
         console.log(User.Username + " left room.");
         self.socket.leave(User.CurrentRoom);
-        Broadcast.refreshRoomList(self.socket);
 
         if (User.IsHost) {
             // Shutdown the room if the user was the host of the room.
@@ -83,6 +82,7 @@ const leave = function(){
         } else if (User.CurrentRoom) {
             // Let the other clients know if the user was in their room.
             Broadcast.refreshRoomDetails(self.socket, User.CurrentRoom);
+            Broadcast.refreshRoomList(self.socket);
         }
     });
 };

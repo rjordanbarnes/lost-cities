@@ -31,7 +31,7 @@
     export default {
         data() {
             return {
-                currentRoom: {},
+                currentRoom: {players: [{isHost: true, isReady: false, username: ""}, {isHost: false, isReady: false, username: ""}]},
                 isReady: false
             }
         },
