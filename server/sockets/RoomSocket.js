@@ -46,7 +46,7 @@ const join = function(roomId) {
             self.socket.emit('generalError', {error: 'Room is full.'});
         } else {
             sqlQueries.joinRoom(userId, roomId, function () {
-                console.log('User joined room ' + Room.roomName);
+                console.log('Player joined room ' + Room.roomName);
                 // Joins room's socket.io channel.
                 self.socket.join(roomId);
 
@@ -54,6 +54,21 @@ const join = function(roomId) {
                 Broadcast.refreshRoomDetails(self.socket, roomId);
             });
         }
+    });
+};
+
+const spectate = function(roomId) {
+    const self = this;
+
+    const userId = self.app.onlineUsers[self.socket.id];
+
+    sqlQueries.spectateRoom(userId, roomId, function () {
+        console.log('Spectator joined room.');
+        // Joins room's socket.io channel.
+        self.socket.join(roomId);
+
+        Broadcast.refreshRoomList(self.socket);
+        Broadcast.refreshRoomDetails(self.socket, roomId);
     });
 };
 
@@ -110,6 +125,7 @@ module.exports = function(app, socket){
         'roomCreate': create.bind(this),
         'roomJoin': join.bind(this),
         'roomLeave': leave.bind(this),
-        'roomToggleReady': toggleReady.bind(this)
+        'roomToggleReady': toggleReady.bind(this),
+        'roomSpectate': spectate.bind(this)
     };
 };

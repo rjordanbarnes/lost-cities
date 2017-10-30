@@ -22,6 +22,7 @@
                     <button type="button" id="quit-room-button" class="btn btn-secondary" @click="onQuitRoom">Quit</button>
                     <button type="button" id="ready-room-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle">{{ readyButtonText }}</button>
                 </div>
+                <div>Spectators: {{ currentRoom.spectators.length }}</div>
             </div>
         </div>
     </div>
@@ -31,12 +32,14 @@
     export default {
         data() {
             return {
-                currentRoom: {players: [{isHost: true, isReady: false, username: ""}, {isHost: false, isReady: false, username: ""}]},
+                currentRoom: {players: [{isHost: true, isReady: false, username: ""}, {isHost: false, isReady: false, username: ""}],
+                              spectators: []},
                 isReady: false
             }
         },
         created() {
-            this.$socket.emit('roomJoin', this.$route.params.roomid);
+            // TODO: Check to make sure user isn't already joining room as a player
+            this.$socket.emit('roomSpectate', this.$route.params.roomid);
         },
         computed: {
             readyButtonText() {

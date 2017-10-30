@@ -104,6 +104,25 @@ module.exports = {
         });
     },
 
+    // Makes the user join the given room.
+    spectateRoom(userId, roomId, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/SpectateRoom"),
+            params: {
+                userId: {
+                    val: userId
+                },
+                roomId: {
+                    val: roomId
+                }
+            }
+        }).then(function () {
+            callback();
+        }, function (err) {
+            console.error(err);
+        });
+    },
+
     // Gets the currently active rooms.
     // Returns the room IDs, Names, Hosts, User Counts, and whether the room is password protected.
     getActiveRooms(callback) {
@@ -133,20 +152,28 @@ module.exports = {
             }
         }).then(function (results) {
             let players = [];
+            let spectators = [];
 
             // Place room players into an array.
             for (let i = 0; i < results.length; i++) {
-                players[i] = {userId: results[i].userId,
-                              username: results[i].username,
-                              isHost: results[i].isHost,
-                              isReady: results[i].isReady}
+                if (results[i].isPlayer) {
+                    players.push({userId: results[i].userId,
+                        username: results[i].username,
+                        isHost: results[i].isHost,
+                        isReady: results[i].isReady})
+                } else {
+                    spectators.push({userId: results[i].userId,
+                        username: results[i].username,
+                        isHost: results[i].isHost})
+                }
             }
 
             // Structure the results
             const roomDetails = {roomId: results[0].roomId,
                                  roomName: results[0].roomName,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
-                                 players: players};
+                                 players: players,
+                                 spectators: spectators};
 
             callback(roomDetails);
         }, function (err) {

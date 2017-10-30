@@ -4,7 +4,7 @@ SELECT rm1.RoomId AS roomId,
        Users.Username AS roomHost,
        (SELECT COUNT(Username) FROM Users
          INNER JOIN Rooms rm2 ON (Users.CurrentRoom = rm2.RoomId)
-         WHERE rm1.RoomId = rm2.RoomId) AS roomUserCount,
+         WHERE rm1.RoomId = rm2.RoomId AND Users.IsPlayer = 1) AS roomPlayerCount,
        (SELECT CASE WHEN LEN(rm3.Password) > 0 THEN 1 ELSE 0 END FROM Rooms rm3
          WHERE rm3.RoomId = rm1.RoomId) AS isPasswordProtected
 FROM Users 

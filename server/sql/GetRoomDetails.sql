@@ -1,5 +1,6 @@
 SELECT UserId AS userId,
        Username AS username,
+       IsPlayer AS isPlayer,
        IsHost AS isHost,
        IsReady AS isReady,
        rm1.RoomId AS roomId,
