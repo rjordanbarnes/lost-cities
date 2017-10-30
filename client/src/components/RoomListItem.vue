@@ -6,22 +6,22 @@
                 <h5 class="mb-1">{{ roomHost }}</h5>
             </div>
 
-            <h3 class="my-0 mx-4 align-self-center">{{ roomUserCount }}/2</h3>
-            <button class="join-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="onJoinRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> Join</button>
+            <h3 class="my-0 mx-4 align-self-center">{{ roomPlayerCount }}/2</h3>
+            <button class="view-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="onViewRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> View</button>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        props: ['roomId', 'roomName', 'roomHost', 'roomUserCount', 'isPasswordProtected'],
+        props: ['roomId', 'roomName', 'roomHost', 'roomPlayerCount', 'isPasswordProtected'],
         data() {
             return {
 
             }
         },
         methods: {
-            onJoinRoom(roomId){
+            onViewRoom(roomId){
                 this.$router.push('room/' + roomId);
             }
         }
@@ -34,7 +34,7 @@
         margin: 10px 0;
     }
 
-    .join-room-button {
+    .view-room-button {
         width: 90px;
     }
 </style>

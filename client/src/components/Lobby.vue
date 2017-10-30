@@ -12,7 +12,7 @@
                     :room-id="room.roomId"
                     :room-name="room.roomName"
                     :room-host="room.roomHost"
-                    :room-user-count="room.roomUserCount"
+                    :room-player-count="room.roomPlayerCount"
                     :is-password-protected="room.isPasswordProtected">
                 </room-list-item>
             </div>
