@@ -13,7 +13,7 @@ const requestLogin = function(username){
         if (self.socket.authenticated) {
             // Send JWT Token
             const token = createToken(User.UserId, username);
-            self.socket.emit('userNewToken',{token: token});
+            self.socket.emit('userToken',{token: token});
 
 
             self.app.onlineUsers[self.socket.id] = User.UserId;
@@ -31,7 +31,8 @@ const verifyToken = function(token) {
 
     jwt.verify(token, tokenConfig.secret, function(err, decoded) {
         if (err) {
-            console.log("Expired or invalid token.");
+            self.socket.emit('userToken',{errors: err.toString()});
+            console.log("Expired, invalid, or missing token.");
         } else {
             sqlQueries.verifyToken(decoded.userId, function(User) {
                 self.socket.authenticated = User.Exists;
@@ -41,11 +42,12 @@ const verifyToken = function(token) {
 
                     // Refresh the token
                     const token = createToken(User.UserId, User.Username);
-                    self.socket.emit('userNewToken',{token: token});
+                    self.socket.emit('userToken',{token: token});
 
                     console.log(User.Username + " token authenticated.");
                 } else {
                     // User information in token doesn't exist.
+                    self.socket.emit('userToken',{errors: "Invalid token request."});
                     console.log("Invalid token request for " + User.Username + ".")
                 }
             });

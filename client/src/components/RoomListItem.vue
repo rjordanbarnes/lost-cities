@@ -7,7 +7,7 @@
             </div>
 
             <h3 class="my-0 mx-4 align-self-center">{{ roomPlayerCount }}/2</h3>
-            <button class="view-room-button my-1 btn btn-outline-primary btn-lg" v-on:click="onViewRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> View</button>
+            <button class="open-room-button my-1 btn btn-lg" :class="openRoomButtonColor" v-on:click="onOpenRoom(roomId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openRoomButtonText }}</button>
         </div>
     </div>
 </template>
@@ -20,8 +20,19 @@
 
             }
         },
+        computed: {
+            openRoomButtonText() {
+                return (this.roomPlayerCount < 2 ? 'Join' : 'View');
+            },
+            openRoomButtonColor() {
+                return {
+                    'btn-outline-primary': this.roomPlayerCount < 2,
+                    'btn-outline-info' : this.roomPlayerCount === 2
+                }
+            }
+        },
         methods: {
-            onViewRoom(roomId){
+            onOpenRoom(roomId){
                 this.$router.push('room/' + roomId);
             }
         }
@@ -34,7 +45,7 @@
         margin: 10px 0;
     }
 
-    .view-room-button {
+    .open-room-button {
         width: 90px;
     }
 </style>

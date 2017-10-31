@@ -26,8 +26,14 @@
             userRequestToken() {
                 this.$socket.emit('userVerifyToken', localStorage.getItem('token'));
             },
-            userNewToken(data) {
-                localStorage.setItem('token', data.token);
+            userToken(data) {
+                if (data.errors) {
+                    console.log(data.errors);
+                } else {
+                    this.$store.commit('authenticated', true);
+                    localStorage.setItem('token', data.token);
+                }
+                this.$store.commit('tokenResponseReceived', true);
             },
             generalError(data) {
                 this.alertProperties = {

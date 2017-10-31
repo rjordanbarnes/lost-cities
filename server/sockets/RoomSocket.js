@@ -117,6 +117,16 @@ const toggleReady = function() {
     });
 };
 
+// Sends the room details to a single socket.
+const getDetails = function(roomId) {
+    const self = this;
+
+    sqlQueries.getRoomDetails(roomId, function (Room) {
+        console.log('Sent single user room details for ' + Room.roomName);
+        self.socket.emit('roomUpdate', Room);
+    });
+}
+
 module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
@@ -126,6 +136,7 @@ module.exports = function(app, socket){
         'roomJoin': join.bind(this),
         'roomLeave': leave.bind(this),
         'roomToggleReady': toggleReady.bind(this),
-        'roomSpectate': spectate.bind(this)
+        'roomSpectate': spectate.bind(this),
+        'roomGetDetails': spectate.bind(this)
     };
 };

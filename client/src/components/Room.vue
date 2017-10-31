@@ -1,28 +1,32 @@
 <template>
-    <div id="room" class="container" >
-        <h1 class="text-center my-4">{{ currentRoom.roomName }}</h1>
-        <div class="row">
-            <div id="room-chat" class="col-4">
-                Chat Box Here
-            </div>
-            <div class="col-8">
-                <ul class="room-player-list list-group">
-                    <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[0].isReady }">
-                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[0].username }}<span v-if="currentRoom.players[0].isReady">Ready</span></h2>
-                    </li>
-
-                    <li class="list-group-item" v-if="currentRoom.players.length <= 1">
-                        <h2 class="text-muted">Empty</h2>
-                    </li>
-                    <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[1].isReady }" v-else>
-                        <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span v-if="currentRoom.players[1].isReady">Ready</span></h2>
-                    </li>
-                </ul>
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="button" id="quit-room-button" class="btn btn-secondary" @click="onQuitRoom">Quit</button>
-                    <button type="button" id="ready-room-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle">{{ readyButtonText }}</button>
+    <div id="room" class="container">
+        <div v-if="loading">Loading</div>
+        <div v-if="error">Error</div>
+        <div v-if="currentRoom">
+            <h1 class="text-center my-4">{{ currentRoom.roomName }}</h1>
+            <div class="row">
+                <div id="room-chat" class="col-4">
+                    Chat Box Here
                 </div>
-                <div>Spectators: {{ currentRoom.spectators.length }}</div>
+                <div class="col-8">
+                    <ul class="room-player-list list-group">
+                        <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[0].isReady }">
+                            <h2 class="d-flex justify-content-between">{{ currentRoom.players[0].username }}<span v-if="currentRoom.players[0].isReady">Ready</span></h2>
+                        </li>
+
+                        <li class="list-group-item" v-if="currentRoom.players.length <= 1">
+                            <h2 class="text-muted">Empty</h2>
+                        </li>
+                        <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[1].isReady }" v-else>
+                            <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span v-if="currentRoom.players[1].isReady">Ready</span></h2>
+                        </li>
+                    </ul>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" id="quit-room-button" class="btn btn-secondary" @click="onQuitRoom">Quit</button>
+                        <button type="button" id="ready-room-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle">{{ readyButtonText }}</button>
+                    </div>
+                    <div>Spectators: {{ currentRoom.spectators.length }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -32,14 +36,30 @@
     export default {
         data() {
             return {
-                currentRoom: {players: [{isHost: true, isReady: false, username: ""}, {isHost: false, isReady: false, username: ""}],
-                              spectators: []},
+                loading: true,
+                error: null,
+                currentRoom: null,
                 isReady: false
             }
         },
         created() {
-            // TODO: Check to make sure user isn't already joining room as a player
-            this.$socket.emit('roomSpectate', this.$route.params.roomid);
+            // Get the room's details after we make sure the token state is correct. If we don't wait, then the
+            // token response from the server might come in after we've loaded the page.
+            if (this.$store.getters.tokenResponseReceived) {
+                this.getRoomDetails();
+            } else {
+                this.$store.watch(
+                    (state) => {
+                        return this.$store.getters.tokenResponseReceived
+                    },
+                    (value) => {
+                        this.getRoomDetails();
+                    },
+                    {
+                        deep: true
+                    }
+                );
+            }
         },
         computed: {
             readyButtonText() {
@@ -54,13 +74,31 @@
         },
         sockets: {
             roomUpdate(data) {
-                this.currentRoom = data;
+                if (data.errors) {
+                    this.error = data.errors;
+                } else {
+                    this.currentRoom = data;
+                }
+
+                if (this.loading) {
+                    this.loading = false;
+
+                    if (this.currentRoom.players.length < 2 && this.$store.getters.authenticated) {
+                        this.$socket.emit('roomJoin', this.$route.params.roomid);
+                    } else {
+                        this.$socket.emit('roomSpectate', this.$route.params.roomid);
+                    }
+                }
+
             },
             roomShutdown() {
                 this.$router.push('../lobby');
             }
         },
         methods: {
+            getRoomDetails() {
+                this.$socket.emit('roomGetDetails', this.$route.params.roomid);
+            },
             onQuitRoom() {
                 this.$socket.emit('roomLeave');
                 this.$router.push('../lobby');

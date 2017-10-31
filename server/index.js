@@ -24,7 +24,7 @@ const app = {
 };
 
 // Shuts down all active rooms on server start.
-sqlQueries.shutdownAllRooms(function() {
+// sqlQueries.shutdownAllRooms(function() {
     io.on('connection', function(socket) {
         console.log('Socket connected.');
         app.connectedSockets.push(socket);
@@ -53,4 +53,4 @@ sqlQueries.shutdownAllRooms(function() {
     http.listen(8889, function() {
         console.log('Listening on *:8889');
     });
-});
+// });
