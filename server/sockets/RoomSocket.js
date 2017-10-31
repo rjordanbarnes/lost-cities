@@ -25,6 +25,7 @@ const create = function(roomInput) {
             // Host joins room channel.
             self.socket.join(NewRoom.roomId);
 
+            self.socket.emit('roomCreate', NewRoom);
             Broadcast.refreshRoomList(self.socket);
             Broadcast.refreshRoomDetails(self.socket, NewRoom.roomId);
         });

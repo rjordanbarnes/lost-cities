@@ -68,6 +68,13 @@
         sockets: {
             lobbyRoomList(data) {
                 this.rooms = data.rooms;
+            },
+            roomCreate(data) {
+                if (data.errors) {
+                    console.log(data.errors);
+                } else {
+                    this.$router.push('room/' + data.roomId);
+                }
             }
         },
         methods: {
