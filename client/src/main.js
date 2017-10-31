@@ -10,6 +10,7 @@ Vue.config.productionTip = false;
 
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'font-awesome/css/font-awesome.css'
 
 /* eslint-disable no-new */
 new Vue({
