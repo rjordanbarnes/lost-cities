@@ -5,7 +5,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         authenticated: false,
-        tokenResponseReceived: false
+        tokenResponseReceived: false,
+        userId: null
     },
     mutations: {
         authenticated(state, authenticated) {
@@ -13,6 +14,9 @@ export default new Vuex.Store({
         },
         tokenResponseReceived(state, received) {
             state.tokenResponseReceived = received;
+        },
+        userId(state, userId) {
+            state.userId = userId;
         }
     },
     getters: {
@@ -21,6 +25,9 @@ export default new Vuex.Store({
         },
         tokenResponseReceived(state, getters) {
             return state.tokenResponseReceived;
+        },
+        userId(state, getters) {
+            return state.userId;
         }
     }
 })

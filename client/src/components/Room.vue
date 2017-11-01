@@ -23,7 +23,8 @@
                     </ul>
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" id="quit-room-button" class="btn btn-secondary" @click="onQuitRoom">Quit</button>
-                        <button type="button" id="ready-room-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle">{{ readyButtonText }}</button>
+                        <button type="button" id="spectate-room-button" class="btn btn-secondary ml-2" @click="onSpectateRoom" v-if="userIsPlayer">Spectate</button>
+                        <button type="button" id="ready-room-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle" v-if="userIsPlayer">{{ readyButtonText }}</button>
                     </div>
                     <div>Spectators: {{ currentRoom.spectators.length }}</div>
                 </div>
@@ -62,6 +63,12 @@
             }
         },
         computed: {
+            userIsPlayer() {
+                return this.currentRoom.players.filter(player => (player.userId === this.$store.getters.userId)).length > 0;
+            },
+            userIsSpectator() {
+                return this.currentRoom.spectators.filter(spectator => (spectator.userId === this.$store.getters.userId)).length > 0;
+            },
             readyButtonText() {
                 return (this.isReady ? 'Unready' : 'Ready Up');
             },
@@ -106,6 +113,9 @@
             onReadyToggle() {
                 this.$socket.emit('roomToggleReady');
                 this.isReady = !this.isReady;
+            },
+            onSpectateRoom() {
+                this.$socket.emit('roomSpectate', this.$route.params.roomid);
             }
         }
     }

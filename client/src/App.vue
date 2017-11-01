@@ -10,6 +10,7 @@
 
 <script>
     import Alert from '@/components/Alert'
+    import jwt_decode from 'jwt-decode'
 
     export default {
         name: 'app',
@@ -31,6 +32,7 @@
                     console.log(data.errors);
                 } else {
                     this.$store.commit('authenticated', true);
+                    this.$store.commit('userId', jwt_decode(data.token).userId);
                     localStorage.setItem('token', data.token);
                 }
                 this.$store.commit('tokenResponseReceived', true);
