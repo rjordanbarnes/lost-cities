@@ -5,8 +5,8 @@
         <div v-if="currentRoom">
             <h1 class="text-center my-4">{{ currentRoom.roomName }}</h1>
             <div class="row">
-                <div id="room-chat" class="col-4">
-                    Chat Box Here
+                <div class="col-4">
+                    <chat-box></chat-box>
                 </div>
                 <div class="col-8">
                     <ul class="room-player-list list-group">
@@ -18,7 +18,7 @@
                         </li>
 
                         <li class="list-group-item" v-if="currentRoom.players.length <= 1">
-                            <h2 class="text-muted d-flex justify-content-between">Empty <button type="button" class="btn btn-primary float-right" @click="onFillSlot" v-if="currentRoom.players.length > 0 && userIsSpectator">Fill Slot</button></h2>
+                            <h2 class="text-muted d-flex justify-content-between">Empty <button type="button" class="btn btn-primary" @click="onFillSlot" v-if="currentRoom.players.length > 0 && userIsSpectator">Fill Slot</button></h2>
                         </li>
                         <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[1].isReady }" v-else>
                             <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span v-if="currentRoom.players[1].isReady">Ready</span></h2>
@@ -37,6 +37,8 @@
 </template>
 
 <script>
+    import ChatBox from '@/components/ChatBox'
+
     export default {
         data() {
             return {
@@ -123,6 +125,9 @@
             onFillSlot() {
                 this.$socket.emit('roomJoin', this.$route.params.roomid);
             }
+        },
+        components: {
+            ChatBox
         }
     }
 </script>
@@ -131,12 +136,10 @@
     #ready-room-button {
         width: 95px;
     }
-
     #room {
         max-width: 790px;
     }
-
-    #room-chat {
-        border-style: solid;
+    #chat-box {
+        height: 250px;
     }
 </style>

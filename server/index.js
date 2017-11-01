@@ -10,6 +10,7 @@ const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
 const RoomSocket = require('./sockets/RoomSocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
+const ChatSocket = require('./sockets/ChatSocket.js');
 const sqlQueries = require('./sqlQueries.js');
 
 // SQL
@@ -20,7 +21,7 @@ sql.setDefaultConfig(sqlConfig);
 // App variables
 const app = {
     connectedSockets: [], // Sockets
-    onlineUsers: {}       // socket.id, sql.UserId
+    onlineUsers: {},    // socket.id, {sql.UserId, sql.Username}
 };
 
 // Shuts down all active rooms on server start.
@@ -35,7 +36,8 @@ const app = {
             'user': new UserSocket(app, socket),
             'lobby': new LobbySocket(app, socket),
             'room' : new RoomSocket(app, socket),
-            'game' : new GameSocket(app, socket)
+            'game' : new GameSocket(app, socket),
+            'chat': new ChatSocket(app, socket)
         };
 
         for (let category in socketHandlers) {

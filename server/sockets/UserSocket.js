@@ -7,7 +7,7 @@ const tokenConfig = require('../../config/token.config.js');
 const requestLogin = function(username){
     const self = this;
 
-    sqlQueries.loginUser(username, function(User) {
+    sqlQueries.getUser(username, function(User) {
         self.socket.authenticated = User.Exists;
 
         if (self.socket.authenticated) {
@@ -15,8 +15,7 @@ const requestLogin = function(username){
             const token = createToken(User.UserId, username);
             self.socket.emit('userToken',{token: token});
 
-
-            self.app.onlineUsers[self.socket.id] = User.UserId;
+            self.app.onlineUsers[self.socket.id] = {userId: User.UserId, username: User.Username};
             console.log(username + " logged in.");
             self.socket.emit('userLoginSuccess');
         } else {
@@ -38,7 +37,7 @@ const verifyToken = function(token) {
                 self.socket.authenticated = User.Exists;
 
                 if (self.socket.authenticated) {
-                    self.app.onlineUsers[self.socket.id] = User.UserId;
+                    self.app.onlineUsers[self.socket.id] = {userId: User.UserId, username: User.Username};
 
                     // Refresh the token
                     const token = createToken(User.UserId, User.Username);
@@ -63,7 +62,7 @@ const disconnectSocket = function() {
 
     // If the socket is authenticated, handle disconnecting the user.
     if (self.socket.authenticated) {
-        const userId = self.app.onlineUsers[self.socket.id];
+        const userId = self.app.onlineUsers[self.socket.id].userId;
 
         sqlQueries.leaveRoom(userId, function(User) {
             console.log(User.Username + " left room.");

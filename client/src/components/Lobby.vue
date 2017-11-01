@@ -2,8 +2,9 @@
     <div id="lobby" class="container">
         <div class="row">
             <div class="col-3">
-                <button id="createRoom" type="button" data-toggle="modal" data-target="#create-room">Create Room
+                <button id="create-room-button" class="btn btn-block btn-success" type="button" data-toggle="modal" data-target="#create-room">Create Room
                 </button>
+                <chat-box class="mt-2"></chat-box>
             </div>
             <div id="room-list" class="list-group col-9">
                 <room-list-item
@@ -13,8 +14,7 @@
                     :room-name="room.roomName"
                     :room-host="room.roomHost"
                     :room-player-count="room.roomPlayerCount"
-                    :is-password-protected="room.isPasswordProtected">
-                </room-list-item>
+                    :is-password-protected="room.isPasswordProtected" />
             </div>
         </div>
         <div class="modal fade" id="create-room" tabindex="-1" role="dialog">
@@ -39,9 +39,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" id="create-room-button" class="btn btn-primary" data-dismiss="modal"
-                                @click="onCreateRoom">Create
-                        </button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="onCreateRoom">Create</button>
                     </div>
                 </div>
             </div>
@@ -51,6 +49,7 @@
 
 <script>
     import RoomListItem from '@/components/RoomListItem'
+    import ChatBox from '@/components/ChatBox'
 
     export default {
         data() {
@@ -85,11 +84,17 @@
             }
         },
         components: {
-            RoomListItem
+            RoomListItem,
+            ChatBox
         }
     }
 </script>
 
 <style scoped>
-
+    #chat-box {
+        height: 500px;
+    }
+    #create-room-button {
+        margin-top: 10px
+    }
 </style>

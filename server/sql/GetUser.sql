@@ -1,0 +1,1 @@
+SELECT UserId, Username, CurrentRoom FROM Users WHERE Username=@username

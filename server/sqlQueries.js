@@ -19,11 +19,10 @@ module.exports = {
     //// Login ////
 
 
-    // Logs in the specified user.
-    // Returns UserId and if the user Exists
-    loginUser(username, callback){
+    // Returns User information and whether the user Exists
+    getUser(username, callback){
         sql.execute({
-            query: sql.fromFile("./sql/GetUserId"),
+            query: sql.fromFile("./sql/GetUser"),
             params: {
                 username: {
                     val: username

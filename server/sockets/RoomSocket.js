@@ -18,7 +18,7 @@ const create = function(roomInput) {
     if (roomInput.roomName.length < 4 || roomInput.roomName.length > 20) {
         self.socket.emit('generalError', {error: 'Room name must be between 4 and 20 characters.'});
     } else {
-        const userId = self.app.onlineUsers[self.socket.id];
+        const userId = self.app.onlineUsers[self.socket.id].userId;
 
         sqlQueries.createRoom(userId, roomInput.roomName, roomInput.roomPassword, function (NewRoom) {
             console.log('Created room ' + roomInput.roomName);
@@ -39,7 +39,7 @@ const join = function(roomId) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id];
+    const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.getRoomDetails(roomId, function(Room) {
 
@@ -61,7 +61,7 @@ const join = function(roomId) {
 const spectate = function(roomId) {
     const self = this;
 
-    const userId = self.app.onlineUsers[self.socket.id];
+    const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.spectateRoom(userId, roomId, function () {
         console.log('Spectator joined room.');
@@ -80,7 +80,7 @@ const leave = function(){
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id];
+    const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.leaveRoom(userId, function (User) {
         console.log(User.Username + " left room.");
@@ -110,7 +110,7 @@ const toggleReady = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id];
+    const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.readyToggle(userId, function (User) {
         console.log(User.Username + " readied up.");
