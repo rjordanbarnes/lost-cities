@@ -10,12 +10,15 @@
                 </div>
                 <div class="col-8">
                     <ul class="room-player-list list-group">
-                        <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[0].isReady }">
+                        <li class="list-group-item" v-if="currentRoom.players.length <= 0">
+                            <h2 class="text-muted d-flex justify-content-between">Empty <button type="button" class="btn btn-primary float-right" @click="onFillSlot">Fill Slot</button></h2>
+                        </li>
+                        <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[0].isReady }"  v-else>
                             <h2 class="d-flex justify-content-between">{{ currentRoom.players[0].username }}<span v-if="currentRoom.players[0].isReady">Ready</span></h2>
                         </li>
 
                         <li class="list-group-item" v-if="currentRoom.players.length <= 1">
-                            <h2 class="text-muted">Empty</h2>
+                            <h2 class="text-muted d-flex justify-content-between">Empty <button type="button" class="btn btn-primary float-right" @click="onFillSlot" v-if="currentRoom.players.length > 0 && userIsSpectator">Fill Slot</button></h2>
                         </li>
                         <li class="list-group-item" v-bind:class="{ 'list-group-item-success': currentRoom.players[1].isReady }" v-else>
                             <h2 class="d-flex justify-content-between">{{ currentRoom.players[1].username }}<span v-if="currentRoom.players[1].isReady">Ready</span></h2>
@@ -116,6 +119,9 @@
             },
             onSpectateRoom() {
                 this.$socket.emit('roomSpectate', this.$route.params.roomid);
+            },
+            onFillSlot() {
+                this.$socket.emit('roomJoin', this.$route.params.roomid);
             }
         }
     }
