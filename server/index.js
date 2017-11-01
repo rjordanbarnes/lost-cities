@@ -21,7 +21,7 @@ sql.setDefaultConfig(sqlConfig);
 // App variables
 const app = {
     connectedSockets: [], // Sockets
-    onlineUsers: {},    // socket.id, {sql.UserId, sql.Username}
+    onlineUsers: {}       // socket.id, {sql.UserId, sql.Username}
 };
 
 // Shuts down all active rooms on server start.
@@ -52,7 +52,7 @@ const app = {
         socket.emit('userRequestToken');
     });
 
-    http.listen(8889, function() {
-        console.log('Listening on *:8889');
+    http.listen(3379, function() {
+        console.log('Listening on *:3379');
     });
 // });

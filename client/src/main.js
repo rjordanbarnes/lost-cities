@@ -5,7 +5,7 @@ import App from './App'
 import store from './store'
 import router from './router'
 import VueSocketio from 'vue-socket.io';
-Vue.use(VueSocketio, 'http://localhost:8889');
+Vue.use(VueSocketio, 'http://localhost:3379');
 Vue.config.productionTip = false;
 
 import 'bootstrap';
