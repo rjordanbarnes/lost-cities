@@ -8,4 +8,5 @@ VALUES ('Jordan'),
        ('Salem')
 
 SELECT * FROM Users
+SELECT * FROM Participants
 SELECT * FROM Games ORDER BY CreationDate DESC

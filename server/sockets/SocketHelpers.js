@@ -1,19 +1,19 @@
 const sqlQueries = require('../sqlQueries.js');
 
 module.exports.Broadcast = {
-    // Updates room list for all sockets.
-    refreshRoomList(socket) {
-        sqlQueries.getActiveRooms(function (RoomList) {
-            console.log('Broadcasted room list.');
-            socket.server.emit('lobbyRoomList', {rooms: RoomList});
+    // Updates game list for all sockets.
+    refreshGameList(socket) {
+        sqlQueries.getGames(function (GameList) {
+            console.log('Broadcasted game list.');
+            socket.server.emit('lobbyGameList', {games: GameList});
         });
     },
 
-    // Refresh an individual room's details for all users in the room.
-    refreshRoomDetails(socket, roomId) {
-        sqlQueries.getRoomDetails(roomId, function (Room) {
-            console.log('Sent room details for ' + Room.roomName);
-            socket.server.in(roomId).emit('roomUpdate', Room);
+    // Refresh an individual game's details for all users in the game.
+    refreshGameDetails(socket, gameId) {
+        sqlQueries.getGameDetails(gameId, function (Game) {
+            console.log('Sent game details for ' + Game.gameName);
+            socket.server.in(gameId).emit('gameUpdate', Game);
         });
     }
 };

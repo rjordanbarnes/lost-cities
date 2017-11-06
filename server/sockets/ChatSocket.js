@@ -11,7 +11,7 @@ const message = function(data) {
         return;
 
     if (data.roomId) {
-        // Send chat to user's room.
+        // Send chat to user's game.
         sqlQueries.getUser(self.app.onlineUsers[self.socket.id].username, function(User) {
             if (data.roomId === User.CurrentRoom) {
                 self.socket.server.in(User.CurrentRoom).emit('chatMessage', {
@@ -22,7 +22,7 @@ const message = function(data) {
             }
         });
     } else {
-        // Send chat to lobby if room not specified.
+        // Send chat to lobby if game not specified.
         console.log("Sending message.");
         self.socket.server.emit('chatMessage', {
             chatUsername: self.app.onlineUsers[self.socket.id].username,

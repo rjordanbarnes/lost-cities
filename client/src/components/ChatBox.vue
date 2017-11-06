@@ -23,14 +23,14 @@
         },
         sockets: {
             chatMessage(data) {
-                if (data.roomId === this.$route.params.roomid) {
+                if (data.gameId === this.$route.params.gameid) {
                     this.chatLines.unshift(data);
                 }
             }
         },
         methods: {
             onChatSubmit() {
-                this.$socket.emit('chatMessage', {message: this.chatInput, roomId: this.$route.params.roomid});
+                this.$socket.emit('chatMessage', {message: this.chatInput, gameId: this.$route.params.gameid});
                 this.chatInput = "";
             }
         },

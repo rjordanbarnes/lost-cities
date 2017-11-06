@@ -2,13 +2,13 @@ const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
 
-// Broadcasts the active rooms to all users.
-const getRooms = function() {
+// Broadcasts the active games to all users.
+const getGames = function() {
     const self = this;
 
-    sqlQueries.getActiveRooms(function (RoomList) {
-        console.log('Sending room list to single user.');
-        self.socket.emit('lobbyRoomList', {rooms: RoomList});
+    sqlQueries.getGames(function (GameList) {
+        console.log('Sending game list to single user.');
+        self.socket.emit('lobbyGameList', {games: GameList});
     });
 };
 
@@ -17,6 +17,6 @@ module.exports = function(app, socket){
     this.socket = socket;
 
     this.handlers = {
-        'lobbyGetRooms': getRooms.bind(this)
+        'lobbyGetGames': getGames.bind(this)
     };
 };

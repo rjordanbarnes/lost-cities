@@ -8,7 +8,6 @@ const sql = require('seriate');
 // My Modules
 const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
-const RoomSocket = require('./sockets/RoomSocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
 const ChatSocket = require('./sockets/ChatSocket.js');
 const sqlQueries = require('./sqlQueries.js');
@@ -25,7 +24,7 @@ const app = {
 };
 
 // Shuts down all active rooms on server start.
-sqlQueries.shutdownAllRooms(function() {
+// sqlQueries.shutdownAllGames(function() {
     io.on('connection', function(socket) {
         console.log('Socket connected.');
         app.connectedSockets.push(socket);
@@ -35,7 +34,6 @@ sqlQueries.shutdownAllRooms(function() {
         const socketHandlers = {
             'user': new UserSocket(app, socket),
             'lobby': new LobbySocket(app, socket),
-            'room' : new RoomSocket(app, socket),
             'game' : new GameSocket(app, socket),
             'chat': new ChatSocket(app, socket)
         };
@@ -55,4 +53,4 @@ sqlQueries.shutdownAllRooms(function() {
     http.listen(3379, function() {
         console.log('Listening on *:3379');
     });
-});
+// });

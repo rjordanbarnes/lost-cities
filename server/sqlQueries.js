@@ -4,10 +4,10 @@ module.exports = {
 
     //// Maintenance ////
 
-    // Shuts down all currently active rooms.
-    shutdownAllRooms(callback) {
+    // Shuts down all currently active games.
+    shutdownAllGames(callback) {
         sql.execute({
-            query: sql.fromFile("./sql/ShutdownAllRooms")
+            query: sql.fromFile("./sql/ShutdownAllGames")
         }).then(function(results) {
             callback(results);
         }, function(err) {
@@ -20,9 +20,9 @@ module.exports = {
 
 
     // Returns User information and whether the user Exists
-    getUser(username, callback){
+    loginUser(username, callback){
         sql.execute({
-            query: sql.fromFile("./sql/GetUser"),
+            query: sql.fromFile("./sql/LoginUser"),
             params: {
                 username: {
                     val: username
@@ -61,19 +61,19 @@ module.exports = {
     //// Lobby ////
 
 
-    // Creates a room in SQL using the supplied Room Info, making the supplied user the host.
-    // Returns the new room's ID.
-    createRoom(userId, roomName, roomPassword, callback) {
+    // Creates a game in SQL using the supplied Game Info, making the supplied user the host.
+    // Returns the new game's ID.
+    createGame(userId, gameName, gamePassword, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/CreateRoom"),
+            query: sql.fromFile("./sql/CreateGame"),
             params: {
-                roomName: {
-                    val: roomName
+                gameName: {
+                    val: gameName
                 },
-                roomPassword: {
-                    val: roomPassword
+                gamePassword: {
+                    val: gamePassword
                 },
-                roomHostId: {
+                gameHostId: {
                     val: userId
                 }
             }
@@ -84,16 +84,16 @@ module.exports = {
         });
     },
 
-    // Makes the user join the given room.
-    joinRoom(userId, roomId, callback) {
+    // Makes the user join the given game.
+    joinGame(userId, gameId, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/JoinRoom"),
+            query: sql.fromFile("./sql/JoinGame"),
             params: {
                 userId: {
                     val: userId
                 },
-                roomId: {
-                    val: roomId
+                gameId: {
+                    val: gameId
                 }
             }
         }).then(function () {
@@ -103,16 +103,16 @@ module.exports = {
         });
     },
 
-    // Makes the user join the given room.
-    spectateRoom(userId, roomId, callback) {
+    // Makes the user join the given game.
+    spectateGame(userId, gameId, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/SpectateRoom"),
+            query: sql.fromFile("./sql/SpectateGame"),
             params: {
                 userId: {
                     val: userId
                 },
-                roomId: {
-                    val: roomId
+                gameId: {
+                    val: gameId
                 }
             }
         }).then(function () {
@@ -122,81 +122,85 @@ module.exports = {
         });
     },
 
-    // Gets the currently active rooms.
-    // Returns the room IDs, Names, Hosts, User Counts, and whether the room is password protected.
-    getActiveRooms(callback) {
+    // Gets the currently active games.
+    // Returns the game IDs, Names, Hosts, User Counts, and whether the game is password protected.
+    getGames(callback) {
         sql.execute({
-            query: sql.fromFile("./sql/GetActiveRooms")
-        }).then(function (Rooms) {
+            query: sql.fromFile("./sql/GetGames")
+        }).then(function (Games) {
             // Converts the returned bit 0 and 1 to Boolean values.
-            for (let i = 0; i < Rooms.length; i++) {
-                Rooms[i].isPasswordProtected = Rooms[i].isPasswordProtected === 1;
+            for (let i = 0; i < Games.length; i++) {
+                Games[i].isPasswordProtected = Games[i].isPasswordProtected === 1;
             }
 
-            callback(Rooms);
+            callback(Games);
         }, function (err) {
             console.error(err);
         });
     },
 
-    // Returns detailed information about the specified room.
-    // Returns the Players in the room, roomId, roomName, and whether the room is password protected.
-    getRoomDetails(roomId, callback) {
+    // Returns detailed information about the specified game.
+    // Returns the Players in the game, gameId, gameName, and whether the game is password protected.
+    getGameDetails(gameId, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/GetRoomDetails"),
+            query: sql.fromFile("./sql/GetGameDetails"),
             params: {
-                roomId: {
-                    val: roomId
+                gameId: {
+                    val: gameId
                 }
             }
         }).then(function (results) {
             let players = [];
             let spectators = [];
 
-            // Place room players into an array.
+            // Place game players into an array.
             for (let i = 0; i < results.length; i++) {
-                if (results[i].isPlayer) {
-                    players.push({userId: results[i].userId,
+                if (results[i].type === 'Player') {
+                    players.push({
+                        participantId: results[i].participantId,
+                        userId: results[i].userId,
                         username: results[i].username,
                         isHost: results[i].isHost,
                         isReady: results[i].isReady})
                 } else {
-                    spectators.push({userId: results[i].userId,
+                    spectators.push({
+                        participantId: results[i].participantId,
+                        userId: results[i].userId,
                         username: results[i].username,
                         isHost: results[i].isHost})
                 }
             }
 
             // Structure the results
-            const roomDetails = {roomId: results[0].roomId,
-                                 roomName: results[0].roomName,
+            const gameDetails = {gameId: gameId,
+                                 gameName: results[0].gameName,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
                                  players: players,
                                  spectators: spectators};
 
-            callback(roomDetails);
+            callback(gameDetails);
         }, function (err) {
             console.error(err);
         });
     },
 
 
-    //// Room ////
+    //// Game ////
 
 
-    // Specified user leaves whatever room they're currently in.
-    // Returns the user's name, the room they were in, and if they were the host.
-    leaveRoom(userId, callback) {
+    // Specified user leaves whatever game they're currently in.
+    // Returns the user's name, the game they were in, and if they were the host.
+    leaveGame(userId, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/LeaveRoom"),
+            query: sql.fromFile("./sql/LeaveGame"),
             params: {
                 userId: {
                     val: userId
                 }
             }
         }).then(function (results) {
-            if (results[0].CurrentRoom === null)
-                results[0].CurrentRoom = false;
+            if (!results[0].currentGame)
+                results[0].currentGame = false;
 
             callback(results[0]);
         }, function (err) {
@@ -204,13 +208,13 @@ module.exports = {
         });
     },
 
-    // Shuts a certain room down.
-    shutdownRoom(roomId, callback) {
+    // Shuts a certain game down.
+    shutdownGame(gameId, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/ShutdownRoom"),
+            query: sql.fromFile("./sql/ShutdownGame"),
             params: {
-                roomId: {
-                    val: roomId
+                gameId: {
+                    val: gameId
                 }
             }
         }).then(function () {
@@ -221,7 +225,7 @@ module.exports = {
     },
 
     // Toggles the user's ready state.
-    // Returns the room that the user is in and the user's Username.
+    // Returns the game that the user is in and the user's Username.
     readyToggle(userId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/ReadyToggle"),

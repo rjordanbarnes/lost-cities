@@ -7,7 +7,7 @@ const tokenConfig = require('../../config/token.config.js');
 const requestLogin = function(username){
     const self = this;
 
-    sqlQueries.getUser(username, function(User) {
+    sqlQueries.loginUser(username, function(User) {
         self.socket.authenticated = User.Exists;
 
         if (self.socket.authenticated) {
@@ -64,21 +64,23 @@ const disconnectSocket = function() {
     if (self.socket.authenticated) {
         const userId = self.app.onlineUsers[self.socket.id].userId;
 
-        sqlQueries.leaveRoom(userId, function(User) {
-            console.log(User.Username + " left room.");
+        sqlQueries.leaveGame(userId, function (User) {
+            console.log(User.Username + " left game.");
+            self.socket.leave(User.currentGame);
 
-            if (User.IsHost) {
-                // Shutdown the room if the user was the host of the room.
-                sqlQueries.shutdownRoom(User.CurrentRoom, function () {
-                    console.log(User.Username + " shutdown room.");
-                    self.socket.server.in(User.CurrentRoom).emit('generalError', {error: 'The host left.'});
-                    self.socket.server.in(User.CurrentRoom).emit('roomShutdown');
+            if (User.isHost) {
+                // Shutdown the game if the user was the host of the game.
+                sqlQueries.shutdownGame(User.currentGame, function () {
+                    console.log(User.Username + " shutdown game.");
+                    self.socket.broadcast.to(User.currentGame).emit('generalError', {error: 'The host left.'});
+                    self.socket.broadcast.to(User.currentGame).emit('gameShutdown');
 
-                    Broadcast.refreshRoomList(self.socket);
+                    Broadcast.refreshGameList(self.socket);
                 });
-            } else if (User.CurrentRoom) {
-                // Let the other clients know if the user was in their room.
-                Broadcast.refreshRoomDetails(self.socket, User.CurrentRoom);
+            } else {
+                // Let the other clients know if the user was in their game.
+                Broadcast.refreshGameDetails(self.socket, User.CurrentGame);
+                Broadcast.refreshGameList(self.socket);
             }
         });
 
