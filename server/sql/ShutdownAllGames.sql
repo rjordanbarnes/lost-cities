@@ -1,0 +1,2 @@
+DELETE FROM Participants
+DELETE FROM Games

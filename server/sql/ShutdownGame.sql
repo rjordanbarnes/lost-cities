@@ -1,0 +1,10 @@
+-- SELECT * FROM Participants
+-- SELECT * FROM Games
+
+-- DECLARE @gameId UNIQUEIDENTIFIER = '771F3E81-D94C-4A73-B0F1-B16BD71DC6AB';
+
+DELETE FROM Participants
+WHERE Game = @gameId
+
+DELETE FROM Games
+WHERE GameId = @gameId
