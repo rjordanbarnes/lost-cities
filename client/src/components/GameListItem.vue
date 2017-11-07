@@ -9,6 +9,28 @@
             <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
             <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame(gameId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
         </div>
+        <div class="modal fade" id="password-prompt" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enter Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="create-game-name" class="form-control-label">Password:</label>
+                            <input type="text" class="form-control" id="create-game-name" v-model="enteredPassword">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="onSubmitPassword">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -17,7 +39,7 @@
         props: ['gameId', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
         data() {
             return {
-
+                enteredPassword: ''
             }
         },
         computed: {
@@ -33,7 +55,14 @@
         },
         methods: {
             onOpenGame(gameId){
-                this.$router.push('game/' + gameId);
+                if (this.isPasswordProtected) {
+                    $('#password-prompt').modal('show');
+                } else {
+                    this.$router.push('game/' + gameId);
+                }
+            },
+            onSubmitPassword() {
+                this.$socket.emit('gameJoin', {gameId: this.gameId, password: this.enteredPassword})
             }
         }
 

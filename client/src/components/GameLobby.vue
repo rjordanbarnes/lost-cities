@@ -94,12 +94,6 @@
 
                 if (this.loading) {
                     this.loading = false;
-
-                    if (this.currentGame.players.length < 2 && this.$store.getters.authenticated) {
-                        this.$socket.emit('gameJoin', this.$route.params.gameid);
-                    } else {
-                        this.$socket.emit('gameSpectate', this.$route.params.gameid);
-                    }
                 }
 
             },

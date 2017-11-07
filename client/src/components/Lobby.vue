@@ -74,6 +74,13 @@
                 } else {
                     this.$router.push('game/' + data.gameId);
                 }
+            },
+            gameJoin(data) {
+                if (data.errors) {
+                    console.log(data.errors);
+                } else {
+                    this.$router.push('game/' + data.gameId);
+                }
             }
         },
         methods: {

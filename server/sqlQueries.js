@@ -11,7 +11,7 @@ module.exports = {
         }).then(function(results) {
             callback(results);
         }, function(err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -34,7 +34,7 @@ module.exports = {
 
             callback(results[0]);
         }, function(err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -53,7 +53,7 @@ module.exports = {
 
             callback(results[0]);
         }, function(err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -80,12 +80,12 @@ module.exports = {
         }).then(function (results) {
             callback(results[0]);
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
     // Makes the user join the given game.
-    joinGame(userId, gameId, callback) {
+    joinGame(userId, gameId, password, callback) {
         sql.execute({
             query: sql.fromFile("./sql/JoinGame"),
             params: {
@@ -94,12 +94,15 @@ module.exports = {
                 },
                 gameId: {
                     val: gameId
+                },
+                password: {
+                    val: password
                 }
             }
         }).then(function () {
             callback();
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -118,7 +121,7 @@ module.exports = {
         }).then(function () {
             callback();
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -135,7 +138,7 @@ module.exports = {
 
             callback(Games);
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -180,7 +183,7 @@ module.exports = {
 
             callback(gameDetails);
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -204,7 +207,7 @@ module.exports = {
 
             callback(results[0]);
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -220,7 +223,7 @@ module.exports = {
         }).then(function () {
             callback();
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 
@@ -237,7 +240,7 @@ module.exports = {
         }).then(function (results) {
             callback(results[0]);
         }, function (err) {
-            console.error(err);
+            callback({errors: err});
         });
     },
 };

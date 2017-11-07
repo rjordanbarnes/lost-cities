@@ -21,19 +21,23 @@ const create = function(gameInput) {
         const userId = self.app.onlineUsers[self.socket.id].userId;
 
         sqlQueries.createGame(userId, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
-            console.log('Created game ' + gameInput.gameName);
-            // Host joins game channel.
-            self.socket.join(NewGame.gameId);
+            if (NewGame && NewGame.hasOwnProperty('errors')) {
+                // SQL Errors
+            } else {
+                console.log('Created game ' + gameInput.gameName);
+                // Host joins game channel.
+                self.socket.join(NewGame.gameId);
 
-            self.socket.emit('gameCreate', NewGame);
-            Broadcast.refreshGameList(self.socket);
-            Broadcast.refreshGameDetails(self.socket, NewGame.gameId);
+                self.socket.emit('gameCreate', NewGame);
+                Broadcast.refreshGameList(self.socket);
+                Broadcast.refreshGameDetails(self.socket, NewGame.gameId);
+            }
         });
     }
 };
 
 // Causes the current socket to join the specified game as a player.
-const join = function(gameId) {
+const join = function(gameInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -41,13 +45,19 @@ const join = function(gameId) {
 
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
-    sqlQueries.joinGame(userId, gameId, function () {
-        console.log('Player joined a game.');
-        // Joins game's socket.io channel.
-        self.socket.join(gameId);
+    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, function (data) {
+        if (data && data.hasOwnProperty('errors')) {
+            // SQL Errors
+        } else {
+            console.log('Player joined a game.');
+            // Joins game's socket.io channel.
+            self.socket.join(gameInput.gameId);
 
-        Broadcast.refreshGameList(self.socket);
-        Broadcast.refreshGameDetails(self.socket, gameId);
+            self.socket.emit('gameJoin', {gameId: gameInput.gameId});
+
+            Broadcast.refreshGameList(self.socket);
+            Broadcast.refreshGameDetails(self.socket, gameInput.gameId);
+        }
     });
 };
 
@@ -131,6 +141,6 @@ module.exports = function(app, socket){
         'gameLeave': leave.bind(this),
         'gameToggleReady': toggleReady.bind(this),
         'gameSpectate': spectate.bind(this),
-        'gameGetDetails': spectate.bind(this)
+        'gameGetDetails': getDetails.bind(this)
     };
 };
