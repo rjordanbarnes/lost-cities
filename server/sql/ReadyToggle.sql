@@ -12,7 +12,7 @@ UPDATE Participants
 SET IsReady = IsReady ^ 1
 WHERE [User] = @userId
 
-SELECT Username, Participants.Game AS CurrentGame
+SELECT Username, Participants.Game AS currentGame
 FROM Users
 INNER JOIN Participants ON (Users.UserId = Participants.[User])
 WHERE UserId = @userId

@@ -107,7 +107,7 @@ module.exports = {
     },
 
     // Makes the user join the given game.
-    spectateGame(userId, gameId, callback) {
+    spectateGame(userId, gameId, password, callback) {
         sql.execute({
             query: sql.fromFile("./sql/SpectateGame"),
             params: {
@@ -116,6 +116,9 @@ module.exports = {
                 },
                 gameId: {
                     val: gameId
+                },
+                password: {
+                    val: password
                 }
             }
         }).then(function () {
@@ -144,12 +147,15 @@ module.exports = {
 
     // Returns detailed information about the specified game.
     // Returns the Players in the game, gameId, gameName, and whether the game is password protected.
-    getGameDetails(gameId, callback) {
+    getGameDetails(gameId, userId, callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetGameDetails"),
             params: {
                 gameId: {
                     val: gameId
+                },
+                userId: {
+                    val: userId
                 }
             }
         }).then(function (results) {

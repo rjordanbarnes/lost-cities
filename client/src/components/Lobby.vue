@@ -81,6 +81,13 @@
                 } else {
                     this.$router.push('game/' + data.gameId);
                 }
+            },
+            gameSpectate(data) {
+                if (data.errors) {
+                    console.log(data.errors);
+                } else {
+                    this.$router.push('game/' + data.gameId);
+                }
             }
         },
         methods: {

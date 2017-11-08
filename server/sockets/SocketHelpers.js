@@ -11,6 +11,7 @@ module.exports.Broadcast = {
 
     // Refresh an individual game's details for all users in the game.
     refreshGameDetails(socket, gameId) {
+        // TODO: This call is expecting a userId, but in this case the server is attempting to get all the game details so it shouldn't require one.
         sqlQueries.getGameDetails(gameId, function (Game) {
             console.log('Sent game details for ' + Game.gameName);
             socket.server.in(gameId).emit('gameUpdate', Game);

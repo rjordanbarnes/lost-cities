@@ -117,7 +117,7 @@
                 this.$socket.emit('gameSpectate', this.$route.params.gameid);
             },
             onFillSlot() {
-                this.$socket.emit('gameJoin', this.$route.params.gameid);
+                this.$socket.emit('gameJoin', {gameId: this.$route.params.gameid});
             }
         },
         components: {

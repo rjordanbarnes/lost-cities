@@ -1,4 +1,5 @@
 -- Returns extended details about the given game and its participants.
+-- Only returns data if the given user is in the game.
 
 /*
   SELECT * FROM Users
@@ -6,7 +7,11 @@
   SELECT * FROM Games
 */
 
--- DECLARE @gameId UNIQUEIDENTIFIER = 'FEE6CCE8-5D42-40D9-A588-4D56C0382CF8';
+--DECLARE @gameId UNIQUEIDENTIFIER = '70039E39-89E7-4746-8DC4-020773C7ACE9';
+--DECLARE @userId UNIQUEIDENTIFIER = '91110464-98CB-4438-ADFD-89881545DFA0';
+
+IF ((SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND [User] = @userId) < 1)
+  THROW 50001, 'Unable to give game details, user isn''t in the game.', 1;
 
 SELECT Users.UserId AS userId,
        Participants.ParticipantId AS participantId,

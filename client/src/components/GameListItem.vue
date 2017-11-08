@@ -43,14 +43,14 @@
             }
         },
         computed: {
+            isGameFull() {
+                return this.gamePlayerCount >= 2;
+            },
             openGameButtonText() {
-                return (this.gamePlayerCount < 2 ? 'Join' : 'View');
+                return (this.isGameFull ? 'View' : 'Join');
             },
             openGameButtonColor() {
-                return {
-                    'btn-outline-primary': this.gamePlayerCount < 2,
-                    'btn-outline-info' : this.gamePlayerCount === 2
-                }
+                return (this.isGameFull ? 'btn-outline-info' : 'btn-outline-primary');
             }
         },
         methods: {
@@ -62,7 +62,13 @@
                 }
             },
             onSubmitPassword() {
-                this.$socket.emit('gameJoin', {gameId: this.gameId, password: this.enteredPassword})
+                if (this.isGameFull) {
+                    this.$socket.emit('gameSpectate', {gameId: this.gameId, password: this.enteredPassword});
+                } else {
+                    this.$socket.emit('gameJoin', {gameId: this.gameId, password: this.enteredPassword});
+                }
+
+                this.enteredPassword = '';
             }
         }
 

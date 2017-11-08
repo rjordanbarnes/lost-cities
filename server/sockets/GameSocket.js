@@ -47,7 +47,7 @@ const join = function(gameInput) {
 
     sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, function (data) {
         if (data && data.hasOwnProperty('errors')) {
-            // SQL Errors
+            console.log('Error joining game.')
         } else {
             console.log('Player joined a game.');
             // Joins game's socket.io channel.
@@ -61,18 +61,24 @@ const join = function(gameInput) {
     });
 };
 
-const spectate = function(gameId) {
+const spectate = function(gameInput) {
     const self = this;
 
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
-    sqlQueries.spectateGame(userId, gameId, function () {
-        console.log('Spectator joined game.');
-        // Joins game's socket.io channel.
-        self.socket.join(gameId);
+    sqlQueries.spectateGame(userId, gameInput.gameId, gameInput.password, function (data) {
+        if (data && data.hasOwnProperty('errors')) {
+            console.log('Error spectating game.')
+        } else {
+            console.log('Spectator joined game.');
+            // Joins game's socket.io channel.
+            self.socket.join(gameInput.gameId);
 
-        Broadcast.refreshGameList(self.socket);
-        Broadcast.refreshGameDetails(self.socket, gameId);
+            self.socket.emit('gameSpectate', {gameId: gameInput.gameId});
+
+            Broadcast.refreshGameList(self.socket);
+            Broadcast.refreshGameDetails(self.socket, gameInput.gameId);
+        }
     });
 };
 
@@ -86,22 +92,26 @@ const leave = function(){
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.leaveGame(userId, function (User) {
-        console.log(User.Username + " left game.");
-        self.socket.leave(User.currentGame);
-
-        if (User.isHost) {
-            // Shutdown the game if the user was the host of the game.
-            sqlQueries.shutdownGame(User.currentGame, function () {
-                console.log(User.Username + " shutdown game.");
-                self.socket.broadcast.to(User.currentGame).emit('generalError', {error: 'The host left.'});
-                self.socket.broadcast.to(User.currentGame).emit('gameShutdown');
-
-                Broadcast.refreshGameList(self.socket);
-            });
+        if (User.hasOwnProperty('errors')) {
+            console.log('Error leaving game (might not be in a game).')
         } else {
-            // Let the other clients know if the user was in their game.
-            Broadcast.refreshGameDetails(self.socket, User.CurrentGame);
-            Broadcast.refreshGameList(self.socket);
+            console.log(User.Username + " left game.");
+            self.socket.leave(User.currentGame);
+
+            if (User.isHost) {
+                // Shutdown the game if the user was the host of the game.
+                sqlQueries.shutdownGame(User.currentGame, function () {
+                    console.log(User.Username + " shutdown game.");
+                    self.socket.broadcast.to(User.currentGame).emit('generalError', {error: 'The host left.'});
+                    self.socket.broadcast.to(User.currentGame).emit('gameShutdown');
+
+                    Broadcast.refreshGameList(self.socket);
+                });
+            } else {
+                // Let the other clients know if the user was in their game.
+                Broadcast.refreshGameDetails(self.socket, User.currentGame);
+                Broadcast.refreshGameList(self.socket);
+            }
         }
     });
 };
@@ -117,7 +127,7 @@ const toggleReady = function() {
 
     sqlQueries.readyToggle(userId, function (User) {
         console.log(User.Username + " readied up.");
-        Broadcast.refreshGameDetails(self.socket, User.CurrentGame);
+        Broadcast.refreshGameDetails(self.socket, User.currentGame);
     });
 };
 
@@ -125,7 +135,9 @@ const toggleReady = function() {
 const getDetails = function(gameId) {
     const self = this;
 
-    sqlQueries.getGameDetails(gameId, function (Game) {
+    const userId = self.app.onlineUsers[self.socket.id].userId;
+
+    sqlQueries.getGameDetails(gameId, userId, function (Game) {
         console.log('Sent single user game details for ' + Game.gameName);
         self.socket.emit('gameUpdate', Game);
     });
