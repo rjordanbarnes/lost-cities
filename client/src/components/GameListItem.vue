@@ -20,8 +20,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="create-game-name" class="form-control-label">Password:</label>
-                            <input type="text" class="form-control" id="create-game-name" v-model="enteredPassword">
+                            <label for="entered-password-input" class="form-control-label">Password:</label>
+                            <input type="text" class="form-control" id="entered-password-input" v-model="enteredPassword">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -42,6 +42,11 @@
                 enteredPassword: ''
             }
         },
+        mounted() {
+            $('#password-prompt').on('shown.bs.modal', function() {
+                $('#entered-password-input').focus();
+            });
+        },
         computed: {
             isGameFull() {
                 return this.gamePlayerCount >= 2;
@@ -58,7 +63,11 @@
                 if (this.isPasswordProtected) {
                     $('#password-prompt').modal('show');
                 } else {
-                    this.$router.push('game/' + gameId);
+                    if (this.isGameFull) {
+                        this.$socket.emit('gameSpectate', {gameId: this.gameId});
+                    } else {
+                        this.$socket.emit('gameJoin', {gameId: this.gameId});
+                    }
                 }
             },
             onSubmitPassword() {

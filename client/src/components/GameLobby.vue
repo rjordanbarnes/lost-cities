@@ -114,7 +114,7 @@
                 this.isReady = !this.isReady;
             },
             onSpectateGame() {
-                this.$socket.emit('gameSpectate', this.$route.params.gameid);
+                this.$socket.emit('gameSpectate', {gameId: this.$route.params.gameid});
             },
             onFillSlot() {
                 this.$socket.emit('gameJoin', {gameId: this.$route.params.gameid});

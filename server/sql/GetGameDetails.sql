@@ -10,7 +10,7 @@
 --DECLARE @gameId UNIQUEIDENTIFIER = '70039E39-89E7-4746-8DC4-020773C7ACE9';
 --DECLARE @userId UNIQUEIDENTIFIER = '91110464-98CB-4438-ADFD-89881545DFA0';
 
-IF ((SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND [User] = @userId) < 1)
+IF (@userId != 'server' AND (SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND [User] = @userId) < 1)
   THROW 50001, 'Unable to give game details, user isn''t in the game.', 1;
 
 SELECT Users.UserId AS userId,

@@ -2,7 +2,7 @@
     <div id="lobby" class="container">
         <div class="row">
             <div class="col-3">
-                <button id="create-game-button" class="btn btn-block btn-success" type="button" data-toggle="modal" data-target="#create-game">Create Game
+                <button id="create-game-button" class="btn btn-block btn-success" type="button" data-toggle="modal" data-target="#create-game-prompt">Create Game
                 </button>
                 <chat-box class="mt-2"></chat-box>
             </div>
@@ -17,7 +17,7 @@
                     :is-password-protected="game.isPasswordProtected" />
             </div>
         </div>
-        <div class="modal fade" id="create-game" tabindex="-1" role="dialog">
+        <div class="modal fade" id="create-game-prompt" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -63,6 +63,10 @@
             if (this.games.length === 0) {
                 this.$socket.emit('lobbyGetGames');
             }
+
+            $('#create-game-prompt').on('shown.bs.modal', function() {
+                $('#create-game-name').focus();
+            });
         },
         sockets: {
             lobbyGameList(data) {
