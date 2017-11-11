@@ -35,6 +35,8 @@
             $('#password-prompt').on('shown.bs.modal', function() {
                 $('#entered-password-input').focus();
             });
+
+            $('#entered-password-input').focus();
         },
         methods: {
             onSubmitPassword() {
