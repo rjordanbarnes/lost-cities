@@ -45,4 +45,8 @@
         height: inherit;
         overflow-y:auto;
     }
+
+    #chat-box {
+        font-size: 14px
+    }
 </style>

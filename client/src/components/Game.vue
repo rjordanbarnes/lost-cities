@@ -2,7 +2,7 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails"></game-lobby>
-        <game-password-prompt :game-id="this.$route.params.gameid" :is-game-full="true"></game-password-prompt>
+        <game-password-prompt :game-id="this.$route.params.gameid" :is-game-full="true" id="password-prompt"></game-password-prompt>
     </div>
 </template>
 

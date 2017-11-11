@@ -5,21 +5,16 @@ const Validations = require('./SocketHelpers.js').Validations;
 const message = function(data) {
     const self = this;
 
-    // TODO: Sanitize data.message?
-
-    if (!Validations.isAuthenticated(self.socket) || data.message.trim().length < 1)
+    if (!Validations.isAuthenticated(self.socket) || data.message.trim().length < 1 || data.message.trim().length > 500)
         return;
 
-    if (data.roomId) {
+    if (data.gameId) {
         // Send chat to user's game.
-        sqlQueries.getUser(self.app.onlineUsers[self.socket.id].username, function(User) {
-            if (data.roomId === User.CurrentRoom) {
-                self.socket.server.in(User.CurrentRoom).emit('chatMessage', {
-                    roomId: User.CurrentRoom,
-                    chatUsername: self.app.onlineUsers[self.socket.id].username,
-                    chatMessage: data.message
-                });
-            }
+        // TODO: Make sure user is in the room/channel before sending the message.
+        self.socket.server.in(data.gameId).emit('chatMessage', {
+            gameId: data.gameId,
+            chatUsername: self.app.onlineUsers[self.socket.id].username,
+            chatMessage: data.message
         });
     } else {
         // Send chat to lobby if game not specified.

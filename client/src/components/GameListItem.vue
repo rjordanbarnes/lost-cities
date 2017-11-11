@@ -9,7 +9,7 @@
             <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
             <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame(gameId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
         </div>
-        <game-password-prompt :game-id="this.gameId" :is-game-full="this.isGameFull"></game-password-prompt>
+        <game-password-prompt :game-id="this.gameId" :is-game-full="this.isGameFull" id="password-prompt"></game-password-prompt>
     </div>
 </template>
 
