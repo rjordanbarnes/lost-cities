@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import Login from '@/components/Login'
 import Lobby from '@/components/Lobby'
-import GameLobby from '@/components/GameLobby'
+import Game from '@/components/Game'
 import PageNotFound from '@/components/PageNotFound'
 
 Vue.use(Router);
@@ -14,7 +14,7 @@ export default new Router({
         {path: '/', redirect: '/lobby'},
         {path: '/login', name: 'Login', component: Login},
         {path: '/lobby', name: 'Lobby', component: Lobby},
-        {path: '/game/:gameid', name: 'GameLobby', component: GameLobby},
+        {path: '/game/:gameid', name: 'Game', component: Game},
         {path: '*', name: 'PageNotFound', component: PageNotFound}
     ]
 })
