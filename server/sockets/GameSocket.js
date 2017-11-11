@@ -22,7 +22,7 @@ const create = function(gameInput) {
 
         sqlQueries.createGame(userId, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
             if (NewGame && NewGame.hasOwnProperty('errors')) {
-                // SQL Errors
+                console.log(NewGame.errors.message);
             } else {
                 console.log('Created game ' + gameInput.gameName);
                 // Host joins game channel.
@@ -45,9 +45,9 @@ const join = function(gameInput) {
 
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
-    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, function (data) {
+    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, 'Player', function (data) {
         if (data && data.hasOwnProperty('errors')) {
-            console.log('Error joining game.')
+            console.log(data.errors.message);
         } else {
             console.log('Player joined a game.');
             // Joins game's socket.io channel.
@@ -64,11 +64,15 @@ const join = function(gameInput) {
 const spectate = function(gameInput) {
     const self = this;
 
+    if (!Validations.isAuthenticated(self.socket))
+        return;
+
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
-    sqlQueries.spectateGame(userId, gameInput.gameId, gameInput.password, function (data) {
+    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, 'Spectator', function (data) {
         if (data && data.hasOwnProperty('errors')) {
-            console.log('Error spectating game.')
+            self.socket.emit('gameSpectate', {errors: data.errors.message});
+            console.log(data.errors.message);
         } else {
             console.log('Spectator joined game.');
             // Joins game's socket.io channel.
@@ -93,7 +97,7 @@ const leave = function(){
 
     sqlQueries.leaveGame(userId, function (User) {
         if (User.hasOwnProperty('errors')) {
-            console.log('Error leaving game (might not be in a game).')
+            console.log(User.errors.message);
         } else {
             console.log(User.Username + " left game.");
             self.socket.leave(User.currentGame);
@@ -131,18 +135,6 @@ const toggleReady = function() {
     });
 };
 
-// Sends the game details to a single socket.
-const getDetails = function(gameId) {
-    const self = this;
-
-    const userId = self.app.onlineUsers[self.socket.id].userId;
-
-    sqlQueries.getGameDetails(gameId, userId, function (Game) {
-        console.log('Sent single user game details for ' + Game.gameName);
-        self.socket.emit('gameUpdate', Game);
-    });
-}
-
 module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
@@ -150,9 +142,8 @@ module.exports = function(app, socket){
     this.handlers = {
         'gameCreate': create.bind(this),
         'gameJoin': join.bind(this),
+        'gameSpectate': spectate.bind(this),
         'gameLeave': leave.bind(this),
         'gameToggleReady': toggleReady.bind(this),
-        'gameSpectate': spectate.bind(this),
-        'gameGetDetails': getDetails.bind(this)
     };
 };

@@ -2,11 +2,13 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails"></game-lobby>
+        <game-password-prompt :game-id="this.$route.params.gameid" :is-game-full="true"></game-password-prompt>
     </div>
 </template>
 
 <script>
     import GameLobby from '@/components/GameLobby'
+    import GamePasswordPrompt from '@/components/GamePasswordPrompt'
 
     export default {
         data() {
@@ -18,21 +20,17 @@
         created() {
             // Get the game's details after we make sure the token state is correct. If we don't wait, then the
             // token response from the server might come in after we've loaded the page.
-            if (this.$store.getters.tokenResponseReceived) {
-                this.getGameDetails();
-            } else {
-                this.$store.watch(
-                    (state) => {
-                        return this.$store.getters.tokenResponseReceived
-                    },
-                    (value) => {
-                        this.getGameDetails();
-                    },
-                    {
-                        deep: true
-                    }
-                );
-            }
+            this.$store.watch(
+                (state) => {
+                    return this.$store.getters.tokenResponseReceived
+                },
+                (value) => {
+                    this.$socket.emit('gameSpectate', {gameId: this.$route.params.gameid});
+                },
+                {
+                    deep: true
+                }
+            );
         },
         sockets: {
             gameUpdate(data) {
@@ -45,19 +43,20 @@
                 if (this.loading) {
                     this.loading = false;
                 }
-
             },
             gameShutdown() {
                 this.$router.push('../lobby');
+            },
+            gameSpectate(data) {
+                if (data.errors) {
+                    $('#password-prompt').modal('show');
+                    console.log(data.errors);
+                }
             }
         },
-        methods: {
-            getGameDetails() {
-                this.$socket.emit('gameGetDetails', this.$route.params.gameid);
-            },
-        },
         components: {
-            GameLobby
+            GameLobby,
+            GamePasswordPrompt
         }
     }
 </script>

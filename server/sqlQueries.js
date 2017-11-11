@@ -84,8 +84,8 @@ module.exports = {
         });
     },
 
-    // Makes the user join the given game.
-    joinGame(userId, gameId, password, callback) {
+    // Makes the user join the given game as the supplied userType (Player or Spectator).
+    joinGame(userId, gameId, password, userType, callback) {
         sql.execute({
             query: sql.fromFile("./sql/JoinGame"),
             params: {
@@ -97,28 +97,9 @@ module.exports = {
                 },
                 password: {
                     val: password
-                }
-            }
-        }).then(function () {
-            callback();
-        }, function (err) {
-            callback({errors: err});
-        });
-    },
-
-    // Makes the user join the given game.
-    spectateGame(userId, gameId, password, callback) {
-        sql.execute({
-            query: sql.fromFile("./sql/SpectateGame"),
-            params: {
-                userId: {
-                    val: userId
                 },
-                gameId: {
-                    val: gameId
-                },
-                password: {
-                    val: password
+                userType: {
+                    val: userType
                 }
             }
         }).then(function () {
