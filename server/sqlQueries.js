@@ -84,31 +84,6 @@ module.exports = {
         });
     },
 
-    // Makes the user join the given game as the supplied userType (Player or Spectator).
-    joinGame(userId, gameId, password, userType, callback) {
-        sql.execute({
-            query: sql.fromFile("./sql/JoinGame"),
-            params: {
-                userId: {
-                    val: userId
-                },
-                gameId: {
-                    val: gameId
-                },
-                password: {
-                    val: password
-                },
-                userType: {
-                    val: userType
-                }
-            }
-        }).then(function () {
-            callback();
-        }, function (err) {
-            callback({errors: err});
-        });
-    },
-
     // Gets the currently active games.
     // Returns the game IDs, Names, Hosts, User Counts, and whether the game is password protected.
     getGames(callback) {
@@ -177,6 +152,46 @@ module.exports = {
 
     //// Game ////
 
+    // Makes the user join the given game as the supplied userType (Player or Spectator).
+    joinGame(userId, gameId, password, userType, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/JoinGame"),
+            params: {
+                userId: {
+                    val: userId
+                },
+                gameId: {
+                    val: gameId
+                },
+                password: {
+                    val: password
+                },
+                userType: {
+                    val: userType
+                }
+            }
+        }).then(function () {
+            callback();
+        }, function (err) {
+            callback({errors: err});
+        });
+    },
+
+    // Starts the game that the supplied user is in if they're the host.
+    startGame(userId, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/StartGame"),
+            params: {
+                userId: {
+                    val: userId
+                }
+            }
+        }).then(function () {
+            callback();
+        }, function (err) {
+            callback({errors: err});
+        });
+    },
 
     // Specified user leaves whatever game they're currently in.
     // Returns the user's name, the game they were in, and if they were the host.

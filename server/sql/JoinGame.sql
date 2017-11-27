@@ -13,19 +13,25 @@ DECLARE @gamePassword NVARCHAR(128) = (SELECT Password FROM Games WHERE GameId =
 -- Whether the supplied user is already in the supplied game.
 DECLARE @userInGame BIT = (SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND [User] = @userId)
 
+-- User must not already be in another game.
 IF ((SELECT COUNT(*) FROM Participants WHERE [User] = @userId AND Game != @gameId) > 0)
   THROW 50001, 'Unable to join the game, the user is already in another game.', 1;
 
+-- Game must not be full.
 IF (@userType = 'Player' AND (SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND Type = 'Player') >= 2)
   THROW 50001, 'Unable to join the game as player, the game is full.', 1;
 
--- Fail if password isn't supplied but the game has a password.
+-- Password must be supplied.
 IF (@password IS NULL AND @gamePassword IS NOT NULL AND @userInGame != 1)
   THROW 50001, 'Unable to spectate the game, password not supplied.', 1;
 
--- Fail if the password is incorrect and the user isn't already in the game.
+-- Password must be correct if the user isn't in the game yet.
 IF (@gamePassword != @password AND @userInGame != 1)
   THROW 50001, 'Unable to spectate the game, wrong password.', 1;
+
+-- Game must be at lobby if user is already in the game.
+IF (@userInGame = 1 AND (SELECT State FROM Games WHERE GameId = @gameId) != 'Lobby')
+  THROW 50001, 'Unable to change user type while game isn''t at lobby.', 1;
 
 UPDATE Participants
 SET Type = @userType, IsReady = 0

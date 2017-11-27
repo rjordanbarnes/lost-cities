@@ -48,7 +48,7 @@
                 this.$router.push('../lobby');
             },
             gameSpectate(data) {
-                if (data.errors.includes('Unable to spectate the game, password not supplied.')) {
+                if (data.errors && data.errors.includes('Unable to spectate the game, password not supplied.')) {
                     $('#password-prompt').modal('show');
                 }
             }

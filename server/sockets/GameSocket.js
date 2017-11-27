@@ -86,6 +86,23 @@ const spectate = function(gameInput) {
     });
 };
 
+const start = function() {
+    const self = this;
+
+    if (!Validations.isAuthenticated(self.socket))
+        return;
+
+    const userId = self.app.onlineUsers[self.socket.id].userId;
+
+    sqlQueries.startGame(userId, function(data) {
+        if (data && data.hasOwnProperty('errors')) {
+            console.log(data.errors.message);
+        } else {
+
+        }
+    });
+};
+
 // Causes the socket to leave the game they're in.
 const leave = function(){
     const self = this;
@@ -130,8 +147,12 @@ const toggleReady = function() {
     const userId = self.app.onlineUsers[self.socket.id].userId;
 
     sqlQueries.readyToggle(userId, function (User) {
-        console.log(User.Username + " readied up.");
-        Broadcast.refreshGameDetails(self.socket, User.currentGame);
+        if (User.hasOwnProperty('errors')) {
+            console.log(User.errors.message);
+        } else {
+            console.log(User.Username + " readied up.");
+            Broadcast.refreshGameDetails(self.socket, User.currentGame);
+        }
     });
 };
 
@@ -144,6 +165,7 @@ module.exports = function(app, socket){
         'gameJoin': join.bind(this),
         'gameSpectate': spectate.bind(this),
         'gameLeave': leave.bind(this),
+        'gameStart': start.bind(this),
         'gameToggleReady': toggleReady.bind(this),
     };
 };

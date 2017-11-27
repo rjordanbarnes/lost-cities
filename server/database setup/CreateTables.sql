@@ -2,27 +2,8 @@ USE LostCities
 
 -- Drop all existing tables
 
-DECLARE @Sql NVARCHAR(500) DECLARE @Cursor CURSOR
-
-SET @Cursor = CURSOR FAST_FORWARD FOR
-SELECT DISTINCT sql = 'ALTER TABLE [' + tc2.TABLE_NAME + '] DROP [' + rc1.CONSTRAINT_NAME + ']'
-FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS rc1
-LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc2 ON tc2.CONSTRAINT_NAME = rc1.CONSTRAINT_NAME
-
-OPEN @Cursor FETCH NEXT FROM @Cursor INTO @Sql
-
-WHILE (@@FETCH_STATUS = 0)
-BEGIN
-Exec sp_executesql @Sql
-FETCH NEXT FROM @Cursor INTO @Sql
-END
-
-CLOSE @Cursor DEALLOCATE @Cursor
-GO
-
-EXEC sp_MSforeachtable 'DROP TABLE ?'
-GO
-
+EXEC sp_MSforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all"
+EXEC sp_MSforeachtable @command1 = "DROP TABLE ?"
 
 -- Create tables
 
@@ -39,6 +20,7 @@ CREATE TABLE Games
   Name NVARCHAR(25) NOT NULL,
   Password NVARCHAR(128) NULL,
   Host UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Users(UserId),
+  State VARCHAR(128) NOT NULL CONSTRAINT CK_Games_State CHECK (State IN ('Lobby', 'Gameplay')),
   CreationDate DATETIME NOT NULL DEFAULT GETDATE()
 );
 
@@ -69,7 +51,7 @@ CREATE TABLE DiscardPiles
 (
   DiscardPileId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
   Game UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Games(GameId),
-  Color NVARCHAR(128) NOT NULL CONSTRAINT CK_DiscardPiles_Color CHECK (Color IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
+  Color NVARCHAR(128) NOT NULL CONSTRAINT CK_DiscardPiles_Color CHECK (Color IN ('Red', 'Green', 'White', 'Blue', 'Yellow'))
 );
 
 CREATE TABLE Hands
@@ -77,6 +59,14 @@ CREATE TABLE Hands
   HandId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
   Game UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Games(GameId),
   Player UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Participants(ParticipantId)
+);
+
+CREATE TABLE ScorePiles
+(
+  ScorePileId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+  Game UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Games(GameId),
+  Color NVARCHAR(128) NOT NULL CONSTRAINT CK_ScorePiles_Color CHECK (Color IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
+  Player UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Participants(ParticipantId),
 );
 
 CREATE TABLE Cards
@@ -89,7 +79,8 @@ CREATE TABLE Cards
 CREATE TABLE DeckCards
 (
   Card UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Cards(CardId),
-  Deck UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Decks(DeckId)
+  Deck UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Decks(DeckId),
+  [Order] TINYINT CONSTRAINT CK_DeckCards_Order CHECK ([Order] > 0 AND [Order] < 61)
 );
 
 CREATE TABLE DiscardPileCards
@@ -103,3 +94,73 @@ CREATE TABLE HandCards
   Card UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Cards(CardId),
   Hand UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Hands(HandId)
 );
+
+CREATE TABLE ScorePileCards
+(
+  Card UNIQUEIDENTIFIER FOREIGN KEY REFERENCES Cards(CardId),
+  ScorePile UNIQUEIDENTIFIER FOREIGN KEY REFERENCES ScorePiles(ScorePileId)
+);
+
+-- Fill Cards table
+INSERT INTO Cards (Color, Value)
+VALUES
+  ('Red', 1),
+  ('Red', 1),
+  ('Red', 1),
+  ('Red', 2),
+  ('Red', 3),
+  ('Red', 4),
+  ('Red', 5),
+  ('Red', 6),
+  ('Red', 7),
+  ('Red', 8),
+  ('Red', 9),
+  ('Red', 10),
+  ('Green', 1),
+  ('Green', 1),
+  ('Green', 1),
+  ('Green', 2),
+  ('Green', 3),
+  ('Green', 4),
+  ('Green', 5),
+  ('Green', 6),
+  ('Green', 7),
+  ('Green', 8),
+  ('Green', 9),
+  ('Green', 10),
+  ('White', 1),
+  ('White', 1),
+  ('White', 1),
+  ('White', 2),
+  ('White', 3),
+  ('White', 4),
+  ('White', 5),
+  ('White', 6),
+  ('White', 7),
+  ('White', 8),
+  ('White', 9),
+  ('White', 10),
+  ('Blue', 1),
+  ('Blue', 1),
+  ('Blue', 1),
+  ('Blue', 2),
+  ('Blue', 3),
+  ('Blue', 4),
+  ('Blue', 5),
+  ('Blue', 6),
+  ('Blue', 7),
+  ('Blue', 8),
+  ('Blue', 9),
+  ('Blue', 10),
+  ('Yellow', 1),
+  ('Yellow', 1),
+  ('Yellow', 1),
+  ('Yellow', 2),
+  ('Yellow', 3),
+  ('Yellow', 4),
+  ('Yellow', 5),
+  ('Yellow', 6),
+  ('Yellow', 7),
+  ('Yellow', 8),
+  ('Yellow', 9),
+  ('Yellow', 10)

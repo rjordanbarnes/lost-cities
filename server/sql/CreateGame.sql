@@ -15,8 +15,8 @@ DECLARE @newGameId UNIQUEIDENTIFIER = NEWID();
 IF ((SELECT COUNT(*) FROM Participants WHERE [User] = @gameHostId) > 0)
   THROW 50001, 'Unable to create a game, the user is already in a game.', 1;
 
-INSERT INTO Games (GameId, Name, Password, Host)
-VALUES (@newGameId, @gameName, NULLIF(@gamePassword, 'NULL'), @gameHostId)
+INSERT INTO Games (GameId, Name, Password, Host, State)
+VALUES (@newGameId, @gameName, NULLIF(@gamePassword, 'NULL'), @gameHostId, 'Lobby')
 
 INSERT INTO Participants([User], Game, Type)
 VALUES (@gameHostId, @newGameId, 'Player');

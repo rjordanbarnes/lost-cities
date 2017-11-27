@@ -27,6 +27,7 @@
                         <button type="button" id="quit-game-button" class="btn btn-secondary" @click="onQuitGame">Quit</button>
                         <button type="button" id="spectate-game-button" class="btn btn-secondary ml-2" @click="onSpectateGame" v-if="userIsPlayer">Spectate</button>
                         <button type="button" id="ready-game-button" class="btn btn-success ml-2" :class="readyButtonColor" @click="onReadyToggle" v-if="userIsPlayer">{{ readyButtonText }}</button>
+                        <button type="button" id="start-game-button" class="btn btn-success ml-2" @click="onStartGame" v-if="startActive">Start Game</button>
                     </div>
                     <div>Spectators: {{ gameDetails.spectators.length }}</div>
                 </div>
@@ -42,8 +43,7 @@
         props: ['gameDetails'],
         data() {
             return {
-                error: null,
-                isReady: false
+                error: null
             }
         },
         computed: {
@@ -53,14 +53,26 @@
             userIsSpectator() {
                 return this.gameDetails.spectators.filter(spectator => (spectator.userId === this.$store.getters.userId)).length > 0;
             },
+            userIsHost() {
+                return this.gameDetails.players.filter(player => (player.userId === this.$store.getters.userId))[0].isHost === 1;
+            },
+            userIsReady() {
+                return this.gameDetails.players.filter(player => (player.userId === this.$store.getters.userId))[0].isReady;
+            },
             readyButtonText() {
-                return (this.isReady ? 'Unready' : 'Ready Up');
+                return (this.userIsReady ? 'Unready' : 'Ready Up');
             },
             readyButtonColor() {
                 return {
-                    'btn-success': !this.isReady,
-                    'btn-danger' : this.isReady
+                    'btn-success': !this.userIsReady,
+                    'btn-danger' : this.userIsReady
                 }
+            },
+            startActive() {
+                if (this.gameDetails.players.length === 2) {
+                    return this.userIsHost && this.gameDetails.players[0].isReady && this.gameDetails.players[1].isReady
+                }
+                return false;
             }
         },
         methods: {
@@ -70,13 +82,15 @@
             },
             onReadyToggle() {
                 this.$socket.emit('gameToggleReady');
-                this.isReady = !this.isReady;
             },
             onSpectateGame() {
                 this.$socket.emit('gameSpectate', {gameId: this.$route.params.gameid});
             },
             onFillSlot() {
                 this.$socket.emit('gameJoin', {gameId: this.$route.params.gameid});
+            },
+            onStartGame() {
+                this.$socket.emit('gameStart');
             }
         },
         components: {

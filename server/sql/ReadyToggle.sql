@@ -6,13 +6,19 @@
   SELECT * FROM Games
 */
 
--- DECLARE @userId UNIQUEIDENTIFIER = 'DFC21267-E8CC-47B3-AED5-E0065731E293';
+--DECLARE @userId UNIQUEIDENTIFIER = '06BB6B61-17EC-4384-8ABF-526299C5AB0F';
+
+-- Game that the user is in.
+DECLARE @gameId UNIQUEIDENTIFIER = (SELECT Game FROM Participants WHERE [User] = @userId);
+
+-- Game must be at lobby
+IF ((SELECT State FROM Games WHERE GameId = @gameId) != 'Lobby')
+  THROW 50001, 'Unable to ready up, game isn''t at lobby.', 1;
 
 UPDATE Participants
 SET IsReady = IsReady ^ 1
 WHERE [User] = @userId
 
-SELECT Username, Participants.Game AS currentGame
+SELECT Username, @gameId AS currentGame
 FROM Users
-INNER JOIN Participants ON (Users.UserId = Participants.[User])
 WHERE UserId = @userId
