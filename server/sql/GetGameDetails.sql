@@ -20,6 +20,7 @@ SELECT Users.UserId AS userId,
        (SELECT COUNT(Host) FROM Games WHERE Games.Host = Users.UserId) AS isHost,
        IsReady AS isReady,
        Games.Name AS gameName,
+       Games.State AS gameState,
        (SELECT CASE WHEN LEN(Games.Password) > 0 THEN 1 ELSE 0 END FROM Games WHERE Games.GameId = @gameId) AS isPasswordProtected
 FROM Participants
 INNER JOIN Users ON (Users.UserId = Participants.[User])

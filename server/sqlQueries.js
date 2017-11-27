@@ -139,6 +139,7 @@ module.exports = {
             // Structure the results
             const gameDetails = {gameId: gameId,
                                  gameName: results[0].gameName,
+                                 gameState: results[0].gameState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
                                  players: players,
                                  spectators: spectators};
@@ -186,8 +187,8 @@ module.exports = {
                     val: userId
                 }
             }
-        }).then(function () {
-            callback();
+        }).then(function (results) {
+            callback(results[0]);
         }, function (err) {
             callback({errors: err});
         });
@@ -208,22 +209,6 @@ module.exports = {
                 results[0].currentGame = false;
 
             callback(results[0]);
-        }, function (err) {
-            callback({errors: err});
-        });
-    },
-
-    // Shuts a certain game down.
-    shutdownGame(gameId, callback) {
-        sql.execute({
-            query: sql.fromFile("./sql/ShutdownGame"),
-            params: {
-                gameId: {
-                    val: gameId
-                }
-            }
-        }).then(function () {
-            callback();
         }, function (err) {
             callback({errors: err});
         });

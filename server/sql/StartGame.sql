@@ -26,7 +26,7 @@
   DELETE FROM ScorePileCards
 */
 
---DECLARE @userId UNIQUEIDENTIFIER = 'DD4891C1-5623-49AD-9CC9-EFC01B4B94B6';
+--DECLARE @userId UNIQUEIDENTIFIER = '06BB6B61-17EC-4384-8ABF-526299C5AB0F';
 
 -- Game that the user is in.
 DECLARE @gameId UNIQUEIDENTIFIER = (SELECT Game FROM Participants WHERE [User] = @userId);
@@ -52,8 +52,13 @@ UPDATE Games
 SET State = 'Gameplay'
 WHERE GameId = @gameId
 
+-- Reset ready state for players.
+UPDATE Participants
+SET IsReady = 0
+WHERE Game = @gameId
+
 -- Other user in the game.
-DECLARE @userId2 UNIQUEIDENTIFIER = (SELECT [User] FROM Participants WHERE Game = @gameId AND [User] != @userId);
+DECLARE @userId2 UNIQUEIDENTIFIER = (SELECT [User] FROM Participants WHERE Game = @gameId AND [User] != @userId AND Type = 'Player');
 
 
 ------- Creates deck -------
@@ -124,3 +129,5 @@ ORDER BY [Order]
 DELETE FROM DeckCards
 WHERE Card IN (SELECT Card FROM HandCards WHERE Hand = @handId2)
 ----------------------------
+
+SELECT @gameId AS gameId
