@@ -1,1 +1,0 @@
-SELECT UserId, Username FROM Users WHERE Username=@username

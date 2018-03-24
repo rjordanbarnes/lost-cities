@@ -1,94 +1,96 @@
 -- Removes the given participant from the game and returns the game they were in and whether the game is still active.
 
 /*
-  SELECT * FROM Users
-  SELECT * FROM Participants
-  SELECT * FROM Games
+  SELECT * FROM Account
+  SELECT * FROM GameMember
+  SELECT * FROM Game
 */
 
---DECLARE @userId UNIQUEIDENTIFIER = '88E1B1EC-30AC-4F30-ADDA-C308930ED519';
+--DECLARE @accountSK UNIQUEIDENTIFIER = '6A432575-6530-4A91-A7E8-5305C4730255';
 
 -- Game that the user is in.
-DECLARE @gameId UNIQUEIDENTIFIER = (SELECT Game FROM Participants WHERE [User] = @userId);
+DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
 -- User must be in a game.
-IF ((SELECT COUNT(*) FROM Participants WHERE [User] = @userId) < 1)
+IF (@gameSK IS NULL)
   THROW 50001, 'Unable to leave, the user isn''t in a game.', 1;
 
 -- If user is host, shutdown the game.
-IF ((SELECT COUNT(*) FROM Games WHERE Host = @userId AND GameId = @gameId) > 0)
+IF ((SELECT COUNT(*) FROM Game WHERE HostSK = @accountSK AND GameSK = @gameSK) > 0)
   BEGIN
-    DELETE DeckCards
-    WHERE Deck IN (SELECT DeckId FROM Decks WHERE Game = @gameId)
+    DELETE DeckCard
+    WHERE DeckSK IN (SELECT DeckSK FROM Deck WHERE GameSK = @gameSK)
 
-    DELETE DiscardPileCards
-    WHERE DiscardPile IN (SELECT DiscardPileId FROM DiscardPiles WHERE Game = @gameId)
+    DELETE DiscardPileCard
+    WHERE DiscardPileSK IN (SELECT DiscardPileSK FROM DiscardPile WHERE GameSK = @gameSK)
 
-    DELETE HandCards
-    WHERE Hand IN (SELECT HandId FROM Hands WHERE Game = @gameId)
+    DELETE HandCard
+    WHERE HandSK IN (SELECT HandSK FROM Hand WHERE GameSK = @gameSK)
 
-    DELETE ScorePileCards
-    WHERE ScorePile IN (SELECT ScorePileId FROM ScorePiles WHERE Game = @gameId)
+    DELETE ScorePileCard
+    WHERE ScorePileSK IN (SELECT ScorePileSK FROM ScorePile WHERE GameSK = @gameSK)
 
-    DELETE FROM Decks
-    WHERE Game = @gameId
+    DELETE FROM Deck
+    WHERE GameSK = @gameSK
 
-    DELETE FROM DiscardPiles
-    WHERE Game = @gameId
+    DELETE FROM DiscardPile
+    WHERE GameSK = @gameSK
 
-    DELETE FROM Hands
-    WHERE Game = @gameId
+    DELETE FROM Hand
+    WHERE GameSK = @gameSK
 
-    DELETE FROM ScorePiles
-    WHERE Game = @gameId
+    DELETE FROM ScorePile
+    WHERE GameSK = @gameSK
 
-    DELETE FROM Participants
-    WHERE Game = @gameId
+    DELETE FROM GameMember
+    WHERE GameSK = @gameSK
 
-    DELETE FROM Games
-    WHERE GameId = @gameId
+    DELETE FROM Game
+    WHERE GameSK = @gameSK
 
-    SELECT 1 AS [shutdown], @gameId AS currentGame
+    SELECT 1 AS [gameShutdown], @gameSK AS currentGame
   END
+
 -- If user is a player and the game isn't at the lobby, remove the player and return to lobby.
-ELSE IF ((SELECT COUNT(*) FROM Participants WHERE [User] = @userId AND Type = 'Player') > 0 AND (SELECT State FROM Games WHERE GameId = @gameId) != 'Lobby')
+ELSE IF ((SELECT COUNT(*) FROM GameMember WHERE AccountSK = @accountSK AND GameMemberType = 'Player') > 0 AND (SELECT GameState FROM Game WHERE GameSK = @gameSK) != 'Lobby')
   BEGIN
-    UPDATE Games SET State = 'Lobby' WHERE GameId = @gameId
+    UPDATE Game SET GameState = 'Lobby' WHERE GameSK = @gameSK
 
-    DELETE DeckCards
-    WHERE Deck IN (SELECT DeckId FROM Decks WHERE Game = @gameId)
+    DELETE DeckCard
+    WHERE DeckSK IN (SELECT DeckSK FROM Deck WHERE GameSK = @gameSK)
 
-    DELETE DiscardPileCards
-    WHERE DiscardPile IN (SELECT DiscardPileId FROM DiscardPiles WHERE Game = @gameId)
+    DELETE DiscardPileCard
+    WHERE DiscardPileSK IN (SELECT DiscardPileSK FROM DiscardPile WHERE GameSK = @gameSK)
 
-    DELETE HandCards
-    WHERE Hand IN (SELECT HandId FROM Hands WHERE Game = @gameId)
+    DELETE HandCard
+    WHERE HandSK IN (SELECT HandSK FROM Hand WHERE GameSK = @gameSK)
 
-    DELETE ScorePileCards
-    WHERE ScorePile IN (SELECT ScorePileId FROM ScorePiles WHERE Game = @gameId)
+    DELETE ScorePileCard
+    WHERE ScorePileSK IN (SELECT ScorePileSK FROM ScorePile WHERE GameSK = @gameSK)
 
-    DELETE FROM Decks
-    WHERE Game = @gameId
+    DELETE FROM Deck
+    WHERE GameSK = @gameSK
 
-    DELETE FROM DiscardPiles
-    WHERE Game = @gameId
+    DELETE FROM DiscardPile
+    WHERE GameSK = @gameSK
 
-    DELETE FROM Hands
-    WHERE Game = @gameId
+    DELETE FROM Hand
+    WHERE GameSK = @gameSK
 
-    DELETE FROM ScorePiles
-    WHERE Game = @gameId
+    DELETE FROM ScorePile
+    WHERE GameSK = @gameSK
 
-    DELETE FROM Participants
-    WHERE [User] = @userId
+    DELETE FROM GameMember
+    WHERE AccountSK = @accountSK
 
-    SELECT @gameId AS currentGame
+    SELECT @gameSK AS currentGame
   END
+
 -- Otherwise just remove player.
 ELSE
   BEGIN
-    DELETE FROM Participants
-    WHERE [User] = @userId
+    DELETE FROM GameMember
+    WHERE AccountSK = @accountSK
 
-    SELECT @gameId AS currentGame
+    SELECT @gameSK AS currentGame
   END

@@ -48,16 +48,16 @@
         },
         computed: {
             userIsPlayer() {
-                return this.gameDetails.players.filter(player => (player.userId === this.$store.getters.userId)).length > 0;
+                return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK)).length > 0;
             },
             userIsSpectator() {
-                return this.gameDetails.spectators.filter(spectator => (spectator.userId === this.$store.getters.userId)).length > 0;
+                return this.gameDetails.spectators.filter(spectator => (spectator.accountSK === this.$store.getters.accountSK)).length > 0;
             },
             userIsHost() {
-                return this.gameDetails.players.filter(player => (player.userId === this.$store.getters.userId))[0].isHost === 1;
+                return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isHost === 1;
             },
             userIsReady() {
-                return this.gameDetails.players.filter(player => (player.userId === this.$store.getters.userId))[0].isReady;
+                return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isReady;
             },
             readyButtonText() {
                 return (this.userIsReady ? 'Unready' : 'Ready Up');
@@ -84,10 +84,10 @@
                 this.$socket.emit('gameToggleReady');
             },
             onSpectateGame() {
-                this.$socket.emit('gameSpectate', {gameId: this.$route.params.gameid});
+                this.$socket.emit('gameSpectate', {gameSK: this.$route.params.gameSK});
             },
             onFillSlot() {
-                this.$socket.emit('gameJoin', {gameId: this.$route.params.gameid});
+                this.$socket.emit('gameJoin', {gameSK: this.$route.params.gameSK});
             },
             onStartGame() {
                 this.$socket.emit('gameStart');

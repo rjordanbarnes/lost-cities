@@ -10,8 +10,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="entered-password-input" class="form-control-label">Password:</label>
-                        <input type="text" class="form-control" id="entered-password-input" v-model="enteredPassword">
+                        <label class="form-control-label">Password:</label>
+                        <input type="text" class="form-control" v-model="enteredPassword" ref="passwordInput">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -25,25 +25,26 @@
 
 <script>
     export default {
-        props: ['gameId', 'isGameFull'],
+        props: ['gameSK', 'isGameFull'],
         data() {
             return {
                 enteredPassword: ''
             }
         },
         mounted() {
+            this.$refs.passwordInput.focus();
             $('#password-prompt').on('shown.bs.modal', function() {
-                $('#entered-password-input').focus();
+                this.$refs.passwordInput.focus();
             });
 
-            $('#entered-password-input').focus();
+            this.$refs.passwordInput.focus();
         },
         methods: {
             onSubmitPassword() {
                 if (this.isGameFull) {
-                    this.$socket.emit('gameSpectate', {gameId: this.gameId, password: this.enteredPassword});
+                    this.$socket.emit('gameSpectate', {gameSK: this.gameSK, password: this.enteredPassword});
                 } else {
-                    this.$socket.emit('gameJoin', {gameId: this.gameId, password: this.enteredPassword});
+                    this.$socket.emit('gameJoin', {gameSK: this.gameSK, password: this.enteredPassword});
                 }
 
                 this.enteredPassword = '';

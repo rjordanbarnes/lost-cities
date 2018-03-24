@@ -7,15 +7,15 @@ const tokenConfig = require('../../config/token.config.js');
 const requestLogin = function(username){
     const self = this;
 
-    sqlQueries.loginUser(username, function(User) {
-        self.socket.authenticated = User.Exists;
+    sqlQueries.loginAccount(username, function(User) {
+        self.socket.authenticated = User.exists;
 
         if (self.socket.authenticated) {
             // Send JWT Token
-            const token = createToken(User.UserId, username);
+            const token = createToken(User.accountSK, username);
             self.socket.emit('userToken',{token: token});
 
-            self.app.onlineUsers[self.socket.id] = {userId: User.UserId, username: User.Username};
+            self.app.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
             console.log(username + " logged in.");
             self.socket.emit('userLoginSuccess');
         } else {
@@ -33,21 +33,21 @@ const verifyToken = function(token) {
             self.socket.emit('userToken',{errors: err.toString()});
             console.log("Expired, invalid, or missing token.");
         } else {
-            sqlQueries.verifyToken(decoded.userId, function(User) {
-                self.socket.authenticated = User.Exists;
+            sqlQueries.verifyToken(decoded.accountSK, function(User) {
+                self.socket.authenticated = User.exists;
 
                 if (self.socket.authenticated) {
-                    self.app.onlineUsers[self.socket.id] = {userId: User.UserId, username: User.Username};
+                    self.app.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
 
                     // Refresh the token
-                    const token = createToken(User.UserId, User.Username);
+                    const token = createToken(User.accountSK, User.username);
                     self.socket.emit('userToken',{token: token});
 
-                    console.log(User.Username + " token authenticated.");
+                    console.log(User.username + " token authenticated.");
                 } else {
                     // User information in token doesn't exist.
                     self.socket.emit('userToken',{errors: "Invalid token request."});
-                    console.log("Invalid token request for " + User.Username + ".")
+                    console.log("Invalid token request for " + User.username + ".")
                 }
             });
         }
@@ -62,9 +62,9 @@ const disconnectSocket = function() {
 
     // If the socket is authenticated, handle disconnecting the user.
     if (self.socket.authenticated) {
-        const userId = self.app.onlineUsers[self.socket.id].userId;
+        const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-        sqlQueries.leaveGame(userId, function (data) {
+        sqlQueries.leaveGame(accountSK, function (data) {
             if (data.hasOwnProperty('errors')) {
                 console.log(data.errors.message);
             } else {
@@ -72,7 +72,7 @@ const disconnectSocket = function() {
 
                 self.socket.leave(data.currentGame);
 
-                if (data.shutdown) {
+                if (data.gameShutdown) {
                     self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
                     self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
 
@@ -117,9 +117,9 @@ module.exports = function(app, socket){
 
 //// Helpers ////
 
-function createToken(userId, username) {
+function createToken(accountSK, username) {
     const profile = {
-        userId: userId,
+        accountSK: accountSK,
         username: username
     };
 

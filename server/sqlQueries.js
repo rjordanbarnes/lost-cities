@@ -20,17 +20,17 @@ module.exports = {
 
 
     // Returns User information and whether the user Exists
-    loginUser(username, callback){
+    loginAccount(username, callback){
         sql.execute({
-            query: sql.fromFile("./sql/LoginUser"),
+            query: sql.fromFile("./sql/LoginAccount"),
             params: {
                 username: {
                     val: username
                 }
             }
         }).then(function(results) {
-            // If there were no results found, set Exists to false.
-            (0 in results) ? results[0].Exists = true : results[0] = {Exists: false};
+            // If there were no results found, set exists to false.
+            (0 in results) ? results[0].exists = true : results[0] = {exists: false};
 
             callback(results[0]);
         }, function(err) {
@@ -39,17 +39,17 @@ module.exports = {
     },
 
     // Verifies that the User ID that was in the token exists.
-    verifyToken(userId, callback) {
+    verifyToken(accountSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/VerifyToken"),
             params: {
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: accountSK
                 }
             }
         }).then(function(results) {
             // If there were no results found, set Exists to false.
-            (0 in results) ? results[0].Exists = true : results[0] = {Exists: false};
+            (0 in results) ? results[0].exists = true : results[0] = {exists: false};
 
             callback(results[0]);
         }, function(err) {
@@ -63,7 +63,7 @@ module.exports = {
 
     // Creates a game in SQL using the supplied Game Info, making the supplied user the host.
     // Returns the new game's ID.
-    createGame(userId, gameName, gamePassword, callback) {
+    createGame(accountSK, gameName, gamePassword, callback) {
         sql.execute({
             query: sql.fromFile("./sql/CreateGame"),
             params: {
@@ -73,8 +73,8 @@ module.exports = {
                 gamePassword: {
                     val: gamePassword
                 },
-                gameHostId: {
-                    val: userId
+                gameHostSK: {
+                    val: accountSK
                 }
             }
         }).then(function (results) {
@@ -102,16 +102,19 @@ module.exports = {
     },
 
     // Returns detailed information about the specified game.
-    // Returns the Players in the game, gameId, gameName, and whether the game is password protected.
-    getGameDetails(gameId, userId, callback) {
+    // Returns the Players in the game, gameSK, gameName, and whether the game is password protected.
+    getGameDetails(gameSK, accountSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetGameDetails"),
             params: {
-                gameId: {
-                    val: gameId
+                gameSK: {
+                    val: gameSK
                 },
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: (accountSK === 'server') ? null : accountSK
+                },
+                isServer: {
+                    val: (accountSK === 'server') ? 1 : 0
                 }
             }
         }).then(function (results) {
@@ -120,24 +123,24 @@ module.exports = {
 
             // Place game players into an array.
             for (let i = 0; i < results.length; i++) {
-                if (results[i].type === 'Player') {
+                if (results[i].gameMemberType === 'Player') {
                     players.push({
-                        participantId: results[i].participantId,
-                        userId: results[i].userId,
+                        gameMemberSK: results[i].gameMemberSK,
+                        accountSK: results[i].accountSK,
                         username: results[i].username,
                         isHost: results[i].isHost,
                         isReady: results[i].isReady})
                 } else {
                     spectators.push({
-                        participantId: results[i].participantId,
-                        userId: results[i].userId,
+                        gameMemberSK: results[i].gameMemberSK,
+                        accountSK: results[i].accountSK,
                         username: results[i].username,
                         isHost: results[i].isHost})
                 }
             }
 
             // Structure the results
-            const gameDetails = {gameId: gameId,
+            const gameDetails = {gameSK: gameSK,
                                  gameName: results[0].gameName,
                                  gameState: results[0].gameState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
@@ -153,22 +156,22 @@ module.exports = {
 
     //// Game ////
 
-    // Makes the user join the given game as the supplied userType (Player or Spectator).
-    joinGame(userId, gameId, password, userType, callback) {
+    // Makes the user join the given game as the supplied gameMemberType (Player or Spectator).
+    joinGame(accountSK, gameSK, password, gameMemberType, callback) {
         sql.execute({
             query: sql.fromFile("./sql/JoinGame"),
             params: {
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: accountSK
                 },
-                gameId: {
-                    val: gameId
+                gameSK: {
+                    val: gameSK
                 },
                 password: {
                     val: password
                 },
-                userType: {
-                    val: userType
+                gameMemberType: {
+                    val: gameMemberType
                 }
             }
         }).then(function () {
@@ -179,12 +182,12 @@ module.exports = {
     },
 
     // Starts the game that the supplied user is in if they're the host.
-    startGame(userId, callback) {
+    startGame(accountSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/StartGame"),
             params: {
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: accountSK
                 }
             }
         }).then(function (results) {
@@ -196,12 +199,12 @@ module.exports = {
 
     // Specified user leaves whatever game they're currently in.
     // Returns the user's name, the game they were in, and if they were the host.
-    leaveGame(userId, callback) {
+    leaveGame(accountSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/LeaveGame"),
             params: {
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: accountSK
                 }
             }
         }).then(function (results) {
@@ -216,12 +219,12 @@ module.exports = {
 
     // Toggles the user's ready state.
     // Returns the game that the user is in and the user's Username.
-    readyToggle(userId, callback) {
+    readyToggle(accountSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/ReadyToggle"),
             params: {
-                userId: {
-                    val: userId
+                accountSK: {
+                    val: accountSK
                 }
             }
         }).then(function (results) {

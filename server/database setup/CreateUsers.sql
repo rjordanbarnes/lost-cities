@@ -1,12 +1,12 @@
 USE LostCities
 
-INSERT INTO Users (Username)
+INSERT INTO Account (Username)
 VALUES ('Jordan'),
        ('Keysi'),
        ('Joshua'),
        ('Rini'),
        ('Salem')
 
-SELECT * FROM Users
-SELECT * FROM Participants
-SELECT * FROM Games ORDER BY CreationDate DESC
+SELECT * FROM Account
+SELECT * FROM GameMember
+SELECT * FROM Game ORDER BY CreationDate DESC

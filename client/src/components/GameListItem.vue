@@ -7,9 +7,9 @@
             </div>
 
             <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
-            <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame(gameId)"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
+            <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame()"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
         </div>
-        <game-password-prompt :game-id="this.gameId" :is-game-full="this.isGameFull" id="password-prompt"></game-password-prompt>
+        <game-password-prompt :game-s-k="this.gameSK" :is-game-full="this.isGameFull" v-bind:id="passwordPromptID"></game-password-prompt>
     </div>
 </template>
 
@@ -17,10 +17,9 @@
     import GamePasswordPrompt from '@/components/GamePasswordPrompt'
 
     export default {
-        props: ['gameId', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
+        props: ['gameSK', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
         data() {
             return {
-                enteredPassword: ''
             }
         },
         computed: {
@@ -32,17 +31,20 @@
             },
             openGameButtonColor() {
                 return (this.isGameFull ? 'btn-outline-info' : 'btn-outline-primary');
+            },
+            passwordPromptID() {
+                return "password-prompt-" + this.gameSK;
             }
         },
         methods: {
-            onOpenGame(gameId){
+            onOpenGame(){
                 if (this.isPasswordProtected) {
-                    $('#password-prompt').modal('show');
+                    $('#password-prompt-' + this.gameSK).modal('show');
                 } else {
                     if (this.isGameFull) {
-                        this.$socket.emit('gameSpectate', {gameId: this.gameId});
+                        this.$socket.emit('gameSpectate', {gameSK: this.gameSK});
                     } else {
-                        this.$socket.emit('gameJoin', {gameId: this.gameId});
+                        this.$socket.emit('gameJoin', {gameSK: this.gameSK});
                     }
                 }
             },

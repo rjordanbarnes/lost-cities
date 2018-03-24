@@ -18,19 +18,19 @@ const create = function(gameInput) {
     if (gameInput.gameName.length < 4 || gameInput.gameName.length > 20) {
         self.socket.emit('generalError', {error: 'Game name must be between 4 and 20 characters.'});
     } else {
-        const userId = self.app.onlineUsers[self.socket.id].userId;
+        const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-        sqlQueries.createGame(userId, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
+        sqlQueries.createGame(accountSK, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
             if (NewGame && NewGame.hasOwnProperty('errors')) {
                 console.log(NewGame.errors.message);
             } else {
                 console.log('Created game ' + gameInput.gameName);
                 // Host joins game channel.
-                self.socket.join(NewGame.gameId);
+                self.socket.join(NewGame.gameSK);
 
                 self.socket.emit('gameCreate', NewGame);
                 Broadcast.refreshGameList(self.socket);
-                Broadcast.refreshGameDetails(self.socket, NewGame.gameId);
+                Broadcast.refreshGameDetails(self.socket, NewGame.gameSK);
             }
         });
     }
@@ -43,20 +43,20 @@ const join = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id].userId;
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, 'Player', function (data) {
+    sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Player', function (data) {
         if (data && data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
             console.log('Player joined a game.');
             // Joins game's socket.io channel.
-            self.socket.join(gameInput.gameId);
+            self.socket.join(gameInput.gameSK);
 
-            self.socket.emit('gameJoin', {gameId: gameInput.gameId});
+            self.socket.emit('gameJoin', {gameSK: gameInput.gameSK});
 
             Broadcast.refreshGameList(self.socket);
-            Broadcast.refreshGameDetails(self.socket, gameInput.gameId);
+            Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
 };
@@ -67,21 +67,21 @@ const spectate = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id].userId;
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.joinGame(userId, gameInput.gameId, gameInput.password, 'Spectator', function (data) {
+    sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Spectator', function (data) {
         if (data && data.hasOwnProperty('errors')) {
             self.socket.emit('gameSpectate', {errors: data.errors.message});
             console.log(data.errors.message);
         } else {
             console.log('Spectator joined game.');
             // Joins game's socket.io channel.
-            self.socket.join(gameInput.gameId);
+            self.socket.join(gameInput.gameSK);
 
-            self.socket.emit('gameSpectate', {gameId: gameInput.gameId});
+            self.socket.emit('gameSpectate', {gameSK: gameInput.gameSK});
 
             Broadcast.refreshGameList(self.socket);
-            Broadcast.refreshGameDetails(self.socket, gameInput.gameId);
+            Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
 };
@@ -92,13 +92,13 @@ const start = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id].userId;
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.startGame(userId, function(data) {
+    sqlQueries.startGame(accountSK, function(data) {
         if (data && data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            Broadcast.refreshGameDetails(self.socket, data.gameId);
+            Broadcast.refreshGameDetails(self.socket, data.gameSK);
         }
     });
 };
@@ -110,9 +110,9 @@ const leave = function(){
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id].userId;
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.leaveGame(userId, function (data) {
+    sqlQueries.leaveGame(accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
@@ -120,7 +120,7 @@ const leave = function(){
 
             self.socket.leave(data.currentGame);
 
-            if (data.shutdown) {
+            if (data.gameShutdown) {
                 self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
                 self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
 
@@ -135,7 +135,7 @@ const leave = function(){
 
                 Broadcast.refreshGameList(self.socket);
             } else {
-                Broadcast.refreshGameDetails(self.socket, User.currentGame);
+                Broadcast.refreshGameDetails(self.socket, data.currentGame);
                 Broadcast.refreshGameList(self.socket);
             }
         }
@@ -149,9 +149,9 @@ const toggleReady = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const userId = self.app.onlineUsers[self.socket.id].userId;
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.readyToggle(userId, function (User) {
+    sqlQueries.readyToggle(accountSK, function (User) {
         if (User.hasOwnProperty('errors')) {
             console.log(User.errors.message);
         } else {

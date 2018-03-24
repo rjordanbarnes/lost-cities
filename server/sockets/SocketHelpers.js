@@ -10,10 +10,10 @@ module.exports.Broadcast = {
     },
 
     // Refresh an individual game's details for all users in the game.
-    refreshGameDetails(socket, gameId) {
-        sqlQueries.getGameDetails(gameId, 'server', function (Game) {
-            console.log('Sent game details for ' + Game.gameName);
-            socket.server.in(gameId).emit('gameUpdate', Game);
+    refreshGameDetails(socket, gameSK) {
+        sqlQueries.getGameDetails(gameSK, 'server', function (Game) {
+            console.log('Server sent game details for ' + Game.gameName);
+            socket.server.in(gameSK).emit('gameUpdate', Game);
         });
     }
 };

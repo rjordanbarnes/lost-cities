@@ -2,7 +2,7 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
-        <game-password-prompt :game-id="this.$route.params.gameid" :is-game-full="true" id="password-prompt"></game-password-prompt>
+        <game-password-prompt :game-s-k="this.$route.params.gameSK" :is-game-full="true" id="password-prompt"></game-password-prompt>
     </div>
 </template>
 
@@ -25,7 +25,7 @@
                     return this.$store.getters.tokenResponseReceived
                 },
                 (value) => {
-                    this.$socket.emit('gameSpectate', {gameId: this.$route.params.gameid});
+                    this.$socket.emit('gameSpectate', {gameSK: this.$route.params.gameSK});
                 },
                 {
                     deep: true

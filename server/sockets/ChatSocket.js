@@ -8,11 +8,11 @@ const message = function(data) {
     if (!Validations.isAuthenticated(self.socket) || data.message.trim().length < 1 || data.message.trim().length > 500)
         return;
 
-    if (data.gameId) {
+    if (data.gameSK) {
         // Send chat to user's game.
         // TODO: Make sure user is in the room/channel before sending the message.
-        self.socket.server.in(data.gameId).emit('chatMessage', {
-            gameId: data.gameId,
+        self.socket.server.in(data.gameSK).emit('chatMessage', {
+            gameSK: data.gameSK,
             chatUsername: self.app.onlineUsers[self.socket.id].username,
             chatMessage: data.message
         });

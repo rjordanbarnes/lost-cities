@@ -1,29 +1,30 @@
 -- Returns extended details about the given game and its participants.
--- Only returns data if the given user is in the game.
+-- Only returns data if the given game member is in the game.
 
 /*
-  SELECT * FROM Users
-  SELECT * FROM Participants
-  SELECT * FROM Games
+  SELECT * FROM Account
+  SELECT * FROM GameMember
+  SELECT * FROM Game
 */
 
---DECLARE @gameId UNIQUEIDENTIFIER = '70039E39-89E7-4746-8DC4-020773C7ACE9';
---DECLARE @userId UNIQUEIDENTIFIER = '91110464-98CB-4438-ADFD-89881545DFA0';
+--DECLARE @gameSK UNIQUEIDENTIFIER =    'EA054501-82BC-41B6-8D8C-55463954390E';
+--DECLARE @accountSK UNIQUEIDENTIFIER = '0';
+--DECLARE @isServer BIT = 0;
 
-IF (@userId != 'server' AND (SELECT COUNT(*) FROM Participants WHERE Game = @gameId AND [User] = @userId) < 1)
+IF (@isServer = 0 AND (SELECT COUNT(*) FROM GameMember WHERE GameSK = @gameSK AND AccountSK = @accountSK) < 1)
   THROW 50001, 'Unable to give game details, user isn''t in the game.', 1;
 
-SELECT Users.UserId AS userId,
-       Participants.ParticipantId AS participantId,
-       Users.Username AS username,
-       Type AS type,
-       (SELECT COUNT(Host) FROM Games WHERE Games.Host = Users.UserId) AS isHost,
-       IsReady AS isReady,
-       Games.Name AS gameName,
-       Games.State AS gameState,
-       (SELECT CASE WHEN LEN(Games.Password) > 0 THEN 1 ELSE 0 END FROM Games WHERE Games.GameId = @gameId) AS isPasswordProtected
-FROM Participants
-INNER JOIN Users ON (Users.UserId = Participants.[User])
-INNER JOIN Games ON (Games.GameId = Participants.Game)
-WHERE Participants.Game = @gameId
+SELECT Account.AccountSK AS accountSK,
+       GameMember.GameMemberSK AS gameMemberSK,
+       Account.Username AS username,
+       GameMember.GameMemberType AS gameMemberType,
+       (SELECT COUNT(HostSK) FROM Game WHERE Game.HostSK = Account.AccountSK) AS isHost,
+       GameMember.IsReady AS isReady,
+       Game.GameName AS gameName,
+       Game.GameState AS gameState,
+       (SELECT CASE WHEN LEN(Game.GamePassword) > 0 THEN 1 ELSE 0 END FROM Game WHERE Game.GameSK = @gameSK) AS isPasswordProtected
+FROM GameMember
+INNER JOIN Account ON (Account.AccountSK = GameMember.AccountSK)
+INNER JOIN Game ON (Game.GameSK = GameMember.GameSK)
+WHERE GameMember.GameSK = @gameSK
 ORDER BY isHost DESC

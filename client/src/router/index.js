@@ -14,7 +14,7 @@ export default new Router({
         {path: '/', redirect: '/lobby'},
         {path: '/login', name: 'Login', component: Login},
         {path: '/lobby', name: 'Lobby', component: Lobby},
-        {path: '/game/:gameid', name: 'Game', component: Game},
+        {path: '/game/:gameSK', name: 'Game', component: Game},
         {path: '*', name: 'PageNotFound', component: PageNotFound}
     ]
 })

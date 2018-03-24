@@ -32,7 +32,7 @@
                     console.log(data.errors);
                 } else {
                     this.$store.commit('authenticated', true);
-                    this.$store.commit('userId', jwt_decode(data.token).userId);
+                    this.$store.commit('accountSK', jwt_decode(data.token).accountSK);
                     localStorage.setItem('token', data.token);
                 }
                 this.$store.commit('tokenResponseReceived', true);

@@ -9,8 +9,8 @@
             <div id="game-list" class="list-group col-9">
                 <game-list-item
                     v-for="game in games"
-                    :key="game.gameId"
-                    :game-id="game.gameId"
+                    :key="game.gameSK"
+                    :game-s-k="game.gameSK"
                     :game-name="game.gameName"
                     :game-host="game.gameHost"
                     :game-player-count="game.gamePlayerCount"
@@ -76,21 +76,21 @@
                 if (data.errors) {
                     console.log(data.errors);
                 } else {
-                    this.$router.push('game/' + data.gameId);
+                    this.$router.push('game/' + data.gameSK);
                 }
             },
             gameJoin(data) {
                 if (data.errors) {
                     console.log(data.errors);
                 } else {
-                    this.$router.push('game/' + data.gameId);
+                    this.$router.push('game/' + data.gameSK);
                 }
             },
             gameSpectate(data) {
                 if (data.errors) {
                     console.log(data.errors);
                 } else {
-                    this.$router.push('game/' + data.gameId);
+                    this.$router.push('game/' + data.gameSK);
                 }
             }
         },

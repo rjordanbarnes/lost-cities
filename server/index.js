@@ -20,7 +20,7 @@ sql.setDefaultConfig(sqlConfig);
 // App variables
 const app = {
     connectedSockets: [], // Sockets
-    onlineUsers: {}       // socket.id, {sql.UserId, sql.Username}
+    onlineUsers: {}       // socket.id, {sql.accountSK, sql.Username}
 };
 
 // Shuts down all active rooms on server start.
