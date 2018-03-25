@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal fade" role="dialog">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -10,8 +10,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-control-label">Password:</label>
-                        <input type="text" class="form-control" v-model="enteredPassword" ref="passwordInput">
+                        <label for="join-password-room-input" class="form-control-label">Password:</label>
+                        <input type="text" class="form-control" v-model="enteredPassword" id="join-password-room-input">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -25,19 +25,23 @@
 
 <script>
     export default {
-        props: ['gameSK', 'isGameFull'],
         data() {
             return {
-                enteredPassword: ''
+                enteredPassword: '',
+                gameSK : '',
+                isGameFull: false
             }
         },
         mounted() {
-            this.$refs.passwordInput.focus();
-            $('#password-prompt').on('shown.bs.modal', function() {
-                this.$refs.passwordInput.focus();
+            this.$root.$on('join-password-room', data => {
+                this.gameSK = data.gameSK;
+                this.isGameFull = data.isGameFull;
+                $('#join-game-password-prompt').modal('show');
             });
 
-            this.$refs.passwordInput.focus();
+            $('#join-game-password-prompt').on('shown.bs.modal', function() {
+                $('#join-password-room-input').focus();
+            });
         },
         methods: {
             onSubmitPassword() {

@@ -17,7 +17,8 @@
                     :is-password-protected="game.isPasswordProtected" />
             </div>
         </div>
-        <div class="modal fade" id="create-game-prompt" tabindex="-1" role="dialog">
+        <game-password-prompt id="join-game-password-prompt"></game-password-prompt>
+        <div class="modal fade" id="create-game-prompt" role="dialog">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -50,6 +51,7 @@
 <script>
     import GameListItem from '@/components/GameListItem'
     import ChatBox from '@/components/ChatBox'
+    import GamePasswordPrompt from '@/components/GamePasswordPrompt'
 
     export default {
         data() {
@@ -103,7 +105,8 @@
         },
         components: {
             GameListItem,
-            ChatBox
+            ChatBox,
+            GamePasswordPrompt
         }
     }
 </script>

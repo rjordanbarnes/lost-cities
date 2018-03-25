@@ -9,13 +9,10 @@
             <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
             <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame()"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
         </div>
-        <game-password-prompt :game-s-k="this.gameSK" :is-game-full="this.isGameFull" v-bind:id="passwordPromptID"></game-password-prompt>
     </div>
 </template>
 
 <script>
-    import GamePasswordPrompt from '@/components/GamePasswordPrompt'
-
     export default {
         props: ['gameSK', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
         data() {
@@ -31,15 +28,13 @@
             },
             openGameButtonColor() {
                 return (this.isGameFull ? 'btn-outline-info' : 'btn-outline-primary');
-            },
-            passwordPromptID() {
-                return "password-prompt-" + this.gameSK;
             }
         },
         methods: {
             onOpenGame(){
                 if (this.isPasswordProtected) {
-                    $('#password-prompt-' + this.gameSK).modal('show');
+                    // Sends event for GamePasswordPrompt to appear
+                    this.$root.$emit('join-password-room', {gameSK : this.gameSK, isGameFull: this.isGameFull});
                 } else {
                     if (this.isGameFull) {
                         this.$socket.emit('gameSpectate', {gameSK: this.gameSK});
@@ -48,9 +43,6 @@
                     }
                 }
             },
-        },
-        components: {
-            GamePasswordPrompt
         }
     }
 </script>
