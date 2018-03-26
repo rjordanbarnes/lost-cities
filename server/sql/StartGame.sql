@@ -1,35 +1,25 @@
--- Starts the game that the specified user is hosting.
-
 /*
-  SELECT * FROM Account
-  SELECT * FROM GameMember
-  SELECT * FROM Game
-  SELECT * FROM Card
 
-  SELECT * FROM Deck
-  SELECT * FROM DiscardPile
-  SELECT * FROM Hand
-  SELECT * FROM ScorePile ORDER BY PlayerSK, ScorePileColor
+  Starts the game that the specified user is hosting.
 
-  SELECT * FROM DeckCard
-  SELECT * FROM DiscardPileCard
-  SELECT * FROM HandCard
-  SELECT * FROM ScorePileCard
-  
-  DELETE FROM Deck
-  DELETE FROM DiscardPile
-  DELETE FROM Hand
-  DELETE FROM ScorePile
-  DELETE FROM DeckCard
-  DELETE FROM DiscardPileCard
-  DELETE FROM HandCard
-  DELETE FROM ScorePileCard
+  @accountSK
+  The user that's starting the game. An AccountSK
+
 */
 
 --DECLARE @accountSK UNIQUEIDENTIFIER = 'CB0964E8-BBF6-4A2D-934B-2790D81B0EEA';
 
 -- Game that the user is in.
 DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
+
+-- Other user in the game.
+DECLARE @accountSK2 UNIQUEIDENTIFIER = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
+
+/*
+
+  Validations
+
+*/
 
 -- User must be in a game.
 IF (@gameSK IS NULL)
@@ -57,8 +47,15 @@ UPDATE GameMember
 SET IsReady = 0
 WHERE GameSK = @gameSK
 
--- Other user in the game.
-DECLARE @accountSK2 UNIQUEIDENTIFIER = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
+-- Host goes first.
+UPDATE GameMember
+SET IsTurn = 0
+WHERE GameSK = @gameSK
+
+UPDATE GameMember
+SET IsTurn = 1
+WHERE AccountSK = @accountSK AND GameSK = @gameSK
+
 
 
 ------- Creates deck -------
@@ -68,8 +65,8 @@ INSERT INTO Deck(DeckSK, GameSK)
 VALUES (@deckSK, @gameSK)
 
 -- Insert one of each card into the deck (60 cards)
-INSERT INTO DeckCard(CardSK, DeckSK, DeckCardOrder)
-SELECT CardSK, @deckSK, ROW_NUMBER() OVER(ORDER BY NEWID()) FROM Card
+INSERT INTO DeckCard(CardSK, DeckSK)
+SELECT CardSK, @deckSK FROM Card
 
 ----------------------------
 
@@ -117,17 +114,19 @@ VALUES
 
 INSERT INTO HandCard(CardSK, HandSK)
 SELECT TOP 8 CardSK, @handSK FROM DeckCard
-ORDER BY DeckCardOrder ASC
+WHERE DeckSK = @deckSK
+ORDER BY DeckCardOrder DESC
 
 DELETE FROM DeckCard
-WHERE CardSK IN (SELECT CardSK FROM HandCard WHERE HandSK = @handSK)
+WHERE CardSK IN (SELECT CardSK FROM HandCard WHERE HandSK = @handSK) AND DeckSK = @deckSK
 
 INSERT INTO HandCard(CardSK, HandSK)
 SELECT TOP 8 CardSK, @handSK2 FROM DeckCard
-ORDER BY DeckCardOrder ASC
+WHERE DeckSK = @deckSK
+ORDER BY DeckCardOrder DESC
 
 DELETE FROM DeckCard
-WHERE CardSK IN (SELECT CardSK FROM HandCard WHERE HandSK = @handSK2)
+WHERE CardSK IN (SELECT CardSK FROM HandCard WHERE HandSK = @handSK2) AND DeckSK = @deckSK
 ----------------------------
 
 SELECT @gameSK AS gameSK

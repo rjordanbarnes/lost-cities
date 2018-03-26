@@ -2,13 +2,11 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
-        <game-password-prompt :game-s-k="this.$route.params.gameSK" :is-game-full="true" id="password-prompt"></game-password-prompt>
     </div>
 </template>
 
 <script>
     import GameLobby from '@/components/GameLobby'
-    import GamePasswordPrompt from '@/components/GamePasswordPrompt'
 
     export default {
         data() {
@@ -54,8 +52,7 @@
             }
         },
         components: {
-            GameLobby,
-            GamePasswordPrompt
+            GameLobby
         }
     }
 </script>

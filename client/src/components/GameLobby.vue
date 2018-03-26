@@ -54,10 +54,16 @@
                 return this.gameDetails.spectators.filter(spectator => (spectator.accountSK === this.$store.getters.accountSK)).length > 0;
             },
             userIsHost() {
-                return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isHost === 1;
+                if (this.userIsPlayer)
+                    return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isHost === 1;
+                else
+                    return false
             },
             userIsReady() {
-                return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isReady;
+                if (this.userIsPlayer)
+                    return this.gameDetails.players.filter(player => (player.accountSK === this.$store.getters.accountSK))[0].isReady;
+                else
+                    return false
             },
             readyButtonText() {
                 return (this.userIsReady ? 'Unready' : 'Ready Up');
