@@ -1,6 +1,7 @@
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
+const appVariables = require('../appVariables.js');
 
 // Broadcasts the active games to all users.
 const getGames = function() {
@@ -12,8 +13,7 @@ const getGames = function() {
     });
 };
 
-module.exports = function(app, socket){
-    this.app = app;
+module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {

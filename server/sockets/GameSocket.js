@@ -1,6 +1,7 @@
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
+const appVariables = require('../appVariables.js');
 
 // Creates a new game with the current socket as the host.
 const create = function(gameInput) {
@@ -18,7 +19,7 @@ const create = function(gameInput) {
     if (gameInput.gameName.length < 4 || gameInput.gameName.length > 20) {
         self.socket.emit('generalError', {error: 'Game name must be between 4 and 20 characters.'});
     } else {
-        const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+        const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
         sqlQueries.createGame(accountSK, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
             if (NewGame && NewGame.hasOwnProperty('errors')) {
@@ -43,7 +44,7 @@ const join = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Player', function (data) {
         if (data && data.hasOwnProperty('errors')) {
@@ -67,7 +68,7 @@ const spectate = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Spectator', function (data) {
         if (data && data.hasOwnProperty('errors')) {
@@ -92,7 +93,7 @@ const start = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.startGame(accountSK, function(data) {
         if (data && data.hasOwnProperty('errors')) {
@@ -110,7 +111,7 @@ const leave = function(){
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.leaveGame(accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
@@ -149,7 +150,7 @@ const toggleReady = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.readyToggle(accountSK, function (User) {
         if (User.hasOwnProperty('errors')) {
@@ -167,7 +168,7 @@ const makeTurn = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
     sqlQueries.makeTurn(accountSK, function (User) {
         if (User.hasOwnProperty('errors')) {
@@ -179,8 +180,7 @@ const makeTurn = function() {
     });
 };
 
-module.exports = function(app, socket){
-    this.app = app;
+module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {

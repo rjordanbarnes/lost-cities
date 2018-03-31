@@ -7,7 +7,7 @@
   SELECT * FROM Game
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = '532F6203-9F70-48FF-886F-4FC8D6E5A08E';
+--DECLARE @gameSK UNIQUEIDENTIFIER = 'B9018601-1305-4B4C-B803-C2FC5DAA997D';
 
 SELECT Account.AccountSK AS accountSK,
        GameMember.GameMemberSK AS gameMemberSK,
@@ -17,7 +17,8 @@ SELECT Account.AccountSK AS accountSK,
        GameMember.IsReady AS isReady,
        Game.GameName AS gameName,
        Game.GameState AS gameState,
-       (SELECT CASE WHEN LEN(Game.GamePassword) > 0 THEN 1 ELSE 0 END FROM Game WHERE Game.GameSK = @gameSK) AS isPasswordProtected
+       (SELECT CASE WHEN LEN(Game.GamePassword) > 0 THEN 1 ELSE 0 END FROM Game WHERE Game.GameSK = @gameSK) AS isPasswordProtected,
+       (SELECT COUNT(*) FROM DeckCard INNER JOIN Deck ON (Deck.DeckSK = DeckCard.DeckSK) WHERE Deck.GameSK = @gameSK) AS deckSize
 FROM GameMember
 INNER JOIN Account ON (Account.AccountSK = GameMember.AccountSK)
 INNER JOIN Game ON (Game.GameSK = GameMember.GameSK)

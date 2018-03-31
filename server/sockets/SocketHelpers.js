@@ -1,4 +1,5 @@
 const sqlQueries = require('../sqlQueries.js');
+const appVariables = require('../appVariables.js');
 
 module.exports.Broadcast = {
     // Updates game list for all sockets.
@@ -12,8 +13,27 @@ module.exports.Broadcast = {
     // Refresh an individual game's details for all users in the game.
     refreshGameDetails(socket, gameSK) {
         sqlQueries.getGameDetails(gameSK, function (Game) {
-            console.log('Server sent game details for ' + Game.gameName);
+            const hands = {};
+
+            // Associate each hand to an account and initially replace all hands with 'back' cards.
+            for (let i = 0; i < Game.players.length; i++) {
+                hands[Game.players[i].accountSK] = Game.players[i].hand;
+                Game.players[i].handSize = Game.players[i].hand.length;
+                delete Game.players[i].hand;
+            }
+
+            // Update clients with everything but their hands.
             socket.server.in(gameSK).emit('gameUpdate', Game);
+
+            // Send each player in the room their hand.
+            for (socketInRoom in socket.server.in(gameSK).sockets) {
+                socketAccountSK = appVariables.onlineUsers[socketInRoom].accountSK;
+
+                if (socketAccountSK in hands)
+                    socket.broadcast.to(socketInRoom).emit('gameHandUpdate', hands[socketAccountSK])
+            }
+
+            console.log('Server sent game details for ' + Game.gameName);
         });
     }
 };

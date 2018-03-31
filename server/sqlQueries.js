@@ -122,7 +122,9 @@ module.exports = {
                         accountSK: results[i].accountSK,
                         username: results[i].username,
                         isHost: results[i].isHost,
-                        isReady: results[i].isReady})
+                        isReady: results[i].isReady,
+                        hand: [],
+                        scorePiles: {}})
                 } else {
                     spectators.push({
                         gameMemberSK: results[i].gameMemberSK,
@@ -138,6 +140,7 @@ module.exports = {
                                  gameState: results[0].gameState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
                                  deckSize: results[0].deckSize,
+                                 discardPiles: {},
                                  players: players,
                                  spectators: spectators};
 
@@ -149,9 +152,63 @@ module.exports = {
                     }
                 }
             }).then(function (results) {
-                // TODO: Take the discard pile results and put them into gameDetails. Then get the Score Piles and Player Hands in separate queries
+                // Create discard pile arrays for each discard pile
+                for (let i = 0; i < results.length; i++) {
+                    // Create the discard pile if not yet created.
+                    if (gameDetails.discardPiles[results[i].DiscardPileSK] === undefined)
+                        gameDetails.discardPiles[results[i].DiscardPileSK] = [];
 
-                callback(gameDetails);
+                    // Add card to discard pile array. This will put cards in ascending order so top-most card is at end of the array.
+                    if (results[i].CardSK !== null)
+                        gameDetails.discardPiles[results[i].DiscardPileSK].push({CardSK: results[i].CardSK, CardColor: results[i].CardColor, CardValue: results[i].CardValue})
+                }
+
+                sql.execute({
+                    query: sql.fromFile("./sql/GetScorePiles"),
+                    params: {
+                        gameSK: {
+                            val: gameSK
+                        }
+                    }
+                }).then(function (results) {
+                    // For each player, fill their scorePiles object with an array of cards for each of their score piles.
+                    for (let i = 0; i < gameDetails.players.length; i++) {
+
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].GameMemberSK === gameDetails.players[i].gameMemberSK) {
+                                // Creates a missing score pile
+                                if (gameDetails.players[i].scorePiles[results[j].ScorePileSK] === undefined)
+                                    gameDetails.players[i].scorePiles[results[j].ScorePileSK] = [];
+
+                                // Fills the score piles
+                                if (results[j].CardSK !== null)
+                                    gameDetails.players[i].scorePiles[results[j].ScorePileSK].push({CardSK: results[j].CardSK, CardColor: results[j].CardColor, CardValue: results[j].CardValue});
+
+                            }
+                        }
+                    }
+
+                    sql.execute({
+                        query: sql.fromFile("./sql/GetPlayerHands"),
+                        params: {
+                            gameSK: {
+                                val: gameSK
+                            }
+                        }
+                    }).then(function (results) {
+
+                        // Goes through each player and adds cards to their hand from the results
+                        for (let i = 0; i < gameDetails.players.length; i++) {
+                            for (let j = 0; j < results.length; j++) {
+                                if (gameDetails.players[i].gameMemberSK === results[j].PlayerSK) {
+                                    gameDetails.players[i].hand.push({CardSK: results[j].CardSK, CardColor: results[j].CardColor, CardValue: results[j].CardValue})
+                                }
+                            }
+                        }
+
+                        callback(gameDetails);
+                    });
+                });
             });
         }, function (err) {
             callback({errors: err});

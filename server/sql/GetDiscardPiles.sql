@@ -8,9 +8,10 @@
 
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = 'A57BBADF-0D62-4630-8752-5FCD8521E1E6';
+--DECLARE @gameSK UNIQUEIDENTIFIER = 'B9018601-1305-4B4C-B803-C2FC5DAA997D';
 
 SELECT DiscardPile.DiscardPileSK, DiscardPileColor, DiscardPileCardOrder, Card.CardSK, Card.CardColor, Card.CardValue FROM DiscardPile
 LEFT OUTER JOIN DiscardPileCard ON (DiscardPile.DiscardPileSK = DiscardPileCard.DiscardPileSK)
 LEFT OUTER JOIN Card ON (DiscardPileCard.CardSK = Card.CardSK)
-ORDER BY DiscardPileColor ASC, DiscardPileCardOrder DESC
+WHERE DiscardPile.GameSK = @gameSK
+ORDER BY DiscardPileColor ASC, DiscardPileCardOrder ASC

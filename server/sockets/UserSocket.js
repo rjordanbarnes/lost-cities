@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
+const appVariables = require('../appVariables.js');
 const tokenConfig = require('../../config/token.config.js');
 
 // Authenticates if username is in SQL database.
@@ -15,7 +16,7 @@ const requestLogin = function(username){
             const token = createToken(User.accountSK, username);
             self.socket.emit('userToken',{token: token});
 
-            self.app.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
+            appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
             console.log(username + " logged in.");
             self.socket.emit('userLoginSuccess');
         } else {
@@ -37,7 +38,7 @@ const verifyToken = function(token) {
                 self.socket.authenticated = User.exists;
 
                 if (self.socket.authenticated) {
-                    self.app.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
+                    appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
 
                     // Refresh the token
                     const token = createToken(User.accountSK, User.username);
@@ -62,7 +63,7 @@ const disconnectSocket = function() {
 
     // If the socket is authenticated, handle disconnecting the user.
     if (self.socket.authenticated) {
-        const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+        const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
         sqlQueries.leaveGame(accountSK, function (data) {
             if (data.hasOwnProperty('errors')) {
@@ -87,24 +88,23 @@ const disconnectSocket = function() {
 
                     Broadcast.refreshGameList(self.socket);
                 } else {
-                    Broadcast.refreshGameDetails(self.socket, User.currentGame);
+                    Broadcast.refreshGameDetails(self.socket, data.currentGame);
                     Broadcast.refreshGameList(self.socket);
                 }
             }
         });
 
-        delete self.app.onlineUsers[self.socket.id];
+        delete appVariables.onlineUsers[self.socket.id];
     }
 
 
     // Removes connected socket.
-    const socketIndex = self.app.connectedSockets.indexOf(self.socket);
+    const socketIndex = appVariables.connectedSockets.indexOf(self.socket);
     if (socketIndex >= 0)
-        self.app.connectedSockets.splice(socketIndex, 1);
+        appVariables.connectedSockets.splice(socketIndex, 1);
 };
 
-module.exports = function(app, socket){
-    this.app = app;
+module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {

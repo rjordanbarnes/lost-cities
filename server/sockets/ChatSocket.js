@@ -1,6 +1,7 @@
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
+const appVariables = require('../appVariables.js');
 
 const message = function(data) {
     const self = this;
@@ -13,21 +14,20 @@ const message = function(data) {
         // TODO: Make sure user is in the room/channel before sending the message.
         self.socket.server.in(data.gameSK).emit('chatMessage', {
             gameSK: data.gameSK,
-            chatUsername: self.app.onlineUsers[self.socket.id].username,
+            chatUsername: appVariables.onlineUsers[self.socket.id].username,
             chatMessage: data.message
         });
     } else {
         // Send chat to lobby if game not specified.
         console.log("Sending message.");
         self.socket.server.emit('chatMessage', {
-            chatUsername: self.app.onlineUsers[self.socket.id].username,
+            chatUsername: appVariables.onlineUsers[self.socket.id].username,
             chatMessage: data.message
         });
     }
 };
 
-module.exports = function(app, socket){
-    this.app = app;
+module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {

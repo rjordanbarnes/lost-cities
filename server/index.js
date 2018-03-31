@@ -6,6 +6,7 @@ const io = require('socket.io')(http);
 const sql = require('seriate');
 
 // My Modules
+const appVariables = require('./appVariables.js');
 const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
@@ -17,25 +18,19 @@ const sqlConfig = require('../config/sql.config.js');
 sql.setDefaultConfig(sqlConfig);
 
 
-// App variables
-const app = {
-    connectedSockets: [], // Sockets
-    onlineUsers: {}       // socket.id, {sql.accountSK, sql.Username}
-};
-
 // Shuts down all active rooms on server start.
-sqlQueries.shutdownAllGames(function() {
+//sqlQueries.shutdownAllGames(function() {
     io.on('connection', function(socket) {
         console.log('Socket connected.');
-        app.connectedSockets.push(socket);
+        appVariables.connectedSockets.push(socket);
         socket.authenticated = false;
 
 
         const socketHandlers = {
-            'user': new UserSocket(app, socket),
-            'lobby': new LobbySocket(app, socket),
-            'game' : new GameSocket(app, socket),
-            'chat': new ChatSocket(app, socket)
+            'user': new UserSocket(socket),
+            'lobby': new LobbySocket(socket),
+            'game' : new GameSocket(socket),
+            'chat': new ChatSocket(socket)
         };
 
         for (let category in socketHandlers) {
@@ -53,4 +48,4 @@ sqlQueries.shutdownAllGames(function() {
     http.listen(3379, function() {
         console.log('Listening on *:3379');
     });
-});
+//});
