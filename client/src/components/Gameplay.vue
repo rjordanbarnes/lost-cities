@@ -19,7 +19,7 @@
     import ChatBox from '@/components/ChatBox'
 
     export default {
-        props: ['gameDetails'],
+        props: ['gameDetails', 'player', 'opponent'],
         data() {
             return {
                 error: null

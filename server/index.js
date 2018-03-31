@@ -19,7 +19,7 @@ sql.setDefaultConfig(sqlConfig);
 
 
 // Shuts down all active rooms on server start.
-//sqlQueries.shutdownAllGames(function() {
+sqlQueries.shutdownAllGames(function() {
     io.on('connection', function(socket) {
         console.log('Socket connected.');
         appVariables.connectedSockets.push(socket);
@@ -48,4 +48,4 @@ sql.setDefaultConfig(sqlConfig);
     http.listen(3379, function() {
         console.log('Listening on *:3379');
     });
-//});
+});

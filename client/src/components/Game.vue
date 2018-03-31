@@ -2,7 +2,7 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
-        <gameplay :game-details="gameDetails" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
+        <gameplay :game-details="gameDetails" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
     </div>
 </template>
 
@@ -15,6 +15,20 @@
             return {
                 loading: true,
                 gameDetails: {}
+            }
+        },
+        computed: {
+            // Returns 0 if the user is a spectator.
+            playerIndex() {
+                const index = this.gameDetails.players.findIndex(item => item.accountSK === this.$store.getters.accountSK);
+                return (index === -1) ? 0 : index;
+            },
+            player() {
+                return this.gameDetails.players[this.playerIndex];
+            },
+            // Opponent is opposite user than player
+            opponent() {
+                return this.gameDetails.players[1 - this.playerIndex];
             }
         },
         created() {

@@ -55,7 +55,6 @@ const join = function(gameInput) {
             self.socket.join(gameInput.gameSK);
 
             self.socket.emit('gameJoin', {gameSK: gameInput.gameSK});
-
             Broadcast.refreshGameList(self.socket);
             Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
