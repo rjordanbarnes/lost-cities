@@ -125,7 +125,6 @@ fabric.properties
 .idea/sonarlint
 
 # Project
-server/database setup/backups/
 dist/
 config/sql.config.js
 config/token.config.js

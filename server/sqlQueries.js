@@ -102,19 +102,12 @@ module.exports = {
     },
 
     // Returns detailed information about the specified game.
-    // Returns the Players in the game, gameSK, gameName, and whether the game is password protected.
-    getGameDetails(gameSK, accountSK, callback) {
+    getGameDetails(gameSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/GetGameDetails"),
             params: {
                 gameSK: {
                     val: gameSK
-                },
-                accountSK: {
-                    val: (accountSK === 'server') ? null : accountSK
-                },
-                isServer: {
-                    val: (accountSK === 'server') ? 1 : 0
                 }
             }
         }).then(function (results) {
@@ -144,10 +137,22 @@ module.exports = {
                                  gameName: results[0].gameName,
                                  gameState: results[0].gameState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
+                                 deckSize: results[0].deckSize,
                                  players: players,
                                  spectators: spectators};
 
-            callback(gameDetails);
+            sql.execute({
+                query: sql.fromFile("./sql/GetDiscardPiles"),
+                params: {
+                    gameSK: {
+                        val: gameSK
+                    }
+                }
+            }).then(function (results) {
+                // TODO: Take the discard pile results and put them into gameDetails. Then get the Score Piles and Player Hands in separate queries
+
+                callback(gameDetails);
+            });
         }, function (err) {
             callback({errors: err});
         });
@@ -233,4 +238,30 @@ module.exports = {
             callback({errors: err});
         });
     },
+
+    // Makes a turn
+    //
+    makeTurn(accountSK, playedCardSK, playedCardLocationSK, drawCardLocationSK, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/MakeTurn"),
+            params: {
+                accountSK: {
+                    val: accountSK
+                },
+                playedCardSK: {
+                    val: playedCardSK
+                },
+                playedCardLocationSK: {
+                    val: playedCardLocationSK
+                },
+                drawCardLocationSK: {
+                    val: drawCardLocationSK
+                }
+            }
+        }).then(function (results) {
+            callback(results[0]);
+        }, function (err) {
+            callback({errors: err});
+        });
+    }
 };

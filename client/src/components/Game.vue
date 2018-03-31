@@ -2,11 +2,13 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
+        <gameplay :game-details="gameDetails" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
     </div>
 </template>
 
 <script>
     import GameLobby from '@/components/GameLobby'
+    import Gameplay from '@/components/Gameplay'
 
     export default {
         data() {
@@ -52,7 +54,8 @@
             }
         },
         components: {
-            GameLobby
+            GameLobby,
+            Gameplay
         }
     }
 </script>

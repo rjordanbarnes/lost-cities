@@ -7,12 +7,7 @@
   SELECT * FROM Game
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER =    'EA054501-82BC-41B6-8D8C-55463954390E';
---DECLARE @accountSK UNIQUEIDENTIFIER = '0';
---DECLARE @isServer BIT = 0;
-
-IF (@isServer = 0 AND (SELECT COUNT(*) FROM GameMember WHERE GameSK = @gameSK AND AccountSK = @accountSK) < 1)
-  THROW 50001, 'Unable to give game details, user isn''t in the game.', 1;
+--DECLARE @gameSK UNIQUEIDENTIFIER = '532F6203-9F70-48FF-886F-4FC8D6E5A08E';
 
 SELECT Account.AccountSK AS accountSK,
        GameMember.GameMemberSK AS gameMemberSK,

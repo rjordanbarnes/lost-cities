@@ -161,6 +161,24 @@ const toggleReady = function() {
     });
 };
 
+const makeTurn = function() {
+    const self = this;
+
+    if (!Validations.isAuthenticated(self.socket))
+        return;
+
+    const accountSK = self.app.onlineUsers[self.socket.id].accountSK;
+
+    sqlQueries.makeTurn(accountSK, function (User) {
+        if (User.hasOwnProperty('errors')) {
+            console.log(User.errors.message);
+        } else {
+            console.log(User.Username + " readied up.");
+            Broadcast.refreshGameDetails(self.socket, User.currentGame);
+        }
+    });
+};
+
 module.exports = function(app, socket){
     this.app = app;
     this.socket = socket;
@@ -172,5 +190,6 @@ module.exports = function(app, socket){
         'gameLeave': leave.bind(this),
         'gameStart': start.bind(this),
         'gameToggleReady': toggleReady.bind(this),
+        'gameMakeTurn': makeTurn.bind(this)
     };
 };
