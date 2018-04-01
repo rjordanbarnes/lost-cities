@@ -26,12 +26,11 @@ module.exports.Broadcast = {
             socket.server.in(gameSK).emit('gameUpdate', Game);
 
             // Send each player in the room their hand.
-            for (socketInRoom in socket.server.in(gameSK).sockets) {
-                socketAccountSK = appVariables.onlineUsers[socketInRoom].accountSK;
-
-                if (socketAccountSK in hands)
-                    socket.broadcast.to(socketInRoom).emit('gameHandUpdate', hands[socketAccountSK])
-            }
+            Object.keys(appVariables.onlineUsers).forEach(function(socketid, index) {
+                if (appVariables.onlineUsers[socketid].accountSK in hands) {
+                    socket.server.sockets.connected[socketid].emit('gameHandUpdate', hands[appVariables.onlineUsers[socketid].accountSK]);
+                }
+            });
 
             console.log('Server sent game details for ' + Game.gameName);
         });
