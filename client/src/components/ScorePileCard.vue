@@ -1,5 +1,5 @@
 <template>
-    <div v-bind:style="cardStyle" v-bind:class="topMargin">
+    <div v-bind:style="scorePileCardStyle" v-bind:class="topMargin">
         {{card.CardValue}}
     </div>
 </template>
@@ -9,17 +9,15 @@
         props: ['card', 'index'],
         data() {
             return {
-                cardStyle: {
+                scorePileCardStyle: {
                     height: this.card.CardValue * 7 + 'px',
-                    'background-color': this.card.CardColor,
-                    'text-align': 'center',
-                    'vertical-align': 'middle',
-                    'line-height': this.card.CardValue * 7 + 'px'
+                    'font-size': this.card.CardValue + 14 + 'px',
+                    'background-color': 'var(--card-' + this.card.CardColor.toLowerCase() + ')'
                 }
             }
         }, computed: {
             topMargin() {
-                return (this.index === 0) ? 'mt-auto' : null;
+                return (parseInt(this.index) === 0) ? 'mt-auto' : null;
             }
         }
     }
@@ -30,5 +28,10 @@
         border-style: solid;
         border-width: 1px;
         width: 100%;
+        font-weight: bold;
+        font-size: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

@@ -123,6 +123,7 @@ module.exports = {
                         username: results[i].username,
                         isHost: results[i].isHost,
                         isReady: results[i].isReady,
+                        isTurn: results[i].isTurn,
                         hand: [],
                         scorePiles: {}})
                 } else {

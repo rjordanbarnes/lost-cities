@@ -7,7 +7,7 @@
   SELECT * FROM Game
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = 'B9018601-1305-4B4C-B803-C2FC5DAA997D';
+--DECLARE @gameSK UNIQUEIDENTIFIER = '60161DC3-1BA8-4965-BE8D-FE41B671C376';
 
 SELECT Account.AccountSK AS accountSK,
        GameMember.GameMemberSK AS gameMemberSK,
@@ -15,6 +15,7 @@ SELECT Account.AccountSK AS accountSK,
        GameMember.GameMemberType AS gameMemberType,
        (SELECT COUNT(HostSK) FROM Game WHERE Game.HostSK = Account.AccountSK) AS isHost,
        GameMember.IsReady AS isReady,
+       GameMember.IsTurn AS isTurn,
        Game.GameName AS gameName,
        Game.GameState AS gameState,
        (SELECT CASE WHEN LEN(Game.GamePassword) > 0 THEN 1 ELSE 0 END FROM Game WHERE Game.GameSK = @gameSK) AS isPasswordProtected,

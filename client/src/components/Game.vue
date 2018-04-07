@@ -58,9 +58,7 @@
                     this.loading = false;
                 }
             },
-            gameHandUpdate(data) {
-                this.gameDetails.playerHand = data;
-            },
+
             gameShutdown() {
                 this.$router.push('../lobby');
             },

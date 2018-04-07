@@ -1,11 +1,9 @@
 <template>
-    <div class="col-2">
-        <div class="board-column">
-            <score-pile-score :cards="opponentScorePileCards"></score-pile-score>
-            <score-pile :player-cards="playerScorePileCardsWithoutInvestments" :opponent-cards="opponentScorePileCardsWithoutInvestments"></score-pile>
-            <score-pile-score :cards="playerScorePileCards"></score-pile-score>
-            <discard-pile :cards="discardPileCards"></discard-pile>
-        </div>
+    <div class="board-column">
+        <score-pile-score :cards="opponentScorePileCards"></score-pile-score>
+        <score-pile :player-cards="playerScorePileCardsWithoutInvestments" :opponent-cards="opponentScorePileCardsWithoutInvestments" :color="color"></score-pile>
+        <score-pile-score :cards="playerScorePileCards"></score-pile-score>
+        <discard-pile :cards="discardPileCards"></discard-pile>
     </div>
 </template>
 

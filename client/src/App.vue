@@ -55,7 +55,25 @@
     }
 </script>
 
-<style scoped>
+<style>
+    :root {
+        --score-pile-blue: #B0C0CF;
+        --score-pile-green: #A4F0DC ;
+        --score-pile-red: #F9C1CF ;
+        --score-pile-white: #FBF9FB;
+        --score-pile-yellow: #FFEEC7 ;
+
+        --card-blue: #26547C;
+        --card-green: #06D6A0;
+        --card-red: #F0577C;
+        --card-white: #F5F0F6;
+        --card-yellow: #FFD166 ;
+    }
+
+    body {
+        /*background-color: #000B14;*/
+    }
+
     [v-cloak] {
         display: none;
     }
