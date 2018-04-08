@@ -7,11 +7,12 @@
   SELECT * FROM Game
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = '9290D5E7-725F-4CAE-A93C-5A65E6CF9943';
+--DECLARE @gameSK UNIQUEIDENTIFIER = '487549E8-5CD6-44AB-8B57-DCD290FA72E6';
 
 SELECT Account.AccountSK AS accountSK,
        GameMember.GameMemberSK AS gameMemberSK,
        Account.Username AS username,
+       Account.SkillRating AS skillRating,
        GameMember.GameMemberType AS gameMemberType,
        (SELECT COUNT(HostSK) FROM Game WHERE Game.HostSK = Account.AccountSK) AS isHost,
        GameMember.IsReady AS isReady,

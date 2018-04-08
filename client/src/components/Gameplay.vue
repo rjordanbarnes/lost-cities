@@ -8,6 +8,7 @@
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.Red" :opponent-score-pile="opponent.scorePiles.Red" :discard-pile="gameDetails.discardPiles.Red" color="red"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.Green" :opponent-score-pile="opponent.scorePiles.Green" :discard-pile="gameDetails.discardPiles.Green" color="green"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.Blue" :opponent-score-pile="opponent.scorePiles.Blue" :discard-pile="gameDetails.discardPiles.Blue" color="blue"></BoardColumn>
+                <Scoreboard class="col-2" :game-details="gameDetails" :player="player" :opponent="opponent"></Scoreboard>
             </div>
             <div class="row  m-4">
                 <hand class="col-4" :hand="playerHand" v-if="playerHand.length > 0"></hand>
@@ -27,6 +28,7 @@
     import BoardColumn from '@/components/BoardColumn'
     import Hand from '@/components/Hand'
     import Deck from '@/components/Deck'
+    import Scoreboard from '@/components/Scoreboard'
 
     export default {
         props: ['gameDetails', 'player', 'opponent'],
@@ -42,6 +44,9 @@
         mounted() {
             const self = this;
 
+            // Resets the event bus.
+            GameplayEventBus.$off();
+
             GameplayEventBus.$on('card-clicked', function(card) {
 
                 // If it's the player's turn and it's the placing phase, select the card in hand.
@@ -54,10 +59,11 @@
                         }
                     }
 
-                    if (cardInHand ) {
+                    if (cardInHand) {
                         if (self.selectedCard !== null)
                             self.selectedCard.toggleIsSelected();
 
+                        console.log("Toggling selected");
                         self.selectedCard = card;
                         card.toggleIsSelected();
                     }
@@ -107,11 +113,14 @@
             ChatBox,
             BoardColumn,
             Hand,
-            Deck
+            Deck,
+            Scoreboard
         }
     }
 </script>
 
 <style scoped>
-
+    #chat-box {
+        height: 175px;
+    }
 </style>

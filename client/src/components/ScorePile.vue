@@ -37,5 +37,6 @@
         height: 392px;
         border-style: solid;
         border-width: 2px;
+        cursor: pointer;
     }
 </style>

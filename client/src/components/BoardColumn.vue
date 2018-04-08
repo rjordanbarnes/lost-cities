@@ -43,7 +43,5 @@
 </script>
 
 <style scoped>
-    .board-column {
 
-    }
 </style>

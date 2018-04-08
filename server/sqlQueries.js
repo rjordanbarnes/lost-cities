@@ -121,6 +121,7 @@ module.exports = {
                         gameMemberSK: results[i].gameMemberSK,
                         accountSK: results[i].accountSK,
                         username: results[i].username,
+                        skillRating: results[i].skillRating,
                         isHost: results[i].isHost,
                         isReady: results[i].isReady,
                         isTurn: results[i].isTurn,
