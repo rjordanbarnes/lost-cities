@@ -2,11 +2,12 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
-        <gameplay :game-details="gameDetails" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
+        <gameplay :game-details="gameDetails" :turn-phase="turnPhase" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
     </div>
 </template>
 
 <script>
+    import { GameplayEventBus } from '../events/GameplayEventBus.js'
     import GameLobby from '@/components/GameLobby'
     import Gameplay from '@/components/Gameplay'
 
@@ -14,7 +15,8 @@
         data() {
             return {
                 loading: true,
-                gameDetails: {}
+                gameDetails: {},
+                turnPhase: '' // Used to limit game updates. Allows placing, drawing, waiting
             }
         },
         computed: {
@@ -46,12 +48,20 @@
                 }
             );
         },
+        mounted() {
+            const self = this;
+
+            GameplayEventBus.$on('game-phase-change', function(phase) {
+                self.turnPhase = phase;
+            });
+        },
         sockets: {
             gameUpdate(data) {
                 if (data.errors) {
                     this.error = data.errors;
-                } else {
+                } else if (this.turnPhase !== 'drawing') {
                     this.gameDetails = data;
+                    this.turnPhase = (this.player.isTurn) ? 'placing' : 'waiting';
                 }
 
                 if (this.loading) {

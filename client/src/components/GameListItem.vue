@@ -24,7 +24,7 @@
                 return this.gamePlayerCount >= 2;
             },
             openGameButtonText() {
-                return (this.isGameFull ? 'View' : 'Join');
+                return (this.isSelected ? 'View' : 'Join');
             },
             openGameButtonColor() {
                 return (this.isGameFull ? 'btn-outline-info' : 'btn-outline-primary');

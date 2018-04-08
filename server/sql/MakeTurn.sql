@@ -21,10 +21,10 @@
 
 */
 
---DECLARE @accountSK UNIQUEIDENTIFIER = (SELECT AccountSK FROM Account WHERE Username = 'Keysi');
---DECLARE @playedCardSK UNIQUEIDENTIFIER = 'D7D33917-4E97-48DD-9EEB-815A505FDD16';
---DECLARE @playedCardLocationSK UNIQUEIDENTIFIER = '6DFEA749-453F-44AA-94C5-9551F780AECD';
---DECLARE @drawCardLocationSK UNIQUEIDENTIFIER = 'B7E3F9CA-CC12-42AF-9FED-9576670BB568';
+--DECLARE @accountSK UNIQUEIDENTIFIER = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
+--DECLARE @playedCardSK UNIQUEIDENTIFIER = '38EF9C76-6772-4692-8B15-EC3293E4F547';
+--DECLARE @playedCardLocationSK UNIQUEIDENTIFIER = '99A7883B-80C4-4A6E-9E57-9E97A7F85258';
+--DECLARE @drawCardLocationSK UNIQUEIDENTIFIER = '9896A367-AB3C-4A83-97CD-FC9651084A50';
 
 /*
 
@@ -94,6 +94,9 @@ IF ((SELECT GameState FROM Game WHERE GameSK = @gameSK) != 'Gameplay')
 -- Supplied card must be in the user's hand.
 IF ((SELECT COUNT(*) FROM HandCard WHERE HandSK = @handSK AND CardSK = @playedCardSK) < 1)
   THROW 50001, 'Unable to make turn, card isn''t in user''s hand.', 1;
+
+IF (@drawCardLocationType = 'DiscardPile' AND (SELECT COUNT(*) FROM DiscardPileCard WHERE DiscardPileSK = @drawCardLocationSK) < 1)
+  THROW 50001, 'Unable to make turn, discard pile is empty.', 1;
 
 /*
 
@@ -178,3 +181,7 @@ BEGIN
   WHERE CardSK IN (SELECT CardSK FROM HandCard WHERE HandSK = @handSK) AND DiscardPileSK = @drawCardLocationSK
 
 END
+
+SELECT Username, @gameSK AS game
+FROM Account
+WHERE AccountSK = @accountSK

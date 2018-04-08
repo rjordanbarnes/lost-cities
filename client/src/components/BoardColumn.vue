@@ -1,9 +1,9 @@
 <template>
     <div class="board-column">
         <score-pile-score :cards="opponentScorePileCards"></score-pile-score>
-        <score-pile :player-cards="playerScorePileCardsWithoutInvestments" :opponent-cards="opponentScorePileCardsWithoutInvestments" :color="color"></score-pile>
+        <score-pile :sk="Object.keys(playerScorePile)[0]" :player-cards="playerScorePileCardsWithoutInvestments" :opponent-cards="opponentScorePileCardsWithoutInvestments" :color="color"></score-pile>
         <score-pile-score :cards="playerScorePileCards"></score-pile-score>
-        <discard-pile :cards="discardPileCards"></discard-pile>
+        <discard-pile :sk="Object.keys(discardPile)[0]" :cards="discardPileCards" :color="color"></discard-pile>
     </div>
 </template>
 

@@ -1,17 +1,26 @@
 <template>
-    <div class="mt-2">
+    <div class="mt-2" v-on:click.stop="emitDiscardPileClicked">
         <card class="p-2" :card="cards[cards.length - 1]" v-if="cards.length > 0"></card>
     </div>
 </template>
 
 <script>
+    import { GameplayEventBus } from '../events/GameplayEventBus.js'
     import Card from '@/components/Card'
 
     export default {
-        props: ['cards'],
+        props: ['cards', 'color', 'sk'],
         data() {
             return {
                 error: null
+            }
+        },methods: {
+            emitDiscardPileClicked() {
+                GameplayEventBus.$emit('discard-pile-clicked', this);
+            },
+            addPlayerCard(card) {
+                this.cards.push(card);
+                this.$forceUpdate();
             }
         }, components: {
             Card

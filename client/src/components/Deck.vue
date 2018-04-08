@@ -1,14 +1,20 @@
 <template>
-    <div>
+    <div v-on:click.stop="emitDeckClicked">
         {{deckSize}}
     </div>
 </template>
 
 <script>
+    import { GameplayEventBus } from '../events/GameplayEventBus.js'
+
     export default {
-        props: ['deckSize'],
+        props: ['deckSize', 'sk'],
         data() {
             return {}
+        },methods: {
+            emitDeckClicked() {
+                GameplayEventBus.$emit('deck-clicked', this);
+            }
         }
     }
 </script>

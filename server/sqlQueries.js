@@ -141,6 +141,7 @@ module.exports = {
                                  gameState: results[0].gameState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
                                  deckSize: results[0].deckSize,
+                                 deckSK: results[0].deckSK,
                                  discardPiles: {},
                                  players: players,
                                  spectators: spectators};

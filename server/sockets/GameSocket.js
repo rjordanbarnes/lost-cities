@@ -161,7 +161,7 @@ const toggleReady = function() {
     });
 };
 
-const makeTurn = function() {
+const makeTurn = function(turnInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -169,12 +169,12 @@ const makeTurn = function() {
 
     const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.makeTurn(accountSK, function (User) {
-        if (User.hasOwnProperty('errors')) {
-            console.log(User.errors.message);
+    sqlQueries.makeTurn(accountSK, turnInput.playedCardSK, turnInput.playedCardLocationSK, turnInput.drawCardLocationSK, function (data) {
+        if (data.hasOwnProperty('errors')) {
+            console.log(data.errors.message);
         } else {
-            console.log(User.Username + " readied up.");
-            Broadcast.refreshGameDetails(self.socket, User.currentGame);
+            console.log(data.Username + " made a turn.");
+            Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });
 };
