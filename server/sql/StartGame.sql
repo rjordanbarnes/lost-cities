@@ -64,9 +64,10 @@ DECLARE @deckSK UNIQUEIDENTIFIER = NEWID();
 INSERT INTO Deck(DeckSK, GameSK)
 VALUES (@deckSK, @gameSK)
 
--- Insert one of each card into the deck (60 cards)
+-- Randomly insert one of each card into the deck (60 cards)
 INSERT INTO DeckCard(CardSK, DeckSK)
 SELECT CardSK, @deckSK FROM Card
+ORDER BY NEWID()
 
 ----------------------------
 
