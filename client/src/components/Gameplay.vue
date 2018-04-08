@@ -29,7 +29,7 @@
     import Deck from '@/components/Deck'
 
     export default {
-        props: ['gameDetails', 'player', 'opponent', 'turnPhase'],
+        props: ['gameDetails', 'player', 'opponent'],
         data() {
             return {
                 error: null,
@@ -43,93 +43,64 @@
             const self = this;
 
             GameplayEventBus.$on('card-clicked', function(card) {
-                let cardInHand = false;
-                for (let i = 0; i < self.playerHand.length; i++) {
-                    if (self.playerHand[i].cardSK === card.card.cardSK) {
-                        cardInHand = true;
-                        break;
+
+                // If it's the player's turn and it's the placing phase, select the card in hand.
+                if (self.player.isTurn && self.gameDetails.turnState === 'Placing') {
+                    let cardInHand = false;
+                    for (let i = 0; i < self.playerHand.length; i++) {
+                        if (self.playerHand[i].cardSK === card.card.cardSK) {
+                            cardInHand = true;
+                            break;
+                        }
                     }
-                }
 
-                // Select the card if it's the correct phase.
-                if (cardInHand && self.turnPhase === 'placing') {
-                    if (self.selectedCard !== null)
-                        self.selectedCard.toggleIsSelected();
+                    if (cardInHand ) {
+                        if (self.selectedCard !== null)
+                            self.selectedCard.toggleIsSelected();
 
-                    self.selectedCard = card;
-                    card.toggleIsSelected();
+                        self.selectedCard = card;
+                        card.toggleIsSelected();
+                    }
                 }
             });
 
             GameplayEventBus.$on('score-pile-clicked', function(scorePile) {
                 // Handles clicking on a score pile when placing a card.
-                if (self.turnPhase === 'placing' && self.selectedCard !== null && scorePile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
-                    if (scorePile.playerCards.length < 1 || scorePile.playerCards[0].CardValue < self.selectedCard.card.CardValue) {
-                        self.selectedPlaceLocation = scorePile.sk;
-                        scorePile.addPlayerCard(self.selectedCard.card);
-
-                        // Removes card from hand.
-                        for (let i = 0; i < self.playerHand.length; i++) {
-                            if (self.playerHand[i].CardSK === self.selectedCard.card.CardSK) {
-                                self.playerHand.splice(i, 1);
-                                break;
-                            }
-                        }
-
-                        self.selectedCard.toggleIsSelected();
-                        self.changePhase('drawing');
-                    }
+                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && scorePile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
+                    self.selectedPlaceLocation = scorePile.sk;
+                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
+                    self.selectedCard.toggleIsSelected();
+                    self.selectedCard = null;
                 }
             });
 
             GameplayEventBus.$on('discard-pile-clicked', function(discardPile) {
                 // Handles clicking on a discard pile when placing a card.
-                if (self.turnPhase === 'placing' && self.selectedCard !== null && discardPile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
+                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && discardPile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
                     self.selectedPlaceLocation = discardPile.sk;
-                    discardPile.addPlayerCard(self.selectedCard.card);
-
-                    // Removes card from hand.
-                    for (let i = 0; i < self.playerHand.length; i++) {
-                        if (self.playerHand[i].CardSK === self.selectedCard.card.CardSK) {
-                            self.playerHand.splice(i, 1);
-                            break;
-                        }
-                    }
-
+                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
-                    self.changePhase('drawing');
+                    self.selectedCard = null;
                 }
 
                 // Handles clicking on a discard pile when drawing a card.
-                if (self.turnPhase === 'drawing' && self.selectedPlaceLocation !== discardPile.sk && discardPile.cards.length > 0) {
+                if (self.player.isTurn && self.gameDetails.turnState === 'Drawing' && self.selectedPlaceLocation !== discardPile.sk && discardPile.cards.length > 0) {
                     self.selectedDrawLocation = discardPile.sk;
-                    self.changePhase('waiting');
-                    self.$socket.emit('gameMakeTurn', {playedCardSK: self.selectedCard.card.CardSK, playedCardLocationSK: self.selectedPlaceLocation, drawCardLocationSK: self.selectedDrawLocation});
+                    self.$socket.emit('gameDrawCard', {drawCardLocationSK: self.selectedDrawLocation});
                 }
             });
 
             GameplayEventBus.$on('deck-clicked', function(deck) {
                 // Handles clicking on the deck when drawing a card.
-                if (self.turnPhase === 'drawing') {
+                if (self.player.isTurn && self.gameDetails.turnState === 'Drawing') {
                     self.selectedDrawLocation = deck.sk;
-                    self.changePhase('waiting');
-                    self.$socket.emit('gameMakeTurn', {playedCardSK: self.selectedCard.card.CardSK, playedCardLocationSK: self.selectedPlaceLocation, drawCardLocationSK: self.selectedDrawLocation});
+                    self.$socket.emit('gameDrawCard', {drawCardLocationSK: self.selectedDrawLocation});
                 }
             });
         },
-        methods: {
-            changePhase(phase) {
-                this.emitGamePhaseChange(phase);
-            },
-            emitGamePhaseChange(phase) {
-                GameplayEventBus.$emit('game-phase-change', phase);
-            }
-        },
         sockets: {
             gameHandUpdate(data) {
-                if (this.turnPhase !== 'drawing') {
-                    this.playerHand = data;
-                }
+                this.playerHand = data;
             }
         },
         components: {

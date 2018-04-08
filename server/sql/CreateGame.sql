@@ -15,8 +15,8 @@ DECLARE @newGameSK UNIQUEIDENTIFIER = NEWID();
 IF ((SELECT COUNT(*) FROM GameMember WHERE AccountSK = @gameHostSK) > 0)
   THROW 50001, 'Unable to create a game, the user is already in a game.', 1;
 
-INSERT INTO Game (GameSK, GameName, GamePassword, HostSK, GameState)
-VALUES (@newGameSK, @gameName, NULLIF(@gamePassword, 'NULL'), @gameHostSK, 'Lobby')
+INSERT INTO Game (GameSK, GameName, GamePassword, HostSK, GameState, TurnState)
+VALUES (@newGameSK, @gameName, NULLIF(@gamePassword, 'NULL'), @gameHostSK, 'Lobby', 'Placing')
 
 INSERT INTO GameMember(AccountSK, GameSK, GameMemberType)
 VALUES (@gameHostSK, @newGameSK, 'Player');

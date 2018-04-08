@@ -18,6 +18,7 @@ SELECT Account.AccountSK AS accountSK,
        GameMember.IsTurn AS isTurn,
        Game.GameName AS gameName,
        Game.GameState AS gameState,
+       Game.TurnState AS turnState,
        (SELECT CASE WHEN LEN(Game.GamePassword) > 0 THEN 1 ELSE 0 END FROM Game WHERE Game.GameSK = @gameSK) AS isPasswordProtected,
        (SELECT COUNT(*) FROM DeckCard INNER JOIN Deck ON (Deck.DeckSK = DeckCard.DeckSK) WHERE Deck.GameSK = @gameSK) AS deckSize,
        Deck.DeckSK AS deckSK

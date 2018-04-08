@@ -2,7 +2,7 @@
     <div>
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
-        <gameplay :game-details="gameDetails" :turn-phase="turnPhase" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
+        <gameplay :game-details="gameDetails" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
     </div>
 </template>
 
@@ -15,8 +15,7 @@
         data() {
             return {
                 loading: true,
-                gameDetails: {},
-                turnPhase: '' // Used to limit game updates. Allows placing, drawing, waiting
+                gameDetails: {}
             }
         },
         computed: {
@@ -48,20 +47,12 @@
                 }
             );
         },
-        mounted() {
-            const self = this;
-
-            GameplayEventBus.$on('game-phase-change', function(phase) {
-                self.turnPhase = phase;
-            });
-        },
         sockets: {
             gameUpdate(data) {
                 if (data.errors) {
                     this.error = data.errors;
-                } else if (this.turnPhase !== 'drawing') {
+                } else {
                     this.gameDetails = data;
-                    this.turnPhase = (this.player.isTurn) ? 'placing' : 'waiting';
                 }
 
                 if (this.loading) {

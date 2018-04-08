@@ -139,6 +139,7 @@ module.exports = {
             const gameDetails = {gameSK: gameSK,
                                  gameName: results[0].gameName,
                                  gameState: results[0].gameState,
+                                 turnState: results[0].turnState,
                                  isPasswordProtected: results[0].isPasswordProtected === 1,
                                  deckSize: results[0].deckSize,
                                  deckSK: results[0].deckSK,
@@ -300,9 +301,9 @@ module.exports = {
 
     // Makes a turn
     //
-    makeTurn(accountSK, playedCardSK, playedCardLocationSK, drawCardLocationSK, callback) {
+    placeCard(accountSK, playedCardSK, playedCardLocationSK, callback) {
         sql.execute({
-            query: sql.fromFile("./sql/MakeTurn"),
+            query: sql.fromFile("./sql/PlaceCard"),
             params: {
                 accountSK: {
                     val: accountSK
@@ -312,6 +313,23 @@ module.exports = {
                 },
                 playedCardLocationSK: {
                     val: playedCardLocationSK
+                }
+            }
+        }).then(function (results) {
+            callback(results[0]);
+        }, function (err) {
+            callback({errors: err});
+        });
+    },
+
+    // Makes a turn
+    //
+    drawCard(accountSK, drawCardLocationSK, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/DrawCard"),
+            params: {
+                accountSK: {
+                    val: accountSK
                 },
                 drawCardLocationSK: {
                     val: drawCardLocationSK

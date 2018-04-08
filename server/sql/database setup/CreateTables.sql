@@ -20,6 +20,7 @@ CREATE TABLE Game
   GameName NVARCHAR(25) NOT NULL,
   GamePassword NVARCHAR(128) NULL,
   GameState VARCHAR(128) NOT NULL CONSTRAINT CK_Game_State CHECK (GameState IN ('Lobby', 'Gameplay')),
+  TurnState VARCHAR(128) NOT NULL CONSTRAINT CK_Turn_State CHECK (TurnState IN ('Placing', 'Drawing')),
   HostSK UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Account(AccountSK),
   CreationDate DATETIME NOT NULL DEFAULT GETDATE()
 );

@@ -161,7 +161,7 @@ const toggleReady = function() {
     });
 };
 
-const makeTurn = function(turnInput) {
+const placeCard = function(turnInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -169,11 +169,29 @@ const makeTurn = function(turnInput) {
 
     const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
-    sqlQueries.makeTurn(accountSK, turnInput.playedCardSK, turnInput.playedCardLocationSK, turnInput.drawCardLocationSK, function (data) {
+    sqlQueries.placeCard(accountSK, turnInput.placedCardSK, turnInput.placedCardLocationSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(data.Username + " made a turn.");
+            console.log(data.Username + " placed a card.");
+            Broadcast.refreshGameDetails(self.socket, data.game);
+        }
+    });
+};
+
+const drawCard = function(turnInput) {
+    const self = this;
+
+    if (!Validations.isAuthenticated(self.socket))
+        return;
+
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
+
+    sqlQueries.drawCard(accountSK, turnInput.drawCardLocationSK, function (data) {
+        if (data.hasOwnProperty('errors')) {
+            console.log(data.errors.message);
+        } else {
+            console.log(data.Username + " drew a card.");
             Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });
@@ -189,6 +207,7 @@ module.exports = function(socket){
         'gameLeave': leave.bind(this),
         'gameStart': start.bind(this),
         'gameToggleReady': toggleReady.bind(this),
-        'gameMakeTurn': makeTurn.bind(this)
+        'gamePlaceCard': placeCard.bind(this),
+        'gameDrawCard': drawCard.bind(this)
     };
 };

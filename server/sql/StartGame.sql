@@ -37,9 +37,9 @@ IF ((SELECT COUNT(*) FROM GameMember WHERE GameSK = @gameSK AND IsReady = 1) < 2
 IF ((SELECT GameState FROM Game WHERE GameSK = @gameSK) != 'Lobby')
   THROW 50001, 'Unable to start game, game isn''t at lobby.', 1;
 
--- Updates game state
+-- Updates game and turn state
 UPDATE Game
-SET GameState = 'Gameplay'
+SET GameState = 'Gameplay', TurnState = 'Placing'
 WHERE GameSK = @gameSK
 
 -- Reset ready state for players.
