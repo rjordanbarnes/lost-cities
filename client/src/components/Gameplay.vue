@@ -48,25 +48,21 @@
             GameplayEventBus.$off();
 
             GameplayEventBus.$on('card-clicked', function(card) {
-
-                // If it's the player's turn and it's the placing phase, select the card in hand.
-                if (self.player.isTurn && self.gameDetails.turnState === 'Placing') {
-                    let cardInHand = false;
-                    for (let i = 0; i < self.playerHand.length; i++) {
-                        if (self.playerHand[i].cardSK === card.card.cardSK) {
-                            cardInHand = true;
-                            break;
-                        }
+                let cardInHand = false;
+                for (let i = 0; i < self.playerHand.length; i++) {
+                    if (self.playerHand[i].CardSK === card.card.CardSK) {
+                        cardInHand = true;
+                        break;
                     }
+                }
 
-                    if (cardInHand) {
-                        if (self.selectedCard !== null)
-                            self.selectedCard.toggleIsSelected();
+                if (cardInHand && self.player.isTurn && self.gameDetails.turnState === 'Placing') {
+                    // If it's the player's turn and it's the placing phase, select the card in hand.
+                    if (self.selectedCard !== null)
+                        self.selectedCard.toggleIsSelected();
 
-                        console.log("Toggling selected");
-                        self.selectedCard = card;
-                        card.toggleIsSelected();
-                    }
+                    self.selectedCard = card;
+                    card.toggleIsSelected();
                 }
             });
 

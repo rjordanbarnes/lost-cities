@@ -34,8 +34,7 @@
                     }
 
                     // Investments multiplier
-                    if (this.numberOfInvestments !== 0)
-                        runningTotal *= (this.numberOfInvestments + 1);
+                    runningTotal *= (this.numberOfInvestments + 1);
 
                     // Bonus points for lots of cards.
                     if (this.cards.length >= 8)

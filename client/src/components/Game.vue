@@ -59,7 +59,6 @@
                     this.loading = false;
                 }
             },
-
             gameShutdown() {
                 this.$router.push('../lobby');
             },
@@ -67,6 +66,9 @@
                 if (data.errors && data.errors.includes('Unable to spectate the game, password not supplied.')) {
                     $('#password-prompt').modal('show');
                 }
+            },
+            gameEnd(data) {
+                alert(data.winner + " won!");
             }
         },
         components: {

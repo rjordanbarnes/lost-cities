@@ -192,6 +192,12 @@ const drawCard = function(turnInput) {
             console.log(data.errors.message);
         } else {
             console.log(data.Username + " drew a card.");
+
+            if (data.isGameOver) {
+                console.log("Game ended.");
+                self.socket.server.in(data.game).emit('gameEnd', {winner: data.winner});
+            }
+
             Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });

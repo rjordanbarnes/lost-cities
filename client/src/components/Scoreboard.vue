@@ -53,7 +53,6 @@
         },
         methods: {
             calculateTotalScore(scorePiles) {
-                console.log(scorePiles);
                 let totalScore = 0;
 
                 for (const scorepile in scorePiles) {
@@ -74,8 +73,7 @@
                         }
 
                         // Investments multiplier
-                        if (numberOfInvestments !== 0)
-                            runningTotal *= (numberOfInvestments + 1);
+                        runningTotal *= (numberOfInvestments + 1);
 
                         // Bonus points for lots of cards.
                         if (cards.length >= 8)

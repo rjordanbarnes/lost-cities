@@ -118,7 +118,96 @@ UPDATE GameMember
 SET IsTurn = 1
 WHERE AccountSK != @accountSK AND GameSK = @gameSK AND GameMemberType = 'Player'
 
--- Return who drew the card and the game.
-SELECT Username, @gameSK AS game
+-- Find the deck size after drawing and whether this results in a game over.
+DECLARE @deckSize INT = (SELECT COUNT(*) FROM DeckCard INNER JOIN Deck ON (Deck.DeckSK = DeckCard.DeckSK) WHERE Deck.GameSK = @gameSK)
+DECLARE @isGameOver BIT = CASE WHEN @deckSize < 1 THEN 1 ELSE 0 END
+DECLARE @winner NVARCHAR(25)
+
+-- If the game is over, send the game back to the lobby and determine the winner.
+IF (@isGameOver = 1)
+BEGIN
+  DECLARE @accountSK2 UNIQUEIDENTIFIER = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
+
+  -- Determine score for player 1
+  IF OBJECT_ID('tempdb..#AccountScores') IS NOT NULL DROP TABLE #AccountScores
+
+  CREATE TABLE #AccountScores(ScorePileColor NVARCHAR(128), CardsPresent BIT, ScorePileScore INT, Investments INT, BonusPoints BIT, TotalScore INT)
+
+  INSERT INTO #AccountScores(ScorePileColor, CardsPresent, ScorePileScore, Investments, BonusPoints, TotalScore)
+  SELECT ScorePileColor,
+         CASE WHEN COUNT(ScorePileCard.CardSK) != 0 THEN 1 ELSE 0 END AS CardsPresent,
+         SUM(CASE WHEN Card.CardValue != 1 THEN Card.CardValue ELSE 0 END) AS ScorePileScore,
+         COUNT(CASE WHEN Card.CardValue = 1 THEN 1 END) AS Investments,
+         CASE WHEN COUNT(ScorePileCard.CardSK) >= 8 THEN 1 ELSE 0 END AS BonusPoints,
+         (-20 * (CASE WHEN COUNT(ScorePileCard.CardSK) != 0 THEN 1 ELSE 0 END) + SUM(CASE WHEN Card.CardValue != 1 THEN Card.CardValue ELSE 0 END)) * (COUNT(CASE WHEN Card.CardValue = 1 THEN 1 END) + 1) + ((CASE WHEN COUNT(ScorePileCard.CardSK) >= 8 THEN 1 ELSE 0 END) * 20) AS TotalScore
+  FROM ScorePile
+  LEFT OUTER JOIN ScorePileCard ON (ScorePile.ScorePileSK = ScorePileCard.ScorePileSK)
+  LEFT OUTER JOIN Card ON (ScorePileCard.CardSK = Card.CardSK)
+  INNER JOIN GameMember ON (GameMember.GameMemberSK = ScorePile.PlayerSK)
+  INNER JOIN Account ON (Account.AccountSK = GameMember.AccountSK)
+  WHERE Account.AccountSK = @accountSK
+  GROUP BY ScorePileColor
+
+  DECLARE @accountScore INT = (SELECT SUM(TotalScore) AS TotalScore FROM #AccountScores)
+
+
+  -- Determine score for player 2
+  IF OBJECT_ID('tempdb..#AccountScores2') IS NOT NULL DROP TABLE #AccountScores2
+
+  CREATE TABLE #AccountScores2(ScorePileColor NVARCHAR(128), CardsPresent BIT, ScorePileScore INT, Investments INT, BonusPoints BIT, TotalScore INT)
+
+  INSERT INTO #AccountScores2(ScorePileColor, CardsPresent, ScorePileScore, Investments, BonusPoints, TotalScore)
+  SELECT ScorePileColor,
+         CASE WHEN COUNT(ScorePileCard.CardSK) != 0 THEN 1 ELSE 0 END AS CardsPresent,
+         SUM(CASE WHEN Card.CardValue != 1 THEN Card.CardValue ELSE 0 END) AS ScorePileScore,
+         COUNT(CASE WHEN Card.CardValue = 1 THEN 1 END) AS Investments,
+         CASE WHEN COUNT(ScorePileCard.CardSK) >= 8 THEN 1 ELSE 0 END AS BonusPoints,
+         (-20 * (CASE WHEN COUNT(ScorePileCard.CardSK) != 0 THEN 1 ELSE 0 END) + SUM(CASE WHEN Card.CardValue != 1 THEN Card.CardValue ELSE 0 END)) * (COUNT(CASE WHEN Card.CardValue = 1 THEN 1 END) + 1) + ((CASE WHEN COUNT(ScorePileCard.CardSK) >= 8 THEN 1 ELSE 0 END) * 20) AS TotalScore
+  FROM ScorePile
+  LEFT OUTER JOIN ScorePileCard ON (ScorePile.ScorePileSK = ScorePileCard.ScorePileSK)
+  LEFT OUTER JOIN Card ON (ScorePileCard.CardSK = Card.CardSK)
+  INNER JOIN GameMember ON (GameMember.GameMemberSK = ScorePile.PlayerSK)
+  INNER JOIN Account ON (Account.AccountSK = GameMember.AccountSK)
+  WHERE Account.AccountSK = @accountSK2
+  GROUP BY ScorePileColor
+
+  DECLARE @accountScore2 INT = (SELECT SUM(TotalScore) AS TotalScore FROM #AccountScores2)
+
+  -- Sets the winner to the username of the account that has the higher score.
+  SET @winner = CASE WHEN @accountScore > @accountScore2 THEN (SELECT Username FROM Account WHERE Account.AccountSK = @accountSK) WHEN @accountScore < @accountScore2 THEN (SELECT Username FROM Account WHERE Account.AccountSK = @accountSK2) ELSE (SELECT 'Tie Game') END
+  
+
+  UPDATE Game SET GameState = 'Lobby' WHERE GameSK = @gameSK
+
+  DELETE DeckCard
+  WHERE DeckSK IN (SELECT DeckSK FROM Deck WHERE GameSK = @gameSK)
+
+  DELETE DiscardPileCard
+  WHERE DiscardPileSK IN (SELECT DiscardPileSK FROM DiscardPile WHERE GameSK = @gameSK)
+
+  DELETE HandCard
+  WHERE HandSK IN (SELECT HandSK FROM Hand WHERE GameSK = @gameSK)
+
+  DELETE ScorePileCard
+  WHERE ScorePileSK IN (SELECT ScorePileSK FROM ScorePile WHERE GameSK = @gameSK)
+
+  DELETE FROM Deck
+  WHERE GameSK = @gameSK
+
+  DELETE FROM DiscardPile
+  WHERE GameSK = @gameSK
+
+  DELETE FROM Hand
+  WHERE GameSK = @gameSK
+
+  DELETE FROM ScorePile
+  WHERE GameSK = @gameSK
+END
+
+-- Return who drew the card, the game, and how many cards are left in the deck to check for game over.
+SELECT Username,
+       @gameSK AS game,
+       @isGameOver AS isGameOver,
+       @winner AS winner
 FROM Account
 WHERE AccountSK = @accountSK
