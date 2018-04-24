@@ -85,8 +85,6 @@
                     self.selectedPlaceLocation = discardPile.sk;
                     self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
-                    console.log(discardPile);
-                    console.log(self.selectedCard.card);
                     // Adds the card to the discard pile immediately to reduce perceived latency.
                     self.gameDetails.discardPiles[discardPile.color][discardPile.sk].push(self.selectedCard.card);
                     self.selectedCard = null;

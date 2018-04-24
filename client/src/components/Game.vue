@@ -53,7 +53,6 @@
                 if (data.errors) {
                     this.error = data.errors;
                 } else {
-                    console.log(data);
                     this.gameDetails = data;
                 }
 
