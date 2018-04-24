@@ -14,7 +14,7 @@
             return {
                 isSelected: false,
                 cardStyle: {
-                    'background-color': 'var(--card-' + this.card.CardColor.toLowerCase() + ')'
+                    'background-color': 'var(--card-' + this.card.CardColor + ')'
                 }
             }
         },

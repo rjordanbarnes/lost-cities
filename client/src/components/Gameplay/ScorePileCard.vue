@@ -13,7 +13,7 @@
                 scorePileCardStyle: {
                     height: this.card.CardValue * 7 + 'px',
                     'font-size': this.card.CardValue + 14 + 'px',
-                    'background-color': 'var(--card-' + this.card.CardColor.toLowerCase() + ')'
+                    'background-color': 'var(--card-' + this.card.CardColor + ')'
                 }
             }
         }, computed: {

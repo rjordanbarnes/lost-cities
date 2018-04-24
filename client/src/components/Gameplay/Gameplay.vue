@@ -3,11 +3,11 @@
         <div v-if="error">Error</div>
         <div v-if="gameDetails">
             <div class="row">
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.Yellow" :opponent-score-pile="opponent.scorePiles.Yellow" :discard-pile="gameDetails.discardPiles.Yellow" color="yellow"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.White" :opponent-score-pile="opponent.scorePiles.White" :discard-pile="gameDetails.discardPiles.White" color="white"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.Red" :opponent-score-pile="opponent.scorePiles.Red" :discard-pile="gameDetails.discardPiles.Red" color="red"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.Green" :opponent-score-pile="opponent.scorePiles.Green" :discard-pile="gameDetails.discardPiles.Green" color="green"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.Blue" :opponent-score-pile="opponent.scorePiles.Blue" :discard-pile="gameDetails.discardPiles.Blue" color="blue"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.yellow" :opponent-score-pile="opponent.scorePiles.yellow" :discard-pile="gameDetails.discardPiles.yellow" color="yellow"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.white" :opponent-score-pile="opponent.scorePiles.white" :discard-pile="gameDetails.discardPiles.white" color="white"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.red" :opponent-score-pile="opponent.scorePiles.red" :discard-pile="gameDetails.discardPiles.red" color="red"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.green" :opponent-score-pile="opponent.scorePiles.green" :discard-pile="gameDetails.discardPiles.green" color="green"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.blue" :opponent-score-pile="opponent.scorePiles.blue" :discard-pile="gameDetails.discardPiles.blue" color="blue"></BoardColumn>
                 <Scoreboard class="col-2" :game-details="gameDetails" :player="player" :opponent="opponent"></Scoreboard>
             </div>
             <div class="row  m-4">
@@ -69,20 +69,26 @@
 
             GameplayEventBus.$on('score-pile-clicked', function(scorePile) {
                 // Handles clicking on a score pile when placing a card.
-                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && scorePile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
+                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && scorePile.color === self.selectedCard.card.CardColor) {
                     self.selectedPlaceLocation = scorePile.sk;
                     self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
+                    // Adds the card to the score pile immediately to reduce perceived latency.
+                    self.player.scorePiles[scorePile.color][scorePile.sk].push(self.selectedCard.card);
                     self.selectedCard = null;
                 }
             });
 
             GameplayEventBus.$on('discard-pile-clicked', function(discardPile) {
                 // Handles clicking on a discard pile when placing a card.
-                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && discardPile.color.toLowerCase() === self.selectedCard.card.CardColor.toLowerCase()) {
+                if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && discardPile.color === self.selectedCard.card.CardColor) {
                     self.selectedPlaceLocation = discardPile.sk;
                     self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
+                    console.log(discardPile);
+                    console.log(self.selectedCard.card);
+                    // Adds the card to the discard pile immediately to reduce perceived latency.
+                    self.gameDetails.discardPiles[discardPile.color][discardPile.sk].push(self.selectedCard.card);
                     self.selectedCard = null;
                 }
 

@@ -159,12 +159,12 @@ module.exports = {
                 // Create discard pile arrays for each discard pile
                 for (let i = 0; i < results.length; i++) {
                     // Create the discard pile if not yet created.
-                    if (gameDetails.discardPiles[results[i].DiscardPileColor] === undefined)
-                        gameDetails.discardPiles[results[i].DiscardPileColor] = {[results[i].DiscardPileSK]: []};
+                    if (gameDetails.discardPiles[results[i].DiscardPileColor.toLowerCase()] === undefined)
+                        gameDetails.discardPiles[results[i].DiscardPileColor.toLowerCase()] = {[results[i].DiscardPileSK]: []};
 
                     // Add card to discard pile array. This will put cards in ascending order so top-most card is at end of the array.
                     if (results[i].CardSK !== null)
-                        gameDetails.discardPiles[results[i].DiscardPileColor][results[i].DiscardPileSK].push({CardSK: results[i].CardSK, CardColor: results[i].CardColor, CardValue: results[i].CardValue})
+                        gameDetails.discardPiles[results[i].DiscardPileColor.toLowerCase()][results[i].DiscardPileSK].push({CardSK: results[i].CardSK, CardColor: results[i].CardColor.toLowerCase(), CardValue: results[i].CardValue})
                 }
 
                 sql.execute({
@@ -181,12 +181,12 @@ module.exports = {
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].GameMemberSK === gameDetails.players[i].gameMemberSK) {
                                 // Creates a missing score pile
-                                if (gameDetails.players[i].scorePiles[results[j].ScorePileColor] === undefined)
-                                    gameDetails.players[i].scorePiles[results[j].ScorePileColor] = {[results[j].ScorePileSK]: []};
+                                if (gameDetails.players[i].scorePiles[results[j].ScorePileColor.toLowerCase()] === undefined)
+                                    gameDetails.players[i].scorePiles[results[j].ScorePileColor.toLowerCase()] = {[results[j].ScorePileSK]: []};
 
                                 // Fills the score piles
                                 if (results[j].CardSK !== null)
-                                    gameDetails.players[i].scorePiles[results[j].ScorePileColor][results[j].ScorePileSK].push({CardSK: results[j].CardSK, CardColor: results[j].CardColor, CardValue: results[j].CardValue});
+                                    gameDetails.players[i].scorePiles[results[j].ScorePileColor.toLowerCase()][results[j].ScorePileSK].push({CardSK: results[j].CardSK, CardColor: results[j].CardColor.toLowerCase(), CardValue: results[j].CardValue});
 
                             }
                         }
@@ -205,7 +205,7 @@ module.exports = {
                         for (let i = 0; i < gameDetails.players.length; i++) {
                             for (let j = 0; j < results.length; j++) {
                                 if (gameDetails.players[i].gameMemberSK === results[j].PlayerSK) {
-                                    gameDetails.players[i].hand.push({CardSK: results[j].CardSK, CardColor: results[j].CardColor, CardValue: results[j].CardValue})
+                                    gameDetails.players[i].hand.push({CardSK: results[j].CardSK, CardColor: results[j].CardColor.toLowerCase(), CardValue: results[j].CardValue})
                                 }
                             }
                         }

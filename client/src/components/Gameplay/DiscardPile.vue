@@ -18,10 +18,6 @@
         },methods: {
             emitDiscardPileClicked() {
                 GameplayEventBus.$emit('discard-pile-clicked', this);
-            },
-            addPlayerCard(card) {
-                this.cards.push(card);
-                this.$forceUpdate();
             }
         }, components: {
             Card

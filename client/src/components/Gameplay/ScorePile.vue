@@ -15,16 +15,12 @@
         data() {
             return {
                 scorePileStyle: {
-                    'background-color': 'var(--score-pile-' + this.color.toLowerCase() + ')'
+                    'background-color': 'var(--score-pile-' + this.color + ')'
                 }
             }
         },methods: {
             emitScorePileClicked() {
                 GameplayEventBus.$emit('score-pile-clicked', this);
-            },
-            addPlayerCard(card) {
-                this.playerCards.push(card);
-                this.$forceUpdate();
             }
         }, components: {
             ScorePileCard
