@@ -5,7 +5,8 @@
     "scripts": {
         "dev": "node client/build/dev-server.js",
         "start": "npm run dev",
-        "build": "node client/build/build.js"
+        "build": "node client/build/build.js",
+        "deploy": "rm -r public_html && mv dist public_html"
     },
     "dependencies": {
         "bootstrap": "^4.0.0",
