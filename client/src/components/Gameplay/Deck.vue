@@ -5,9 +5,10 @@
 </template>
 
 <script>
-    import { GameplayEventBus } from '../events/GameplayEventBus.js'
+    import { GameplayEventBus } from '../../events/GameplayEventBus.js'
 
     export default {
+        name: "Deck",
         props: ['deckSize', 'sk'],
         data() {
             return {}

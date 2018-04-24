@@ -23,14 +23,15 @@
 </template>
 
 <script>
-    import { GameplayEventBus } from '../events/GameplayEventBus.js'
+    import { GameplayEventBus } from '../../events/GameplayEventBus.js'
     import ChatBox from '@/components/ChatBox'
-    import BoardColumn from '@/components/BoardColumn'
-    import Hand from '@/components/Hand'
-    import Deck from '@/components/Deck'
-    import Scoreboard from '@/components/Scoreboard'
+    import BoardColumn from '@/components/Gameplay/BoardColumn'
+    import Hand from '@/components/Gameplay/Hand'
+    import Deck from '@/components/Gameplay/Deck'
+    import Scoreboard from '@/components/Gameplay/Scoreboard'
 
     export default {
+        name: "Gameplay",
         props: ['gameDetails', 'player', 'opponent'],
         data() {
             return {

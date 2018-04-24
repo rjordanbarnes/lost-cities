@@ -5,10 +5,11 @@
 </template>
 
 <script>
-    import { GameplayEventBus } from '../events/GameplayEventBus.js'
-    import Card from '@/components/Card'
+    import { GameplayEventBus } from '../../events/GameplayEventBus.js'
+    import Card from '@/components/Gameplay/Card'
 
     export default {
+        name: "DiscardPile",
         props: ['cards', 'color', 'sk'],
         data() {
             return {

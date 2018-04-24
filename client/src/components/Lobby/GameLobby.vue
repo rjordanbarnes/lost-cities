@@ -40,6 +40,7 @@
     import ChatBox from '@/components/ChatBox'
 
     export default {
+        name: "GameLobby",
         props: ['gameDetails'],
         data() {
             return {

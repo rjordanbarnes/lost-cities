@@ -15,6 +15,7 @@
 
 <script>
     export default {
+        name: "ScorePileScore",
         props: ['cards'],
         data() {
             return {

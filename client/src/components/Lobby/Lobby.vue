@@ -49,11 +49,12 @@
 </template>
 
 <script>
-    import GameListItem from '@/components/GameListItem'
+    import GameListItem from '@/components/Lobby/GameListItem'
     import ChatBox from '@/components/ChatBox'
-    import GamePasswordPrompt from '@/components/GamePasswordPrompt'
+    import GamePasswordPrompt from '@/components/Lobby/GamePasswordPrompt'
 
     export default {
+        name: "Lobby",
         data() {
             return {
                 games: [],

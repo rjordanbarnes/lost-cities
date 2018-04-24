@@ -15,6 +15,7 @@
     import ChatLine from '@/components/ChatLine'
 
     export default {
+        name: "ChatBox",
         data() {
             return {
                 chatInput: "",

@@ -8,10 +8,11 @@
 
 <script>
     import { GameplayEventBus } from '../events/GameplayEventBus.js'
-    import GameLobby from '@/components/GameLobby'
-    import Gameplay from '@/components/Gameplay'
+    import GameLobby from '@/components/Lobby/GameLobby'
+    import Gameplay from '@/components/Gameplay/Gameplay'
 
     export default {
+        name: "Game",
         data() {
             return {
                 loading: true,

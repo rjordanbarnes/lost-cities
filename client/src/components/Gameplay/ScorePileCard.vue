@@ -6,6 +6,7 @@
 
 <script>
     export default {
+        name: "ScorePileCard",
         props: ['card', 'index'],
         data() {
             return {
@@ -34,5 +35,6 @@
         align-items: center;
         justify-content: center;
         user-select: none;
+        outline-style: none;
     }
 </style>

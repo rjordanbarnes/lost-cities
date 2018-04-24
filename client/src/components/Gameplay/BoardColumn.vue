@@ -8,11 +8,12 @@
 </template>
 
 <script>
-    import ScorePile from '@/components/ScorePile'
-    import ScorePileScore from '@/components/ScorePileScore'
-    import DiscardPile from '@/components/DiscardPile'
+    import ScorePile from '@/components/Gameplay/ScorePile'
+    import ScorePileScore from '@/components/Gameplay/ScorePileScore'
+    import DiscardPile from '@/components/Gameplay/DiscardPile'
 
     export default {
+        name: "BoardColumn",
         props: ['playerScorePile', 'opponentScorePile', 'discardPile', 'color'],
         data() {
             return {

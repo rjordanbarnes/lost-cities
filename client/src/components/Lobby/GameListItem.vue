@@ -14,6 +14,7 @@
 
 <script>
     export default {
+        name: "GameListItem",
         props: ['gameSK', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
         data() {
             return {

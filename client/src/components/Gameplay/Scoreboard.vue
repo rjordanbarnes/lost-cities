@@ -38,6 +38,7 @@
 
 <script>
     export default {
+        name: "Scoreboard",
         props: ['gameDetails', 'player', 'opponent'],
         data() {
             return {}

@@ -5,9 +5,10 @@
 </template>
 
 <script>
-    import { GameplayEventBus } from '../events/GameplayEventBus.js'
+    import { GameplayEventBus } from '../../events/GameplayEventBus.js'
 
     export default {
+        name: "Card",
         props: ['card'],
         data() {
             return {
@@ -46,6 +47,7 @@
         justify-content: center;
         cursor: pointer;
         user-select: none;
+        outline-style: none;
     }
 
     .card-selected {

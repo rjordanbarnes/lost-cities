@@ -9,6 +9,7 @@
 
 <script>
     export default {
+        name: "Alert",
         props: ['message', 'alertStyle'],
         data() {
             return {

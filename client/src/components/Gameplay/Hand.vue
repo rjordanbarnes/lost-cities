@@ -10,9 +10,10 @@
 </template>
 
 <script>
-    import Card from '@/components/Card'
+    import Card from '@/components/Gameplay/Card'
 
     export default {
+        name: "Hand",
         props: ['hand'],
         data() {
             return {}

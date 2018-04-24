@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Login from '@/components/Login'
-import Lobby from '@/components/Lobby'
+import Lobby from '@/components/Lobby/Lobby'
 import Game from '@/components/Game'
 import PageNotFound from '@/components/PageNotFound'
 

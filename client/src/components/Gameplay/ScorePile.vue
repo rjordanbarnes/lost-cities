@@ -6,10 +6,11 @@
 </template>
 
 <script>
-    import { GameplayEventBus } from '../events/GameplayEventBus.js'
-    import ScorePileCard from '@/components/ScorePileCard'
+    import { GameplayEventBus } from '../../events/GameplayEventBus.js'
+    import ScorePileCard from '@/components/Gameplay/ScorePileCard'
 
     export default {
+        name: "ScorePile",
         props: ['playerCards', 'opponentCards', 'color', 'sk'],
         data() {
             return {
