@@ -44,5 +44,7 @@
 </script>
 
 <style scoped>
-
+    .board-column {
+        padding: 0;
+    }
 </style>

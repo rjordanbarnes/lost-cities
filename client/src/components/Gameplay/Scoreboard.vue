@@ -94,8 +94,6 @@
     #scoreboard {
         align-items: center;
         justify-content: center;
-        border-style: solid;
-        border-width: 1px;
         padding: 15px;
     }
 

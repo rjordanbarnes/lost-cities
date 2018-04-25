@@ -29,6 +29,7 @@
         width: 100%;
         font-weight: bold;
         font-size: 30px;
+        box-shadow: 1px 8px 6px -6px rgba(0, 0, 0, 0.4), inset 0px -1px 2px -1px rgba(0,0,0,0.2);
         display: flex;
         align-items: center;
         justify-content: center;

@@ -31,7 +31,8 @@
 <style scoped>
 
     div {
-        height: 392px;
+        height: 404px;
         cursor: pointer;
+        padding: 5px 9px;
     }
 </style>

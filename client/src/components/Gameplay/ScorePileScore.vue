@@ -62,8 +62,6 @@
 
 <style scoped>
     .score-pile-score {
-        border-style: solid;
-        border-width: 2px;
         font-weight: bold;
         font-size: 30px;
         display: flex;
