@@ -6,7 +6,7 @@ import store from './store';
 import router from './router';
 import VueSocketio from 'vue-socket.io';
 import GoogleAuth from 'vue-google-oauth';
-const googleOathConfig = require('../../config/googleoath.config.js');
+const googleOathConfig = require('../config/googleoath.config.js');
 Vue.use(VueSocketio, 'http://localhost:3379');
 Vue.use(GoogleAuth, { client_id: googleOathConfig.web.client_id });
 Vue.googleAuth().load();
