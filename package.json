@@ -12,6 +12,7 @@
         "bootstrap": "^4.0.0",
         "express": "^4.16.3",
         "font-awesome": "^4.7.0",
+        "googleapis": "^29.0.0",
         "jquery": "^3.3.1",
         "jsonwebtoken": "^8.2.0",
         "jwt-decode": "^2.2.0",
@@ -19,6 +20,7 @@
         "seriate": "^0.13.1",
         "socket.io": "^2.1.0",
         "vue": "^2.5.16",
+        "vue-google-oauth": "https://github.com/TinyNova/vue-google-oauth",
         "vue-router": "^3.0.1",
         "vue-socket.io": "^2.1.1-a",
         "vuex": "^3.0.1"

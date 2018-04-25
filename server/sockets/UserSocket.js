@@ -4,23 +4,46 @@ const Broadcast = require('./SocketHelpers.js').Broadcast;
 const appVariables = require('../appVariables.js');
 const tokenConfig = require('../../config/token.config.js');
 
-// Authenticates if username is in SQL database.
-const requestLogin = function(username){
+const {google} = require('googleapis');
+const googleOathConfig = require('../../config/googleoath.config.js');
+
+
+const googleLoginSuccess = function(authorizationCode) {
     const self = this;
 
-    sqlQueries.loginAccount(username, function(User) {
-        self.socket.authenticated = User.exists;
+    const oauth2Client = new google.auth.OAuth2(
+        googleOathConfig.web.client_id,
+        googleOathConfig.web.client_secret,
+        googleOathConfig.web.redirect_uris[0]
+    );
 
-        if (self.socket.authenticated) {
-            // Send JWT Token
-            const token = createToken(User.accountSK, username);
-            self.socket.emit('userToken',{token: token});
+    oauth2Client.getToken(authorizationCode, function(err, tokens) {
+        if (!err) {
+            oauth2Client.setCredentials(tokens);
+            const plus = google.plus({
+                version: 'v1',
+                auth: oauth2Client
+            });
 
-            appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
-            console.log(username + " logged in.");
-            self.socket.emit('userLoginSuccess');
-        } else {
-            self.socket.emit('generalError', {error: 'Unable to login as ' + username + '.'});
+            plus.people.get({ userId: 'me' }).then(function(res) {
+                const userData = res.data;
+
+                sqlQueries.loginGoogleAccount(userData, function(User) {
+                    self.socket.authenticated = User.exists;
+
+                    if (self.socket.authenticated) {
+                        // Send JWT Token
+                        const token = createToken(User.accountSK, User.username);
+                        self.socket.emit('userToken',{token: token});
+
+                        appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
+                        console.log(User.username + " logged in.");
+                        self.socket.emit('userLoginSuccess');
+                    } else {
+                        self.socket.emit('generalError', {error: 'Unable to login as ' + userData.emails[0].value});
+                    }
+                });
+            });
         }
     });
 };
@@ -108,7 +131,7 @@ module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {
-        'userRequestLogin': requestLogin.bind(this),
+        'userGoogleLoginSuccess': googleLoginSuccess.bind(this),
         'userVerifyToken': verifyToken.bind(this),
         'disconnect': disconnectSocket.bind(this)
     };

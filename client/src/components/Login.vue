@@ -1,6 +1,11 @@
 <template>
     <div id="login" class="container">
         <h1>Lost Cities</h1>
+        <a id="signin-button" v-on:click="onLogin">
+            <i class="fa fa-google-plus-official fa-3x"></i>
+            Sign in with Google
+        </a>
+
         <form id="login-form" @submit.prevent="onLogin">
             <div class="form-group">
                 <label>Username</label>
@@ -12,6 +17,8 @@
 </template>
 
 <script>
+    import Vue from 'vue'
+
     export default {
         name: "Login",
         data() {
@@ -26,8 +33,14 @@
         },
         methods: {
             onLogin() {
-                this.$socket.emit('userRequestLogin', this.enteredUsername);
-            }
+                Vue.googleAuth().signIn(this.onLoginSuccess, this.onLoginError);
+            },
+            onLoginSuccess: function (authorizationCode) {
+                this.$socket.emit('userGoogleLoginSuccess', authorizationCode);
+            },
+            onLoginError: function (error) {
+                console.log('GOOGLE SERVER - SIGN-IN ERROR', error)
+            },
         }
     }
 </script>

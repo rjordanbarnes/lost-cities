@@ -10,7 +10,9 @@ EXEC sp_MSforeachtable @command1 = "DROP TABLE ?"
 CREATE TABLE Account
 (
   AccountSK UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
-  Username NVARCHAR(25) NOT NULL UNIQUE,
+  GoogleID VARCHAR(128) NULL UNIQUE,
+  Username NVARCHAR(25) NOT NULL,
+  AvatarURL VARCHAR(2083) NULL,
   SkillRating INT NOT NULL DEFAULT 1000
 );
 
@@ -67,14 +69,14 @@ CREATE TABLE ScorePile
 (
   ScorePileSK UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
   GameSK UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Game(GameSK),
-  ScorePileColor NVARCHAR(128) NOT NULL CONSTRAINT CK_ScorePile_Color CHECK (ScorePileColor IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
+  ScorePileColor VARCHAR(128) NOT NULL CONSTRAINT CK_ScorePile_Color CHECK (ScorePileColor IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
   PlayerSK UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES GameMember(GameMemberSK)
 );
 
 CREATE TABLE Card
 (
   CardSK UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
-  CardColor NVARCHAR(128) NOT NULL CONSTRAINT CK_Card_Color CHECK (CardColor IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
+  CardColor VARCHAR(128) NOT NULL CONSTRAINT CK_Card_Color CHECK (CardColor IN ('Red', 'Green', 'White', 'Blue', 'Yellow')),
   CardValue TINYINT NOT NULL CONSTRAINT CK_Card_Value CHECK (CardValue > 0 AND CardValue < 11)
 );
 

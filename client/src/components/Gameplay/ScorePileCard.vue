@@ -26,8 +26,6 @@
 
 <style scoped>
     div {
-        border-style: solid;
-        border-width: 1px;
         width: 100%;
         font-weight: bold;
         font-size: 30px;

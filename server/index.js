@@ -1,7 +1,7 @@
 // External Modules
 const express = require('express');
-const expressApp = express();
-const http = require('http').Server(expressApp);
+const app = express();
+const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const sql = require('seriate');
 

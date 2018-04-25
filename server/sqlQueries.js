@@ -20,12 +20,18 @@ module.exports = {
 
 
     // Returns User information and whether the user Exists
-    loginAccount(username, callback){
+    loginGoogleAccount(userData, callback){
         sql.execute({
-            query: sql.fromFile("./sql/LoginAccount"),
+            query: sql.fromFile("./sql/LoginGoogleAccount"),
             params: {
-                username: {
-                    val: username
+                googleID: {
+                    val: userData.id
+                },
+                avatarURL: {
+                    val: userData.image.url
+                },
+                googleUsername: {
+                    val: userData.name.givenName
                 }
             }
         }).then(function(results) {
