@@ -3,6 +3,7 @@
         <div v-if="loading">Loading</div>
         <game-lobby :game-details="gameDetails" v-if="gameDetails.gameState === 'Lobby'"></game-lobby>
         <gameplay :game-details="gameDetails" :player="player" :opponent="opponent" v-if="gameDetails.gameState === 'Gameplay'"></gameplay>
+        <game-password-prompt :game-s-k="$route.params.gameSK" :is-game-full=true ref="gamePasswordPrompt"></game-password-prompt>
     </div>
 </template>
 
@@ -10,6 +11,7 @@
     import { GameplayEventBus } from '../events/GameplayEventBus.js'
     import GameLobby from '@/components/Lobby/GameLobby'
     import Gameplay from '@/components/Gameplay/Gameplay'
+    import GamePasswordPrompt from '@/components/Lobby/GamePasswordPrompt'
 
     export default {
         name: "Game",
@@ -64,8 +66,8 @@
                 this.$router.push('../lobby');
             },
             gameSpectate(data) {
-                if (data.errors && data.errors.includes('Unable to spectate the game, password not supplied.')) {
-                    $('#password-prompt').modal('show');
+                if (data.errors && data.errors.includes('Unable to join the game, password not supplied.')) {
+                    this.$refs.gamePasswordPrompt.showPrompt();
                 }
             },
             gameEnd(data) {
@@ -74,7 +76,8 @@
         },
         components: {
             GameLobby,
-            Gameplay
+            Gameplay,
+            GamePasswordPrompt
         }
     }
 </script>

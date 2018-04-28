@@ -1,23 +1,30 @@
 <template>
-    <div class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-end">
-            <div class="mr-auto">
-                <h3 class="mt-1">{{ gameName }}</h3>
-                <h5 class="mb-1">{{ gameHost }}</h5>
-            </div>
+    <div>
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-end">
+                <div class="mr-auto">
+                    <h3 class="mt-1">{{ gameName }}</h3>
+                    <h5 class="mb-1">{{ gameHost }}</h5>
+                </div>
 
-            <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
-            <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame()"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
+                <h3 class="my-0 mx-4 align-self-center">{{ gamePlayerCount }}/2</h3>
+                <button class="open-game-button my-1 btn btn-lg" :class="openGameButtonColor" v-on:click="onOpenGame()"><i class="fa fa-lock" v-if="isPasswordProtected"></i> {{ openGameButtonText }}</button>
+            </div>
         </div>
+
+        <game-password-prompt :game-s-k="gameSK" :is-game-full="isGameFull" ref="gamePasswordPrompt"></game-password-prompt>
     </div>
 </template>
 
 <script>
+    import GamePasswordPrompt from '@/components/Lobby/GamePasswordPrompt'
+
     export default {
         name: "GameListItem",
         props: ['gameSK', 'gameName', 'gameHost', 'gamePlayerCount', 'isPasswordProtected'],
         data() {
             return {
+                showPasswordPrompt: false
             }
         },
         computed: {
@@ -34,8 +41,7 @@
         methods: {
             onOpenGame(){
                 if (this.isPasswordProtected) {
-                    // Sends event for GamePasswordPrompt to appear
-                    this.$root.$emit('join-password-room', {gameSK : this.gameSK, isGameFull: this.isGameFull});
+                    this.$refs.gamePasswordPrompt.showPrompt();
                 } else {
                     if (this.isGameFull) {
                         this.$socket.emit('gameSpectate', {gameSK: this.gameSK});
@@ -44,6 +50,9 @@
                     }
                 }
             },
+        },
+        components: {
+            GamePasswordPrompt
         }
     }
 </script>
