@@ -1,6 +1,7 @@
 <template>
-    <div class="mt-2" v-on:click.stop="emitDiscardPileClicked">
+    <div class="mt-2 discard-pile" v-on:click.stop="emitDiscardPileClicked" v-bind:style="discardPileStyle">
         <card class="p-2" :card="cards[cards.length - 1]" v-if="cards.length > 0"></card>
+        <i class="fa fa-trash fa-2x" v-bind:style="trashCanStyle" v-else></i>
     </div>
 </template>
 
@@ -13,7 +14,13 @@
         props: ['cards', 'color', 'sk'],
         data() {
             return {
-                error: null
+                error: null,
+                discardPileStyle: {
+                    'border-color': 'var(--card-' + this.color + ')'
+                },
+                trashCanStyle: {
+                    'color':  'var(--card-' + this.color + ')'
+                }
             }
         },methods: {
             emitDiscardPileClicked() {
@@ -26,11 +33,14 @@
 </script>
 
 <style scoped>
-    div {
-        background-color: grey;
-        height: 75px;
-        border-style: solid;
-        border-width: 1px;
+    .discard-pile {
+        border-width: 3px;
+        border-style: dashed;
+        border-radius: 5px;
+        height: 65px;
+        width: 95px;
+        margin-left: auto;
+        margin-right: auto;
         display: flex;
         align-items: center;
         justify-content: center;

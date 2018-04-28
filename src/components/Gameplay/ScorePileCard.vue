@@ -1,6 +1,6 @@
 <template>
     <div v-bind:style="scorePileCardStyle" v-bind:class="topMargin">
-        {{card.CardValue}}
+        {{ card.CardValue }}
     </div>
 </template>
 

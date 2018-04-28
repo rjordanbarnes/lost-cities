@@ -1,5 +1,6 @@
 <template>
-    <div id="app">
+    <div id="app" class="container p-0">
+        <NavBar/>
         <router-link to="/login">Login</router-link>
         <router-view/>
 
@@ -14,7 +15,7 @@
 </template>
 
 <script>
-    import Alert from '@/components/Alert'
+    import NavBar from '@/components/NavBar'
     import jwt_decode from 'jwt-decode'
 
     export default {
@@ -44,6 +45,7 @@
                 } else {
                     this.$store.commit('authenticated', true);
                     this.$store.commit('accountSK', jwt_decode(data.token).accountSK);
+                    this.$store.commit('username', jwt_decode(data.token).username);
                     localStorage.setItem('token', data.token);
                 }
                 this.$store.commit('tokenResponseReceived', true);
@@ -54,7 +56,7 @@
             }
         },
         components: {
-            Alert
+            NavBar
         }
     }
 </script>
@@ -74,8 +76,18 @@
         --card-yellow: #FFD166 ;
     }
 
+    html {
+        height: 100%;
+    }
+
     body {
-        /*background-color: #000B14;*/
+        background-color: rgba(2, 2, 4, 0.33);
+        height: 100%;
+    }
+
+    #app {
+        background-color: white;
+        height: 100%;
     }
 
     .alert {
@@ -86,12 +98,5 @@
 
     [v-cloak] {
         display: none;
-    }
-
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s
-    }
-    .fade-enter, .fade-leave-to {
-        opacity: 0
     }
 </style>

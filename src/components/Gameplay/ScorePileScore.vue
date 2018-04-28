@@ -69,11 +69,6 @@
         justify-content: center;
     }
 
-    .investment-count {
-        border-style: solid;
-        border-width: 2px;
-    }
-
     .investment {
         border-style: solid;
         border-width: 1px;

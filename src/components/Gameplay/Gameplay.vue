@@ -14,7 +14,7 @@
                 <hand class="col-4" :hand="playerHand" v-if="playerHand.length > 0"></hand>
                 <deck class="col-1" :sk="gameDetails.deckSK" :deck-size="gameDetails.deckSize"></deck>
                 <div class="col-5 offset-2">
-                    <chat-box></chat-box>
+                    <chat-box/>
                 </div>
             </div>
 
@@ -73,8 +73,12 @@
                     self.selectedPlaceLocation = scorePile.sk;
                     self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
+
                     // Adds the card to the score pile immediately to reduce perceived latency.
-                    self.player.scorePiles[scorePile.color][scorePile.sk].push(self.selectedCard.card);
+                    const scorePileCards = self.player.scorePiles[scorePile.color][scorePile.sk];
+                    if (scorePileCards[scorePileCards.length - 1].CardValue < self.selectedCard.card.CardValue) {
+                        self.player.scorePiles[scorePile.color][scorePile.sk].push(self.selectedCard.card);
+                    }
                     self.selectedCard = null;
                 }
             });

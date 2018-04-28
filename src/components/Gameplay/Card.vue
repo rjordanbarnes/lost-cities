@@ -1,6 +1,6 @@
 <template>
     <div v-bind:style="cardStyle" :class="selectedHighlight" class="mx-auto" v-on:click="emitCardClicked">
-        {{card.CardValue}}
+        {{ cardDisplayText }}
     </div>
 </template>
 
@@ -29,6 +29,9 @@
         computed: {
             selectedHighlight() {
                 return (this.isSelected ? 'card-selected' : '');
+            },
+            cardDisplayText() {
+                return (this.card.CardValue === 1) ? '$' : this.card.CardValue;
             }
         }
     }
@@ -40,14 +43,13 @@
         font-size: 30px;
         height: 50px;
         width: 75px;
-        border-style: solid;
-        border-width: 1px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         user-select: none;
         outline-style: none;
+        box-shadow: 1px 8px 6px -6px rgba(0, 0, 0, 0.4), inset 0px -1px 2px -1px rgba(0,0,0,0.2);
     }
 
     .card-selected {
