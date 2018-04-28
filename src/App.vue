@@ -2,9 +2,14 @@
     <div id="app">
         <router-link to="/login">Login</router-link>
         <router-view/>
-        <transition name="fade">
-            <alert :message="alertProperties.message" :alert-style="alertProperties.alertStyle" v-if="alertProperties.visible" />
-        </transition>
+
+        <b-alert :show="dismissCountdown"
+                 dismissible
+                 variant="danger"
+                 @dismissed="dismissCountdown=0"
+                 @dismiss-countdown="countdownChanged">
+            {{ message }}
+        </b-alert>
     </div>
 </template>
 
@@ -16,11 +21,17 @@
         name: 'app',
         data() {
             return {
-                alertProperties: {
-                    visible: false,
-                    message: '',
-                    alertStyle: ''
-                }
+                message: '',
+                dismissSecs: 3,
+                dismissCountdown: 0
+            }
+        },
+        methods: {
+            countdownChanged (dismissCountdown) {
+                this.dismissCountdown = dismissCountdown;
+            },
+            showAlert () {
+                this.dismissCountdown = this.dismissSecs;
             }
         },
         sockets: {
@@ -38,15 +49,8 @@
                 this.$store.commit('tokenResponseReceived', true);
             },
             generalError(data) {
-                this.alertProperties = {
-                    visible: true,
-                    message: data.error,
-                    alertStyle: 'danger'
-                };
-
-                setTimeout(() => {
-                    this.alertProperties.visible = false;
-                }, 3000);
+                this.message = data.error;
+                this.showAlert();
             }
         },
         components: {
@@ -72,6 +76,12 @@
 
     body {
         /*background-color: #000B14;*/
+    }
+
+    .alert {
+        position: fixed;
+        bottom: 0;
+        width:100%;
     }
 
     [v-cloak] {
