@@ -28,6 +28,10 @@
 
 */
 
+SET XACT_ABORT ON
+
+BEGIN TRANSACTION
+
 -- Game that the user is in.
 DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
@@ -118,7 +122,7 @@ BEGIN
 
   -- Card color must match DiscardPile color
   IF ((SELECT CardColor FROM Card WHERE CardSK = @playedCardSK) != (SELECT DiscardPileColor FROM DiscardPile WHERE DiscardPileSK = @playedCardLocationSK))
-    THROW 50001, 'Unable to make turn, card color must match discard pile color.', 1;
+    THROW 50001, 'Unable to play card, card color must match discard pile color.', 1;
 
   -- Play the card into the discard pile
   INSERT INTO DiscardPileCard (CardSK, DiscardPileSK)
@@ -133,6 +137,8 @@ END
 UPDATE Game
 SET TurnState = 'Drawing'
 WHERE GameSK = @gameSK
+
+COMMIT TRANSACTION
 
 SELECT Username, @gameSK AS game
 FROM Account

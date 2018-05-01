@@ -20,9 +20,9 @@ module.exports = {
 
 
     // Returns User information and whether the user Exists
-    loginGoogleAccount(userData, callback){
+    signinGoogleAccount(userData, callback){
         sql.execute({
-            query: sql.fromFile("./sql/LoginGoogleAccount"),
+            query: sql.fromFile("./sql/SigninGoogleAccount"),
             params: {
                 googleID: {
                     val: userData.id

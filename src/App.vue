@@ -1,7 +1,6 @@
 <template>
-    <div id="app" class="container p-0">
+    <div id="app" class="container-fluid p-0">
         <NavBar/>
-        <router-link to="/login">Login</router-link>
         <router-view/>
 
         <b-alert :show="dismissCountdown"

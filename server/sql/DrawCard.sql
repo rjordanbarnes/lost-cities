@@ -24,6 +24,10 @@
 
 */
 
+SET XACT_ABORT ON
+
+BEGIN TRANSACTION
+
 -- Game that the user is in.
 DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
@@ -203,6 +207,8 @@ BEGIN
   DELETE FROM ScorePile
   WHERE GameSK = @gameSK
 END
+
+COMMIT TRANSACTION
 
 -- Return who drew the card, the game, and how many cards are left in the deck to check for game over.
 SELECT Username,

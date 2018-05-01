@@ -8,7 +8,7 @@ const {google} = require('googleapis');
 const googleOathConfig = require('../../config/googleoath.config.js');
 
 
-const googleLoginSuccess = function(authorizationCode) {
+const googleSigninSuccess = function(authorizationCode) {
     const self = this;
 
     const oauth2Client = new google.auth.OAuth2(
@@ -28,7 +28,7 @@ const googleLoginSuccess = function(authorizationCode) {
             plus.people.get({ userId: 'me' }).then(function(res) {
                 const userData = res.data;
 
-                sqlQueries.loginGoogleAccount(userData, function(User) {
+                sqlQueries.signinGoogleAccount(userData, function(User) {
                     self.socket.authenticated = User.exists;
 
                     if (self.socket.authenticated) {
@@ -38,14 +38,23 @@ const googleLoginSuccess = function(authorizationCode) {
 
                         appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
                         console.log(User.username + " logged in.");
-                        self.socket.emit('userLoginSuccess');
+                        self.socket.emit('userSigninSuccess');
                     } else {
-                        self.socket.emit('generalError', {error: 'Unable to login as ' + userData.emails[0].value});
+                        self.socket.emit('generalError', {error: 'Unable to sign in as ' + userData.emails[0].value});
                     }
                 });
             });
         }
     });
+};
+
+const googleSignoutSuccess = function() {
+    const self = this;
+
+    console.log(appVariables.onlineUsers[self.socket.id].username + " signed out.");
+
+    delete appVariables.onlineUsers[self.socket.id];
+    self.socket.authenticated = false;
 };
 
 // Checks if the passed token is valid.
@@ -131,7 +140,8 @@ module.exports = function(socket){
     this.socket = socket;
 
     this.handlers = {
-        'userGoogleLoginSuccess': googleLoginSuccess.bind(this),
+        'userGoogleSigninSuccess': googleSigninSuccess.bind(this),
+        'userGoogleSignoutSuccess': googleSignoutSuccess.bind(this),
         'userVerifyToken': verifyToken.bind(this),
         'disconnect': disconnectSocket.bind(this)
     };
