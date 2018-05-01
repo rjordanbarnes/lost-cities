@@ -1,5 +1,4 @@
 const sqlQueries = require('../sqlQueries.js');
-const appVariables = require('../appVariables.js');
 
 module.exports.Broadcast = {
     // Updates game list for all sockets.
@@ -25,10 +24,12 @@ module.exports.Broadcast = {
             // Update clients with everything but their hands.
             socket.server.in(gameSK).emit('gameUpdate', Game);
 
-            // Send each player in the room their hand.
-            Object.keys(appVariables.onlineUsers).forEach(function(socketid, index) {
-                if (appVariables.onlineUsers[socketid].accountSK in hands) {
-                    socket.server.sockets.connected[socketid].emit('gameHandUpdate', hands[appVariables.onlineUsers[socketid].accountSK]);
+            // For each socket in the room, send them their hand.
+            Object.keys(socket.adapter.rooms[gameSK].sockets).forEach(function(socketid) {
+                const clientsocket = socket.server.sockets.connected[socketid];
+
+                if (clientsocket.user.accountSK in hands) {
+                    clientsocket.emit('gameHandUpdate', hands[clientsocket.user.accountSK]);
                 }
             });
 
@@ -40,11 +41,11 @@ module.exports.Broadcast = {
 module.exports.Validations = {
     // Returns whether the given socket is authenticated and sends an error to the user if not.
     isAuthenticated(socket) {
-        if (!socket.authenticated) {
+        if (!socket.user.accountSK) {
             console.log('Unauthenticated socket request.');
             socket.emit('generalError', {error: 'Must be logged in.'});
         }
 
-        return socket.authenticated;
+        return socket.user.accountSK;
     }
 };

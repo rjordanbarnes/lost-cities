@@ -27,6 +27,6 @@ UPDATE GameMember
 SET IsReady = IsReady ^ 1
 WHERE AccountSK = @accountSK
 
-SELECT Username, @gameSK AS currentGame
+SELECT @gameSK AS currentGame
 FROM Account
 WHERE AccountSK = @accountSK

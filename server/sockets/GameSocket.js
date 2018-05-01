@@ -1,7 +1,6 @@
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
-const appVariables = require('../appVariables.js');
 
 // Creates a new game with the current socket as the host.
 const create = function(gameInput) {
@@ -19,13 +18,12 @@ const create = function(gameInput) {
     if (gameInput.gameName.length < 4 || gameInput.gameName.length > 20) {
         self.socket.emit('generalError', {error: 'Game name must be between 4 and 20 characters.'});
     } else {
-        const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
 
-        sqlQueries.createGame(accountSK, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
+        sqlQueries.createGame(self.socket.user.accountSK, gameInput.gameName, gameInput.gamePassword, function (NewGame) {
             if (NewGame && NewGame.hasOwnProperty('errors')) {
                 console.log(NewGame.errors.message);
             } else {
-                console.log('Created game ' + gameInput.gameName);
+                console.log(self.socket.user.username + ' created game ' + gameInput.gameName + ".");
                 // Host joins game channel.
                 self.socket.join(NewGame.gameSK);
 
@@ -44,13 +42,11 @@ const join = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Player', function (data) {
+    sqlQueries.joinGame(self.socket.user.accountSK, gameInput.gameSK, gameInput.password, 'Player', function (data) {
         if (data && data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log('Player joined a game.');
+            console.log(self.socket.user.username + ' joined a game as a player.');
             // Joins game's socket.io channel.
             self.socket.join(gameInput.gameSK);
 
@@ -67,14 +63,12 @@ const spectate = function(gameInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.joinGame(accountSK, gameInput.gameSK, gameInput.password, 'Spectator', function (data) {
+    sqlQueries.joinGame(self.socket.user.accountSK, gameInput.gameSK, gameInput.password, 'Spectator', function (data) {
         if (data && data.hasOwnProperty('errors')) {
             self.socket.emit('gameSpectate', {errors: data.errors.message});
             console.log(data.errors.message);
         } else {
-            console.log('Spectator joined game.');
+            console.log(self.socket.user.username + ' joined a game as a spectator.');
             // Joins game's socket.io channel.
             self.socket.join(gameInput.gameSK);
 
@@ -92,9 +86,7 @@ const start = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.startGame(accountSK, function(data) {
+    sqlQueries.startGame(self.socket.user.accountSK, function(data) {
         if (data && data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
@@ -110,13 +102,11 @@ const leave = function(){
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.leaveGame(accountSK, function (data) {
+    sqlQueries.leaveGame(self.socket.user.accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log("User left game.");
+            console.log(self.socket.user.username + ' left game.');
 
             self.socket.leave(data.currentGame);
 
@@ -149,13 +139,11 @@ const toggleReady = function() {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.readyToggle(accountSK, function (User) {
+    sqlQueries.readyToggle(self.socket.user.accountSK, function (User) {
         if (User.hasOwnProperty('errors')) {
             console.log(User.errors.message);
         } else {
-            console.log(User.Username + " readied up.");
+            console.log(self.socket.user.username + ' readied up.');
             Broadcast.refreshGameDetails(self.socket, User.currentGame);
         }
     });
@@ -167,13 +155,11 @@ const placeCard = function(turnInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.placeCard(accountSK, turnInput.placedCardSK, turnInput.placedCardLocationSK, function (data) {
+    sqlQueries.placeCard(self.socket.user.accountSK, turnInput.placedCardSK, turnInput.placedCardLocationSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(data.Username + " placed a card.");
+            console.log(self.socket.user.username + ' placed a card.');
             Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });
@@ -185,13 +171,11 @@ const drawCard = function(turnInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.drawCard(accountSK, turnInput.drawCardLocationSK, function (data) {
+    sqlQueries.drawCard(self.socket.user.accountSK, turnInput.drawCardLocationSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(data.Username + " drew a card.");
+            console.log(self.socket.user.username + ' drew a card.');
 
             if (data.isGameOver) {
                 console.log("Game ended.");

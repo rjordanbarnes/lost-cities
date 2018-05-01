@@ -1,14 +1,13 @@
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
-const appVariables = require('../appVariables.js');
 
 // Broadcasts the active games to all users.
 const getGames = function() {
     const self = this;
 
     sqlQueries.getGames(function (GameList) {
-        console.log('Sending game list to single user.');
+        console.log('Sending game list to ' + self.socket.user.username);
         self.socket.emit('lobbyGameList', {games: GameList});
     });
 };

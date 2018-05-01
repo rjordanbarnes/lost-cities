@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
-const appVariables = require('../appVariables.js');
 const tokenConfig = require('../../config/token.config.js');
 
 const {google} = require('googleapis');
@@ -29,14 +28,17 @@ const googleSigninSuccess = function(authorizationCode) {
                 const userData = res.data;
 
                 sqlQueries.signinGoogleAccount(userData, function(User) {
-                    self.socket.authenticated = User.exists;
 
-                    if (self.socket.authenticated) {
+                    if (User.exists) {
+                        self.socket.user = {
+                            accountSK: User.accountSK,
+                            username: User.username
+                        };
+
                         // Send JWT Token
                         const token = createToken(User.accountSK, User.username);
                         self.socket.emit('userToken',{token: token});
 
-                        appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
                         console.log(User.username + " logged in.");
                         self.socket.emit('userSigninSuccess');
                     } else {
@@ -51,11 +53,9 @@ const googleSigninSuccess = function(authorizationCode) {
 const googleSignoutSuccess = function() {
     const self = this;
 
-    console.log(appVariables.onlineUsers[self.socket.id].username + " signed out.");
+    console.log(self.socket.user.username + " signed out.");
 
-    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
-
-    sqlQueries.leaveGame(accountSK, function (data) {
+    sqlQueries.leaveGame(self.socket.user.accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
@@ -84,8 +84,10 @@ const googleSignoutSuccess = function() {
         }
     });
 
-    delete appVariables.onlineUsers[self.socket.id];
-    self.socket.authenticated = false;
+    self.socket.user = {
+        accountSK: null,
+        username: null
+    };
 };
 
 // Checks if the passed token is valid.
@@ -98,10 +100,12 @@ const verifyToken = function(token) {
             console.log("Expired, invalid, or missing token.");
         } else {
             sqlQueries.verifyToken(decoded.accountSK, function(User) {
-                self.socket.authenticated = User.exists;
 
-                if (self.socket.authenticated) {
-                    appVariables.onlineUsers[self.socket.id] = {accountSK: User.accountSK, username: User.username};
+                if (User.exists) {
+                    self.socket.user = {
+                        accountSK: User.accountSK,
+                        username: User.username
+                    };
 
                     // Refresh the token
                     const token = createToken(User.accountSK, User.username);
@@ -124,10 +128,7 @@ const disconnectSocket = function() {
 
     console.log('Socket disconnected.');
 
-    // Get the account sk associated with the socket.
-    const accountSK = (appVariables.onlineUsers[self.socket.id]) ? appVariables.onlineUsers[self.socket.id].accountSK : null;
-
-    sqlQueries.leaveGame(accountSK, function (data) {
+    sqlQueries.leaveGame(self.socket.user.accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
@@ -156,12 +157,10 @@ const disconnectSocket = function() {
         }
     });
 
-    delete appVariables.onlineUsers[self.socket.id];
-
-    // Removes connected socket.
-    const socketIndex = appVariables.connectedSockets.indexOf(self.socket);
-    if (socketIndex >= 0)
-        appVariables.connectedSockets.splice(socketIndex, 1);
+    self.socket.user = {
+        accountSK: null,
+        username: null
+    };
 };
 
 module.exports = function(socket){

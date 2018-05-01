@@ -1,5 +1,5 @@
 /*
-  
+
   Contains turn logic to draw a card.
 
   Turns have two parts:
@@ -179,7 +179,7 @@ BEGIN
 
   -- Sets the winner to the username of the account that has the higher score.
   SET @winner = CASE WHEN @accountScore > @accountScore2 THEN (SELECT Username FROM Account WHERE Account.AccountSK = @accountSK) WHEN @accountScore < @accountScore2 THEN (SELECT Username FROM Account WHERE Account.AccountSK = @accountSK2) ELSE (SELECT 'Tie Game') END
-  
+
 
   UPDATE Game SET GameState = 'Lobby' WHERE GameSK = @gameSK
 
@@ -211,8 +211,7 @@ END
 COMMIT TRANSACTION
 
 -- Return who drew the card, the game, and how many cards are left in the deck to check for game over.
-SELECT Username,
-       @gameSK AS game,
+SELECT @gameSK AS game,
        @isGameOver AS isGameOver,
        @winner AS winner
 FROM Account

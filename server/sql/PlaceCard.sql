@@ -1,5 +1,5 @@
 /*
-  
+
   Contains turn logic to place a card.
 
   Turns have two parts:
@@ -140,6 +140,6 @@ WHERE GameSK = @gameSK
 
 COMMIT TRANSACTION
 
-SELECT Username, @gameSK AS game
+SELECT @gameSK AS game
 FROM Account
 WHERE AccountSK = @accountSK

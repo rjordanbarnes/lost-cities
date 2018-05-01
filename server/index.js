@@ -6,7 +6,6 @@ const io = require('socket.io')(http);
 const sql = require('seriate');
 
 // My Modules
-const appVariables = require('./appVariables.js');
 const UserSocket = require('./sockets/UserSocket.js');
 const LobbySocket = require('./sockets/LobbySocket.js');
 const GameSocket = require('./sockets/GameSocket.js');
@@ -22,9 +21,11 @@ sql.setDefaultConfig(sqlConfig);
 sqlQueries.shutdownAllGames(function() {
     io.on('connection', function(socket) {
         console.log('Socket connected.');
-        appVariables.connectedSockets.push(socket);
-        socket.authenticated = false;
 
+        socket.user = {
+            accountSK: null,
+            username: null
+        };
 
         const socketHandlers = {
             'user': new UserSocket(socket),
