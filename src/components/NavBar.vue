@@ -79,12 +79,12 @@
                 Vue.googleAuth().signOut(this.onSignoutSuccess, this.onSignoutError);
             },
             onSignoutSuccess: function () {
+                this.$router.push('/lobby');
                 this.$socket.emit('userGoogleSignoutSuccess');
                 this.$store.commit('authenticated', false);
                 this.$store.commit('accountSK', null);
                 this.$store.commit('username', null);
                 localStorage.removeItem('token');
-                this.$router.push('/lobby');
             },
             onSignoutError: function (error) {
                 console.log('GOOGLE SERVER - SIGN OUT ERROR', error)

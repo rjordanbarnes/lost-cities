@@ -55,35 +55,6 @@ const googleSignoutSuccess = function() {
 
     console.log(self.socket.user.username + " signed out.");
 
-    sqlQueries.leaveGame(self.socket.user.accountSK, function (data) {
-        if (data.hasOwnProperty('errors')) {
-            console.log(data.errors.message);
-        } else {
-            console.log("User left game.");
-
-            self.socket.leave(data.currentGame);
-
-            if (data.gameShutdown) {
-                self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
-                self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
-
-                // Makes every socket leave the room.
-                self.socket.server.of('/').in(data.currentGame).clients(function(error, clients) {
-                    if (clients.length > 0) {
-                        clients.forEach(function(socket_id) {
-                            self.socket.server.sockets.sockets[socket_id].leave(data.currentGame);
-                        });
-                    }
-                });
-
-                Broadcast.refreshGameList(self.socket);
-            } else {
-                Broadcast.refreshGameDetails(self.socket, data.currentGame);
-                Broadcast.refreshGameList(self.socket);
-            }
-        }
-    });
-
     self.socket.user = {
         accountSK: null,
         username: null

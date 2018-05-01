@@ -74,6 +74,10 @@
                 alert(data.winner + " won!");
             }
         },
+        beforeRouteLeave(to, from, next) {
+            this.$socket.emit('gameLeave');
+            next();
+        },
         components: {
             GameLobby,
             Gameplay,

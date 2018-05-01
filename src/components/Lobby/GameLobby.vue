@@ -84,7 +84,6 @@
         },
         methods: {
             onQuitGame() {
-                this.$socket.emit('gameLeave');
                 this.$router.push('../lobby');
             },
             onReadyToggle() {
