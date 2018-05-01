@@ -7,7 +7,8 @@ export default new Vuex.Store({
         authenticated: false,
         tokenResponseReceived: false,
         accountSK: null,
-        username: null
+        username: null,
+        avatarURL: null
     },
     mutations: {
         authenticated(state, authenticated) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
         },
         username(state, username) {
             state.username = username;
+        },
+        avatarURL(state, avatarURL) {
+            state.avatarURL = avatarURL;
         }
     },
     getters: {
@@ -35,6 +39,9 @@ export default new Vuex.Store({
         },
         username(state, getters) {
             return state.username;
+        },
+        avatarURL(state, getters) {
+            return state.avatarURL;
         }
     }
 })

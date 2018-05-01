@@ -7,6 +7,7 @@ const {google} = require('googleapis');
 const googleOathConfig = require('../../config/googleoath.config.js');
 
 
+// Gets user data from Google, links the user to the socket, and sends a new token.
 const googleSigninSuccess = function(authorizationCode) {
     const self = this;
 
@@ -27,6 +28,9 @@ const googleSigninSuccess = function(authorizationCode) {
             plus.people.get({ userId: 'me' }).then(function(res) {
                 const userData = res.data;
 
+                // Removes the size parameter from the image url so that we can specify the size during render.
+                userData.image.url = userData.image.url.replace('?sz=50', '');
+
                 sqlQueries.signinGoogleAccount(userData, function(User) {
 
                     if (User.exists) {
@@ -37,7 +41,12 @@ const googleSigninSuccess = function(authorizationCode) {
 
                         // Send JWT Token
                         const token = createToken(User.accountSK, User.username);
-                        self.socket.emit('userToken',{token: token});
+                        self.socket.emit('userToken', {
+                            token: token,
+                            accountSK: User.accountSK,
+                            username: User.username,
+                            avatarURL: User.avatarURL
+                        });
 
                         console.log(User.username + " logged in.");
                         self.socket.emit('userSigninSuccess');
@@ -50,6 +59,7 @@ const googleSigninSuccess = function(authorizationCode) {
     });
 };
 
+// Unlinks user from socket upon Google sign out.
 const googleSignoutSuccess = function() {
     const self = this;
 
@@ -80,7 +90,12 @@ const verifyToken = function(token) {
 
                     // Refresh the token
                     const token = createToken(User.accountSK, User.username);
-                    self.socket.emit('userToken',{token: token});
+                    self.socket.emit('userToken', {
+                        token: token,
+                        accountSK: User.accountSK,
+                        username: User.username,
+                        avatarURL: User.avatarURL
+                    });
 
                     console.log(User.username + " token authenticated.");
                 } else {

@@ -43,8 +43,9 @@
                     console.log(data.errors);
                 } else {
                     this.$store.commit('authenticated', true);
-                    this.$store.commit('accountSK', jwt_decode(data.token).accountSK);
-                    this.$store.commit('username', jwt_decode(data.token).username);
+                    this.$store.commit('accountSK', data.accountSK);
+                    this.$store.commit('username', data.username);
+                    this.$store.commit('avatarURL', data.avatarURL);
                     localStorage.setItem('token', data.token);
                 }
                 this.$store.commit('tokenResponseReceived', true);

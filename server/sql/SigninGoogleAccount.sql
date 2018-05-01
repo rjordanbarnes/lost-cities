@@ -7,4 +7,7 @@ IF ((SELECT COUNT(*) FROM Account WHERE GoogleID = @googleID) = 0)
   INSERT INTO Account(GoogleID, Username, AvatarURL) VALUES (@googleID, @googleUsername, @avatarURL)
 
 -- Return Account info
-SELECT AccountSK AS accountSK, Username AS username FROM Account WHERE GoogleID=@googleID
+SELECT AccountSK AS accountSK,
+       Username AS username,
+       AvatarURL AS avatarURL
+FROM Account WHERE GoogleID=@googleID
