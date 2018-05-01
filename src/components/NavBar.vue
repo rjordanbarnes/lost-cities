@@ -57,7 +57,7 @@
         },
         sockets: {
             userSigninSuccess() {
-                this.$router.push('lobby');
+                this.$router.push('/lobby');
             }
         },
         computed: {
@@ -84,6 +84,7 @@
                 this.$store.commit('accountSK', null);
                 this.$store.commit('username', null);
                 localStorage.removeItem('token');
+                this.$router.push('/lobby');
             },
             onSignoutError: function (error) {
                 console.log('GOOGLE SERVER - SIGN OUT ERROR', error)

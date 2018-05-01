@@ -53,6 +53,37 @@ const googleSignoutSuccess = function() {
 
     console.log(appVariables.onlineUsers[self.socket.id].username + " signed out.");
 
+    const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
+
+    sqlQueries.leaveGame(accountSK, function (data) {
+        if (data.hasOwnProperty('errors')) {
+            console.log(data.errors.message);
+        } else {
+            console.log("User left game.");
+
+            self.socket.leave(data.currentGame);
+
+            if (data.gameShutdown) {
+                self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
+                self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
+
+                // Makes every socket leave the room.
+                self.socket.server.of('/').in(data.currentGame).clients(function(error, clients) {
+                    if (clients.length > 0) {
+                        clients.forEach(function(socket_id) {
+                            self.socket.server.sockets.sockets[socket_id].leave(data.currentGame);
+                        });
+                    }
+                });
+
+                Broadcast.refreshGameList(self.socket);
+            } else {
+                Broadcast.refreshGameDetails(self.socket, data.currentGame);
+                Broadcast.refreshGameList(self.socket);
+            }
+        }
+    });
+
     delete appVariables.onlineUsers[self.socket.id];
     self.socket.authenticated = false;
 };
@@ -93,42 +124,39 @@ const disconnectSocket = function() {
 
     console.log('Socket disconnected.');
 
-    // If the socket is authenticated, handle disconnecting the user.
-    if (self.socket.authenticated) {
-        const accountSK = appVariables.onlineUsers[self.socket.id].accountSK;
+    // Get the account sk associated with the socket.
+    const accountSK = (appVariables.onlineUsers[self.socket.id]) ? appVariables.onlineUsers[self.socket.id].accountSK : null;
 
-        sqlQueries.leaveGame(accountSK, function (data) {
-            if (data.hasOwnProperty('errors')) {
-                console.log(data.errors.message);
+    sqlQueries.leaveGame(accountSK, function (data) {
+        if (data.hasOwnProperty('errors')) {
+            console.log(data.errors.message);
+        } else {
+            console.log("User left game.");
+
+            self.socket.leave(data.currentGame);
+
+            if (data.gameShutdown) {
+                self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
+                self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
+
+                // Makes every socket leave the room.
+                self.socket.server.of('/').in(data.currentGame).clients(function(error, clients) {
+                    if (clients.length > 0) {
+                        clients.forEach(function(socket_id) {
+                            self.socket.server.sockets.sockets[socket_id].leave(data.currentGame);
+                        });
+                    }
+                });
+
+                Broadcast.refreshGameList(self.socket);
             } else {
-                console.log("User left game.");
-
-                self.socket.leave(data.currentGame);
-
-                if (data.gameShutdown) {
-                    self.socket.broadcast.to(data.currentGame).emit('generalError', {error: 'The host left.'});
-                    self.socket.broadcast.to(data.currentGame).emit('gameShutdown');
-
-                    // Makes every socket leave the room.
-                    self.socket.server.of('/').in(data.currentGame).clients(function(error, clients) {
-                        if (clients.length > 0) {
-                            clients.forEach(function(socket_id) {
-                                self.socket.server.sockets.sockets[socket_id].leave(data.currentGame);
-                            });
-                        }
-                    });
-
-                    Broadcast.refreshGameList(self.socket);
-                } else {
-                    Broadcast.refreshGameDetails(self.socket, data.currentGame);
-                    Broadcast.refreshGameList(self.socket);
-                }
+                Broadcast.refreshGameDetails(self.socket, data.currentGame);
+                Broadcast.refreshGameList(self.socket);
             }
-        });
+        }
+    });
 
-        delete appVariables.onlineUsers[self.socket.id];
-    }
-
+    delete appVariables.onlineUsers[self.socket.id];
 
     // Removes connected socket.
     const socketIndex = appVariables.connectedSockets.indexOf(self.socket);
