@@ -2,7 +2,6 @@
   "name": "LostCities",
   "version": "0.0.1",
   "author": "Jordan Barnes <rjordanbarnes@gmail.com>",
-  "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --open --config build/webpack.dev.conf.js",
     "start": "npm run dev",
