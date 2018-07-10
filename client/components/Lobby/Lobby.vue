@@ -1,11 +1,7 @@
 <template>
     <div id="lobby" class="container">
         <div class="row">
-            <div class="col-3">
-                <b-btn class="btn-block" variant="success" v-b-modal.create-game-prompt>Create Game</b-btn>
-                <chat-box class="mt-2"></chat-box>
-            </div>
-            <div id="game-list" class="list-group col-9">
+            <div id="game-list" class="list-group col-9" v-if="games.length > 0">
                 <game-list-item
                     v-for="game in games"
                     :key="game.gameSK"
@@ -15,6 +11,13 @@
                     :game-player-count="game.gamePlayerCount"
                     :is-password-protected="game.isPasswordProtected" />
             </div>
+            <div id="no-active-games" class="col-9 display-4 text-muted" v-else>No Active Games</div>
+
+            <div class="col-3">
+                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" v-b-modal.create-game-prompt>Create Game</b-btn>
+                <chat-box id="chat-box" class="mt-2"></chat-box>
+            </div>
+
         </div>
 
         <b-modal id="create-game-prompt" title="Create Game" @shown="onShowCreateGameWindow">
@@ -97,9 +100,15 @@
 
 <style scoped>
     #chat-box {
-        height: 500px;
+        height: 490px;
     }
     #create-game-button {
-        margin-top: 10px
+        margin-top: 10px;
+    }
+    #no-active-games {
+        padding-left: 0;
+        height: 546px;
+        line-height: 546px;
+        text-align: center;
     }
 </style>

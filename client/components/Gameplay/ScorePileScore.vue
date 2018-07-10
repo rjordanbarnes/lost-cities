@@ -1,15 +1,13 @@
 <template>
-    <div class="container">
-    <div class="row">
-        <div class="score-pile-score col-9">
+    <div class="container p-0">
+        <div id="investment-container" class="col-12 d-flex flex-row p-0">
+            <div class="investment" v-if="numberOfInvestments >= 3">$</div>
+            <div class="investment" v-if="numberOfInvestments >= 2">$</div>
+            <div class="investment" v-if="numberOfInvestments >= 1">$</div>
+        </div>
+        <div class="score-pile-score col-12">
             {{ score }}
         </div>
-        <div class="investment-count col-3 flex-column p-0">
-            <div class="investment" v-bind:class="{'investment-active': numberOfInvestments >= 3}"></div>
-            <div class="investment" v-bind:class="{'investment-active': numberOfInvestments >= 2}"></div>
-            <div class="investment" v-bind:class="{'investment-active': numberOfInvestments >= 1}"></div>
-        </div>
-    </div>
     </div>
 </template>
 
@@ -61,6 +59,10 @@
 </script>
 
 <style scoped>
+    #investment-container {
+        height: 24px
+    }
+
     .score-pile-score {
         font-weight: bold;
         font-size: 30px;
@@ -70,13 +72,9 @@
     }
 
     .investment {
-        border-style: solid;
-        border-width: 1px;
-        background-color: white;
-        height: 33.33%;
-    }
-
-    .investment-active {
         background-color: mediumpurple;
+        flex-basis: 33%;
+        height: 100%;
+        text-align: center;
     }
 </style>
