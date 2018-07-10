@@ -11,7 +11,7 @@ const create = function(gameInput) {
 
     gameInput.gameName = gameInput.gameName.trim();
 
-    if(gameInput.gamePassword.trim().length < 1) {
+    if (gameInput.gamePassword.trim().length < 1) {
         gameInput.gamePassword = 'NULL'
     }
 

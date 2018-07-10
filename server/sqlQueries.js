@@ -16,7 +16,7 @@ module.exports = {
     },
 
 
-    //// Login ////
+    //// User ////
 
 
     // Returns User information and whether the user Exists
@@ -57,6 +57,25 @@ module.exports = {
             // If there were no results found, set Exists to false.
             (0 in results) ? results[0].exists = true : results[0] = {exists: false};
 
+            callback(results[0]);
+        }, function(err) {
+            callback({errors: err});
+        });
+    },
+
+    // Changes the given account's username
+    changeUsername(accountSK, newUsername, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/ChangeUsername"),
+            params: {
+                accountSK: {
+                    val: accountSK
+                },
+                newUsername: {
+                    val: newUsername
+                }
+            }
+        }).then(function(results) {
             callback(results[0]);
         }, function(err) {
             callback({errors: err});

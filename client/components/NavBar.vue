@@ -8,11 +8,6 @@
 
             <b-collapse is-nav id="nav_collapse">
 
-                <b-navbar-nav>
-                    <b-nav-item href="#">Link</b-nav-item>
-                    <b-nav-item href="#" disabled>Disabled</b-nav-item>
-                </b-navbar-nav>
-
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item-dropdown right v-if="$store.getters.authenticated">
@@ -20,7 +15,7 @@
                             <b-img rounded :src="avatar" class="mr-1" />
                             {{ username }}
                         </template>
-                        <b-dropdown-item href="#">Profile</b-dropdown-item>
+                        <b-dropdown-item v-on:click="onChangeName">Change Name</b-dropdown-item>
                         <b-dropdown-item v-on:click="onSignout">Sign out</b-dropdown-item>
                     </b-nav-item-dropdown>
 
@@ -31,11 +26,13 @@
 
             </b-collapse>
         </b-navbar>
+        <change-name-prompt ref="changeNamePrompt"></change-name-prompt>
     </header>
 </template>
 
 <script>
     import Vue from 'vue';
+    import ChangeNamePrompt from '@/components/ChangeNamePrompt'
 
     export default {
         name: "NavBar",
@@ -79,7 +76,13 @@
             },
             onSignoutError: function (error) {
                 console.log('GOOGLE SERVER - SIGN OUT ERROR', error)
+            },
+            onChangeName: function() {
+                this.$refs.changeNamePrompt.showPrompt();
             }
+        },
+        components: {
+            ChangeNamePrompt
         }
     }
 </script>

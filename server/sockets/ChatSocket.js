@@ -1,5 +1,3 @@
-const sqlQueries = require('../sqlQueries.js');
-const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
 
 const message = function(data) {

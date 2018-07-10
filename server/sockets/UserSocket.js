@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const sqlQueries = require('../sqlQueries.js');
 const Broadcast = require('./SocketHelpers.js').Broadcast;
+const Validations = require('./SocketHelpers.js').Validations;
 const tokenConfig = require('../../config/token.config.js');
 
 const {google} = require('googleapis');
@@ -31,6 +32,9 @@ const googleSigninSuccess = function(authorizationCode) {
                 // Removes the size parameter from the image url so that we can specify the size during render.
                 userData.image.url = userData.image.url.replace('?sz=50', '');
 
+                // Truncate name to 25 characters
+                userData.name.givenName = userData.name.givenName.substring(0, 26);
+
                 sqlQueries.signinGoogleAccount(userData, function(User) {
 
                     if (User.exists) {
@@ -48,7 +52,7 @@ const googleSigninSuccess = function(authorizationCode) {
                             avatarURL: User.avatarURL
                         });
 
-                        console.log(User.username + " logged in.");
+                        console.log(User.username + " signed in with Google.");
                         self.socket.emit('userSigninSuccess');
                     } else {
                         self.socket.emit('generalError', {error: 'Unable to sign in as ' + userData.emails[0].value});
@@ -108,6 +112,27 @@ const verifyToken = function(token) {
     });
 };
 
+// Changes the user's username
+const changeName = function(newDetails) {
+    const self = this;
+
+    if (!Validations.isAuthenticated(self.socket))
+        return;
+
+    const newUsername = newDetails.newName.trim();
+
+    if (newUsername.length < 2 || newUsername.length > 25) {
+        self.socket.emit('generalError', {error: 'New name must be between 2 and 25 characters.'});
+    } else {
+        sqlQueries.changeUsername(self.socket.user.accountSK, newUsername, function(User) {
+            // Triggers a new token to be created because the token contains the username
+            self.socket.emit('userRequestToken');
+
+            console.log(User.oldUsername + ' changed their name to ' + User.newUsername + '.');
+        });
+    }
+};
+
 // Performs cleanup when a socket disconnects.
 const disconnectSocket = function() {
     const self = this;
@@ -156,7 +181,8 @@ module.exports = function(socket){
         'userGoogleSigninSuccess': googleSigninSuccess.bind(this),
         'userGoogleSignoutSuccess': googleSignoutSuccess.bind(this),
         'userVerifyToken': verifyToken.bind(this),
-        'disconnect': disconnectSocket.bind(this)
+        'userChangeName': changeName.bind(this),
+        'disconnect': disconnectSocket.bind(this),
     };
 };
 
