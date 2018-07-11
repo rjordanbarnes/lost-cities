@@ -23,11 +23,11 @@
         <b-modal ref="createGamePrompt" id="create-game-prompt" title="Create Game" @shown="onShowCreateGameWindow">
             <div class="form-group">
                 <label class="form-control-label">Game Name:</label>
-                <input type="text" class="form-control" ref="createGameName" v-model="enteredGameName">
+                <input type="text" class="form-control" ref="createGameName" v-model="enteredGameName" @keyup.enter="onCreateGame">
             </div>
             <div class="form-group">
                 <label for="create-game-password" class="form-control-label">Game Password:</label>
-                <input type="text" class="form-control" id="create-game-password" v-model="enteredGamePassword">
+                <input type="text" class="form-control" id="create-game-password" v-model="enteredGamePassword" @keyup.enter="onCreateGame">
             </div>
             <div slot="modal-footer">
                 <b-btn id="submitButton" class="float-right" variant="primary" @click="onCreateGame">

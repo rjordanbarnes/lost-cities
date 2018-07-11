@@ -2,7 +2,7 @@
     <b-modal ref="changeNamePrompt" title="Change Name" @shown="onShowChangeNamePrompt">
         <div class="form-group">
             <label class="form-control-label">New Name:</label>
-            <input type="text" class="form-control" ref="newName" v-model="enteredNewName">
+            <input type="text" class="form-control" ref="newName" v-model="enteredNewName" @keyup.enter="onSubmitNewName">
         </div>
         <div slot="modal-footer">
             <b-btn id="submitButton" class="float-right" variant="primary" @click="onSubmitNewName">

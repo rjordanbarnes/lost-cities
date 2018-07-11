@@ -2,7 +2,7 @@
     <b-modal ref="gamePasswordPrompt" title="Enter Password" @shown="onShowGamePasswordPrompt">
         <div class="form-group">
             <label class="form-control-label">Password:</label>
-            <input type="text" class="form-control" ref="joinGamePassword" v-model="enteredPassword">
+            <input type="text" class="form-control" ref="joinGamePassword" v-model="enteredPassword" @keyup.enter="onSubmitPassword">
         </div>
         <div slot="modal-footer">
             <b-btn id="submitButton" class="float-right" variant="primary" @click="onSubmitPassword">
