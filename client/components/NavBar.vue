@@ -4,7 +4,7 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand to="/lobby">Lost Cities</b-navbar-brand>
+            <b-navbar-brand id="brand-text" to="/lobby">Lost Cities</b-navbar-brand>
 
             <b-collapse is-nav id="nav_collapse">
 
@@ -12,11 +12,11 @@
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item-dropdown right v-if="$store.getters.authenticated">
                         <template slot="button-content">
-                            <b-img rounded :src="avatar" class="mr-1" />
+                            <b-img rounded :src="avatar" class="mr-2" />
                             {{ username }}
                         </template>
-                        <b-dropdown-item v-on:click="onChangeName">Change Name</b-dropdown-item>
-                        <b-dropdown-item v-on:click="onSignout">Sign out</b-dropdown-item>
+                        <b-dropdown-item @click="onChangeName">Change Name</b-dropdown-item>
+                        <b-dropdown-item @click="onSignout">Sign out</b-dropdown-item>
                     </b-nav-item-dropdown>
 
                     <b-nav-item right v-else v-on:click="onSignin">
@@ -50,7 +50,7 @@
                 return this.$store.getters.username;
             },
             avatar() {
-                return this.$store.getters.avatarURL + '?sz=20';
+                return this.$store.getters.avatarURL + '?sz=30';
             }
         },
         methods: {
@@ -88,5 +88,7 @@
 </script>
 
 <style scoped>
-
+    #brand-text {
+        font-size: 1.75rem;
+    }
 </style>

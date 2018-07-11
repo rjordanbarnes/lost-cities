@@ -80,6 +80,12 @@
         height: 100%;
     }
 
+    header {
+        height: 70px;
+        display: flex;
+        align-items: center;
+    }
+
     body {
         background-color: rgba(2, 2, 4, 0.33);
         height: 100%;

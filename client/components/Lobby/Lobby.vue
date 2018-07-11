@@ -114,6 +114,7 @@
         height: 546px;
         line-height: 546px;
         text-align: center;
+        font-size: 2rem;
     }
     #submitButton {
         margin-left: .5rem;
