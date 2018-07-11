@@ -73,7 +73,7 @@
 
     .investment {
         background-color: mediumpurple;
-        flex-basis: 33%;
+        flex-basis: 33.33%;
         height: 100%;
         text-align: center;
     }

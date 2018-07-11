@@ -4,8 +4,13 @@
             <label class="form-control-label">Password:</label>
             <input type="text" class="form-control" ref="joinGamePassword" v-model="enteredPassword">
         </div>
-        <div slot="modal-ok" @click="onSubmitPassword">
-            Submit
+        <div slot="modal-footer">
+            <b-btn id="submitButton" class="float-right" variant="primary" @click="onSubmitPassword">
+                Submit
+            </b-btn>
+            <b-btn class="float-right" variant="secondary" @click="$refs.gamePasswordPrompt.hide()">
+                Cancel
+            </b-btn>
         </div>
     </b-modal>
 </template>
@@ -40,5 +45,7 @@
 </script>
 
 <style scoped>
-
+    #submitButton {
+        margin-left: .5rem;
+    }
 </style>

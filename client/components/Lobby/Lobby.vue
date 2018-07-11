@@ -14,24 +14,28 @@
             <div id="no-active-games" class="col-9 display-4 text-muted" v-else>No Active Games</div>
 
             <div class="col-3">
-                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" v-b-modal.create-game-prompt>Create Game</b-btn>
+                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" @click="$refs.createGamePrompt.show()">Create Game</b-btn>
                 <chat-box id="chat-box" class="mt-2"></chat-box>
             </div>
 
         </div>
 
-        <b-modal id="create-game-prompt" title="Create Game" @shown="onShowCreateGameWindow">
+        <b-modal ref="createGamePrompt" id="create-game-prompt" title="Create Game" @shown="onShowCreateGameWindow">
             <div class="form-group">
                 <label class="form-control-label">Game Name:</label>
                 <input type="text" class="form-control" ref="createGameName" v-model="enteredGameName">
             </div>
             <div class="form-group">
                 <label for="create-game-password" class="form-control-label">Game Password:</label>
-                <input type="text" class="form-control" id="create-game-password"
-                       v-model="enteredGamePassword">
+                <input type="text" class="form-control" id="create-game-password" v-model="enteredGamePassword">
             </div>
-            <div slot="modal-ok" @click="onCreateGame">
-                Create
+            <div slot="modal-footer">
+                <b-btn id="submitButton" class="float-right" variant="primary" @click="onCreateGame">
+                    Create
+                </b-btn>
+                <b-btn class="float-right" variant="secondary" @click="$refs.createGamePrompt.hide()">
+                    Cancel
+                </b-btn>
             </div>
         </b-modal>
     </div>
@@ -110,5 +114,8 @@
         height: 546px;
         line-height: 546px;
         text-align: center;
+    }
+    #submitButton {
+        margin-left: .5rem;
     }
 </style>
