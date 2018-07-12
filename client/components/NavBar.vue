@@ -1,6 +1,6 @@
 <template>
     <header class="container-fluid p-0 mb-2 bg-dark">
-        <b-navbar toggleable="md" type="dark" variant="dark" class="container">
+        <b-navbar toggleable="md" type="dark" variant="dark" class="container p-0">
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -20,7 +20,7 @@
                     </b-nav-item-dropdown>
 
                     <b-nav-item right v-else v-on:click="onSignin">
-                        <i class="fa fa-google-plus-official"></i> Sign In
+                        <img src="../assets/images/btn_google_signin_light_normal_web.png" />
                     </b-nav-item>
                 </b-navbar-nav>
 
@@ -50,7 +50,7 @@
                 return this.$store.getters.username;
             },
             avatar() {
-                return this.$store.getters.avatarURL + '?sz=30';
+                return this.$store.getters.avatarURL + '?sz=25';
             }
         },
         methods: {
@@ -88,7 +88,21 @@
 </script>
 
 <style scoped>
+    header {
+        height: 60px;
+        display: flex;
+        align-items: center;
+    }
+
+    img {
+        margin-right: 15px;
+    }
+
     #brand-text {
         font-size: 1.75rem;
+    }
+
+    .nav-link {
+        padding: 0 !important;
     }
 </style>
