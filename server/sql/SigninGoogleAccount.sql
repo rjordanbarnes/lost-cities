@@ -22,9 +22,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

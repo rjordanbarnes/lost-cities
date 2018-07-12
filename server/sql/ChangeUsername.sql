@@ -1,4 +1,4 @@
---DECLARE @accountSK UNIQUEIDENTIFIER = '1AC302DA-97C4-466A-A585-CF89159D9E65';
+--DECLARE @accountSK INT = '1AC302DA-97C4-466A-A585-CF89159D9E65';
 --DECLARE @newUsername VARCHAR(25) = 'Jordan';
 
 BEGIN TRANSACTION
@@ -21,9 +21,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

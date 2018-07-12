@@ -15,8 +15,8 @@
 
 */
 
---DECLARE @accountSK UNIQUEIDENTIFIER = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
---DECLARE @drawCardLocationSK UNIQUEIDENTIFIER = '9896A367-AB3C-4A83-97CD-FC9651084A50';
+--DECLARE @accountSK INT = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
+--DECLARE @drawCardLocationSK INT = '9896A367-AB3C-4A83-97CD-FC9651084A50';
 
 /*
 
@@ -28,13 +28,13 @@ BEGIN TRANSACTION
 BEGIN TRY
 
   -- Game that the user is in.
-  DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameSK INT = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- GameMember associated with user.
-  DECLARE @gameMemberSK UNIQUEIDENTIFIER = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameMemberSK INT = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- User's hand
-  DECLARE @handSK UNIQUEIDENTIFIER = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
+  DECLARE @handSK INT = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
 
   -- Whether the draw card location is the deck or a discardpile.
   DECLARE @drawCardLocationType NVARCHAR(128);
@@ -129,7 +129,7 @@ BEGIN TRY
   -- If the game is over, send the game back to the lobby and determine the winner.
   IF (@isGameOver = 1)
   BEGIN
-    DECLARE @accountSK2 UNIQUEIDENTIFIER = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
+    DECLARE @accountSK2 INT = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
 
     -- Determine score for player 1
     IF OBJECT_ID('tempdb..#AccountScores') IS NOT NULL DROP TABLE #AccountScores
@@ -219,9 +219,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

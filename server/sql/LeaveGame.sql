@@ -6,13 +6,13 @@
   SELECT * FROM Game
 */
 
---DECLARE @accountSK UNIQUEIDENTIFIER = '6A432575-6530-4A91-A7E8-5305C4730255';
+--DECLARE @accountSK INT = '6A432575-6530-4A91-A7E8-5305C4730255';
 
 BEGIN TRANSACTION
 BEGIN TRY
 
   -- Game that the user is in.
-  DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameSK INT = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- User must be in a game.
   IF (@gameSK IS NULL)
@@ -103,9 +103,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

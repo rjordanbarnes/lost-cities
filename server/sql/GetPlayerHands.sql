@@ -1,5 +1,5 @@
 /*
-  
+
   Returns the hands of the participants for the given game.
 
 
@@ -8,7 +8,7 @@
 
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = 'B9018601-1305-4B4C-B803-C2FC5DAA997D';
+--DECLARE @gameSK INT = 'B9018601-1305-4B4C-B803-C2FC5DAA997D';
 
 SELECT Hand.HandSK, PlayerSK, Card.CardSK, Card.CardColor, Card.CardValue FROM Hand
 INNER JOIN HandCard ON (Hand.HandSK = HandCard.HandSK)

@@ -18,9 +18,9 @@
 
 */
 
---DECLARE @accountSK UNIQUEIDENTIFIER = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
---DECLARE @playedCardSK UNIQUEIDENTIFIER = '38EF9C76-6772-4692-8B15-EC3293E4F547';
---DECLARE @playedCardLocationSK UNIQUEIDENTIFIER = '99A7883B-80C4-4A6E-9E57-9E97A7F85258';
+--DECLARE @accountSK INT = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
+--DECLARE @playedCardSK INT = '38EF9C76-6772-4692-8B15-EC3293E4F547';
+--DECLARE @playedCardLocationSK INT = '99A7883B-80C4-4A6E-9E57-9E97A7F85258';
 
 /*
 
@@ -32,13 +32,13 @@ BEGIN TRANSACTION
 BEGIN TRY
 
   -- Game that the user is in.
-  DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameSK INT = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- GameMember associated with user.
-  DECLARE @gameMemberSK UNIQUEIDENTIFIER = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameMemberSK INT = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- User's hand
-  DECLARE @handSK UNIQUEIDENTIFIER = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
+  DECLARE @handSK INT = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
 
   -- Whether the played card location is a scorepile or a discardpile.
   DECLARE @playedCardLocationType NVARCHAR(128);
@@ -146,9 +146,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

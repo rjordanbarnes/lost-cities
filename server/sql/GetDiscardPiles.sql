@@ -1,5 +1,5 @@
 /*
-  
+
   Returns the discard piles of the given game.
 
 
@@ -8,7 +8,7 @@
 
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM Game);
+--DECLARE @gameSK INT = (SELECT GameSK FROM Game);
 
 SELECT DiscardPile.DiscardPileSK, DiscardPileColor, DiscardPileCardOrder, Card.CardSK, Card.CardColor, Card.CardValue FROM DiscardPile
 LEFT OUTER JOIN DiscardPileCard ON (DiscardPile.DiscardPileSK = DiscardPileCard.DiscardPileSK)

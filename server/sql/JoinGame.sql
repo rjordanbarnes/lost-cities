@@ -4,8 +4,8 @@
   SELECT * FROM Game
 */
 
---DECLARE @gameSK UNIQUEIDENTIFIER = '331F0821-CA22-4049-A644-ED5489F8E8D9';
---DECLARE @accountSK UNIQUEIDENTIFIER = '6A432575-6530-4A91-A7E8-5305C4730255';
+--DECLARE @gameSK INT = '331F0821-CA22-4049-A644-ED5489F8E8D9';
+--DECLARE @accountSK INT = '6A432575-6530-4A91-A7E8-5305C4730255';
 --DECLARE @password NVARCHAR(128) = 'PasswordFromScript';
 --DECLARE @gameMemberType NVARCHAR(128) = 'Player';
 
@@ -49,9 +49,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 

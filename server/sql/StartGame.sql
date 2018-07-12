@@ -7,16 +7,16 @@
 
 */
 
---DECLARE @accountSK UNIQUEIDENTIFIER = 'CB0964E8-BBF6-4A2D-934B-2790D81B0EEA';
+--DECLARE @accountSK INT = 'CB0964E8-BBF6-4A2D-934B-2790D81B0EEA';
 
 BEGIN TRANSACTION
 BEGIN TRY
 
   -- Game that the user is in.
-  DECLARE @gameSK UNIQUEIDENTIFIER = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameSK INT = (SELECT GameSK FROM GameMember WHERE AccountSK = @accountSK);
 
   -- Other user in the game.
-  DECLARE @accountSK2 UNIQUEIDENTIFIER = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK != @accountSK AND GameMemberType = 'Player');
+  DECLARE @accountSK2 INT = (SELECT AccountSK FROM GameMember WHERE GameSK = @gameSK AND AccountSK <> @accountSK AND GameMemberType = 'Player');
 
   /*
 
@@ -62,10 +62,10 @@ BEGIN TRY
 
 
   ------- Creates deck -------
-  DECLARE @deckSK UNIQUEIDENTIFIER = NEWID();
+  INSERT INTO Deck(GameSK)
+  VALUES (@gameSK)
 
-  INSERT INTO Deck(DeckSK, GameSK)
-  VALUES (@deckSK, @gameSK)
+  DECLARE @deckSK INT = SCOPE_IDENTITY();
 
   -- Randomly insert one of each card into the deck (60 cards)
   INSERT INTO DeckCard(CardSK, DeckSK)
@@ -86,8 +86,8 @@ BEGIN TRY
   ----------------------------
 
   ------- Creates the 10 score piles -------
-  DECLARE @gameMemberSK UNIQUEIDENTIFIER = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
-  DECLARE @gameMemberSK2 UNIQUEIDENTIFIER = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK2);
+  DECLARE @gameMemberSK INT = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK);
+  DECLARE @gameMemberSK2 INT = (SELECT GameMemberSK FROM GameMember WHERE AccountSK = @accountSK2);
 
   INSERT INTO ScorePile (ScorePileColor, PlayerSK, GameSK)
   VALUES
@@ -105,13 +105,16 @@ BEGIN TRY
   ----------------------------
 
   ------- Creates the player hands -------
-  DECLARE @handSK UNIQUEIDENTIFIER = NEWID();
-  DECLARE @handSK2 UNIQUEIDENTIFIER = NEWID();
 
-  INSERT INTO Hand (HandSK, PlayerSK, GameSK)
-  VALUES
-    (@handSK, @gameMemberSK, @gameSK),
-    (@handSK2, @gameMemberSK2, @gameSK)
+  INSERT INTO Hand (PlayerSK, GameSK)
+  VALUES (@gameMemberSK, @gameSK)
+
+  DECLARE @handSK INT = SCOPE_IDENTITY();
+
+  INSERT INTO Hand (PlayerSK, GameSK)
+  VALUES (@gameMemberSK2, @gameSK)
+
+  DECLARE @handSK2 INT = SCOPE_IDENTITY();
   ----------------------------
 
   ------- Draws 8 cards for each player -------
@@ -140,9 +143,9 @@ BEGIN CATCH
   DECLARE @error int,
           @message varchar(4000),
           @xstate int;
-  
+
   SELECT
-      @error = ERROR_NUMBER(),
+      @error = 50000,
       @message = ERROR_MESSAGE(),
       @xstate = XACT_STATE();
 
