@@ -13,13 +13,17 @@
   @playedCardSK
   The card they're playing. A CardSK
 
+  @playedCardLocationType
+  The type of location the card is being played. Either a ScorePile or a DiscardPile.
+
   @playedCardLocationSK
-  The location they're playing the card. Either a ScorePileSK or a DiscardPileSK
+  The SK of the location they're playing the card.
 
 */
 
 --DECLARE @accountSK INT = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
 --DECLARE @playedCardSK INT = '38EF9C76-6772-4692-8B15-EC3293E4F547';
+--DECLARE @playedCardLocationType NVARCHAR(200) = '';
 --DECLARE @playedCardLocationSK INT = '99A7883B-80C4-4A6E-9E57-9E97A7F85258';
 
 /*
@@ -40,16 +44,6 @@ BEGIN TRY
   -- User's hand
   DECLARE @handSK INT = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
 
-  -- Whether the played card location is a scorepile or a discardpile.
-  DECLARE @playedCardLocationType NVARCHAR(128);
-
-  IF ((SELECT COUNT(*) FROM ScorePile WHERE ScorePileSK = @playedCardLocationSK AND GameSK = @gameSK AND PlayerSK = @gameMemberSK) > 0)
-    SET @playedCardLocationType = 'ScorePile';
-  ELSE IF ((SELECT COUNT(*) FROM DiscardPile WHERE DiscardPileSK = @playedCardLocationSK AND GameSK = @gameSK) > 0)
-    SET @playedCardLocationType = 'DiscardPile';
-  ELSE
-    THROW 50001, 'Played card location must be the player''s own score pile or a discard pile for the user''s game.', 1;
-
   /*
 
     Validations
@@ -59,6 +53,10 @@ BEGIN TRY
   -- Inputs must be provided
   IF (@accountSK IS NULL OR @playedCardSK IS NULL OR @playedCardLocationSK IS NULL)
     THROW 50001, 'Unable to place card: user, played card, and played card location must be supplied.', 1;
+
+  -- Played card location type must be valid.
+  IF (@playedCardLocationType <> 'ScorePile' AND @playedCardLocationType <> 'DiscardPile')
+    THROW 50001, 'Played card location type must be ScorePile or DiscardPile', 1;
 
   -- User must be in a game.
   IF (@gameSK IS NULL)
@@ -91,6 +89,10 @@ BEGIN TRY
   IF (@playedCardLocationType = 'ScorePile')
   BEGIN
 
+    -- Score Pile must be the player's own in their own game.
+    IF ((SELECT COUNT(*) FROM ScorePile WHERE ScorePileSK = @playedCardLocationSK AND GameSK = @gameSK AND PlayerSK = @gameMemberSK) = 0)
+      THROW 50001, 'Selected score pile must be the player''s and be in the player''s game.', 1;
+
     -- Card color must match ScorePile color
     IF ((SELECT CardColor FROM Card WHERE CardSK = @playedCardSK) != (SELECT ScorePileColor FROM ScorePile WHERE ScorePileSK = @playedCardLocationSK))
       THROW 50001, 'Unable to play card, card color must match score pile color.', 1;
@@ -118,6 +120,10 @@ BEGIN TRY
   -- If playing card on a discard pile.
   ELSE IF (@playedCardLocationType = 'DiscardPile')
   BEGIN
+
+    -- Score Pile must be in the player's game.
+    IF ((SELECT COUNT(*) FROM DiscardPile WHERE DiscardPileSK = @playedCardLocationSK AND GameSK = @gameSK) = 0)
+      THROW 50001, 'Selected discard pile must be in the player''s game.', 1;
 
     -- Card color must match DiscardPile color
     IF ((SELECT CardColor FROM Card WHERE CardSK = @playedCardSK) != (SELECT DiscardPileColor FROM DiscardPile WHERE DiscardPileSK = @playedCardLocationSK))

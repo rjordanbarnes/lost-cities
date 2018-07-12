@@ -155,7 +155,7 @@ const placeCard = function(turnInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    sqlQueries.placeCard(self.socket.user.accountSK, turnInput.placedCardSK, turnInput.placedCardLocationSK, function (data) {
+    sqlQueries.placeCard(self.socket.user.accountSK, turnInput.placedCardSK, turnInput.placedCardLocationType, turnInput.placedCardLocationSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
@@ -171,7 +171,7 @@ const drawCard = function(turnInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    sqlQueries.drawCard(self.socket.user.accountSK, turnInput.drawCardLocationSK, function (data) {
+    sqlQueries.drawCard(self.socket.user.accountSK, turnInput.drawCardLocationType, turnInput.drawCardLocationSK, function (data) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {

@@ -10,12 +10,16 @@
   @accountSK
   The user that's making the turn. An AccountSK
 
+  @drawCardLocationType
+  Whether the draw card location is the deck or a discardpile. Either Deck or DiscardPile.
+
   @drawCardLocationSK
   The location they're drawing from. Either a DeckSK or a DiscardPileSK
 
 */
 
 --DECLARE @accountSK INT = (SELECT AccountSK FROM Account WHERE Username = 'Jordan');
+--DECLARE @drawCardLocationType NVARCHAR(200) = '';
 --DECLARE @drawCardLocationSK INT = '9896A367-AB3C-4A83-97CD-FC9651084A50';
 
 /*
@@ -36,16 +40,6 @@ BEGIN TRY
   -- User's hand
   DECLARE @handSK INT = (SELECT HandSK FROM Hand WHERE PlayerSK = @gameMemberSK AND GameSK = @gameSK);
 
-  -- Whether the draw card location is the deck or a discardpile.
-  DECLARE @drawCardLocationType NVARCHAR(128);
-
-  IF ((SELECT COUNT(*) FROM Deck WHERE DeckSK = @drawCardLocationSK AND GameSK = @gameSK) > 0)
-    SET @drawCardLocationType = 'Deck';
-  ELSE IF ((SELECT COUNT(*) FROM DiscardPile WHERE DiscardPileSK = @drawCardLocationSK AND GameSK = @gameSK) > 0)
-    SET @drawCardLocationType = 'DiscardPile';
-  ELSE
-    THROW 50001, 'Draw card location must be the deck or a discard pile for the user''s game.', 1;
-
   /*
 
     Validations
@@ -55,6 +49,10 @@ BEGIN TRY
   -- Inputs must be provided
   IF (@accountSK IS NULL OR @drawCardLocationSK IS NULL)
     THROW 50001, 'Unable to draw card: user and draw card location must be supplied.', 1;
+
+  -- Draw card location type must be valid.
+  IF (@drawCardLocationType <> 'Deck' AND @drawCardLocationType <> 'DiscardPile')
+    THROW 50001, 'Draw card location type must be Deck or DiscardPile.', 1;
 
   -- User must be in a game.
   IF (@gameSK IS NULL)
@@ -75,6 +73,14 @@ BEGIN TRY
   -- If drawing from a discard pile, there must be cards in the pile.
   IF (@drawCardLocationType = 'DiscardPile' AND (SELECT COUNT(*) FROM DiscardPileCard WHERE DiscardPileSK = @drawCardLocationSK) < 1)
     THROW 50001, 'Unable to make turn, discard pile is empty.', 1;
+
+  -- If drawing from deck, the deck must be for the user's game.
+  IF (@drawCardLocationType = 'Deck' AND (SELECT COUNT(*) FROM Deck WHERE DeckSK = @drawCardLocationSK AND GameSK = @gameSK) < 1)
+      THROW 50001, 'Selected deck must be in the player''s game.', 1;
+
+  -- If drawing from a discard pile, the discard pile must be for the user's game.
+  IF (@drawCardLocationType = 'DiscardPile' AND (SELECT COUNT(*) FROM DiscardPile WHERE DiscardPileSK = @drawCardLocationSK AND GameSK = @gameSK) = 0)
+      THROW 50001, 'Selected discard pile must be in the player''s game.', 1;
 
   /*
 

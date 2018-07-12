@@ -327,7 +327,7 @@ module.exports = {
 
     // Makes a turn
     //
-    placeCard(accountSK, playedCardSK, playedCardLocationSK, callback) {
+    placeCard(accountSK, playedCardSK, playedCardLocationType, playedCardLocationSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/PlaceCard"),
             params: {
@@ -336,6 +336,9 @@ module.exports = {
                 },
                 playedCardSK: {
                     val: playedCardSK
+                },
+                playedCardLocationType: {
+                    val: playedCardLocationType
                 },
                 playedCardLocationSK: {
                     val: playedCardLocationSK
@@ -350,12 +353,15 @@ module.exports = {
 
     // Makes a turn
     //
-    drawCard(accountSK, drawCardLocationSK, callback) {
+    drawCard(accountSK, drawCardLocationType, drawCardLocationSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/DrawCard"),
             params: {
                 accountSK: {
                     val: accountSK
+                },
+                drawCardLocationType: {
+                    val: drawCardLocationType
                 },
                 drawCardLocationSK: {
                     val: drawCardLocationSK

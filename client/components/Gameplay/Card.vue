@@ -47,9 +47,15 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        user-select: none;
         outline-style: none;
         box-shadow: 1px 8px 6px -6px rgba(0, 0, 0, 0.4), inset 0px -1px 2px -1px rgba(0,0,0,0.2);
+        /* Don't let the user highlight the text in the card. */
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
     }
 
     .card-selected {

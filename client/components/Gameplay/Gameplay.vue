@@ -8,7 +8,7 @@
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.red" :opponent-score-pile="opponent.scorePiles.red" :discard-pile="gameDetails.discardPiles.red" color="red"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.green" :opponent-score-pile="opponent.scorePiles.green" :discard-pile="gameDetails.discardPiles.green" color="green"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.blue" :opponent-score-pile="opponent.scorePiles.blue" :discard-pile="gameDetails.discardPiles.blue" color="blue"></BoardColumn>
-                <Scoreboard class="col-2" :game-details="gameDetails" :player="player" :opponent="opponent"></Scoreboard>
+                <Scoreboard class="col-5" :game-details="gameDetails" :player="player" :opponent="opponent"></Scoreboard>
             </div>
             <div class="row  m-4">
                 <hand class="col-4" :hand="playerHand" v-if="playerHand.length > 0"></hand>
@@ -71,7 +71,7 @@
                 // Handles clicking on a score pile when placing a card.
                 if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && scorePile.color === self.selectedCard.card.CardColor) {
                     self.selectedPlaceLocation = scorePile.sk;
-                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
+                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationType: 'ScorePile', placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
 
                     // Adds the card to the score pile immediately to reduce perceived latency.
@@ -87,7 +87,7 @@
                 // Handles clicking on a discard pile when placing a card.
                 if (self.player.isTurn && self.gameDetails.turnState === 'Placing' && self.selectedCard !== null && discardPile.color === self.selectedCard.card.CardColor) {
                     self.selectedPlaceLocation = discardPile.sk;
-                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationSK: self.selectedPlaceLocation});
+                    self.$socket.emit('gamePlaceCard', {placedCardSK: self.selectedCard.card.CardSK, placedCardLocationType: 'DiscardPile', placedCardLocationSK: self.selectedPlaceLocation});
                     self.selectedCard.toggleIsSelected();
                     // Adds the card to the discard pile immediately to reduce perceived latency.
                     self.gameDetails.discardPiles[discardPile.color][discardPile.sk].push(self.selectedCard.card);
@@ -97,7 +97,7 @@
                 // Handles clicking on a discard pile when drawing a card.
                 if (self.player.isTurn && self.gameDetails.turnState === 'Drawing' && self.selectedPlaceLocation !== discardPile.sk && discardPile.cards.length > 0) {
                     self.selectedDrawLocation = discardPile.sk;
-                    self.$socket.emit('gameDrawCard', {drawCardLocationSK: self.selectedDrawLocation});
+                    self.$socket.emit('gameDrawCard', {drawCardLocationType: 'DiscardPile', drawCardLocationSK: self.selectedDrawLocation});
                 }
             });
 
@@ -105,7 +105,7 @@
                 // Handles clicking on the deck when drawing a card.
                 if (self.player.isTurn && self.gameDetails.turnState === 'Drawing') {
                     self.selectedDrawLocation = deck.sk;
-                    self.$socket.emit('gameDrawCard', {drawCardLocationSK: self.selectedDrawLocation});
+                    self.$socket.emit('gameDrawCard', {drawCardLocationType: 'Deck', drawCardLocationSK: self.selectedDrawLocation});
                 }
             });
         },

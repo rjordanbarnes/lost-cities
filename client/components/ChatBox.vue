@@ -48,6 +48,7 @@
     }
 
     #chat-box {
-        font-size: 14px
+        font-size: 14px;
+        word-wrap: break-word;
     }
 </style>
