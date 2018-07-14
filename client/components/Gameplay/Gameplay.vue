@@ -3,19 +3,19 @@
         <div v-if="error">Error</div>
         <div v-if="gameDetails">
             <div class="row">
+                <div class="col-2">
+                    <Scoreboard :game-details="gameDetails" :player="player" :opponent="opponent" />
+                    <deck class="m-auto" :sk="gameDetails.deckSK" :deck-size="gameDetails.deckSize" />
+                </div>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.yellow" :opponent-score-pile="opponent.scorePiles.yellow" :discard-pile="gameDetails.discardPiles.yellow" color="yellow"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.white" :opponent-score-pile="opponent.scorePiles.white" :discard-pile="gameDetails.discardPiles.white" color="white"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.red" :opponent-score-pile="opponent.scorePiles.red" :discard-pile="gameDetails.discardPiles.red" color="red"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.green" :opponent-score-pile="opponent.scorePiles.green" :discard-pile="gameDetails.discardPiles.green" color="green"></BoardColumn>
                 <BoardColumn class="col" :player-score-pile="player.scorePiles.blue" :opponent-score-pile="opponent.scorePiles.blue" :discard-pile="gameDetails.discardPiles.blue" color="blue"></BoardColumn>
-                <Scoreboard class="col-5" :game-details="gameDetails" :player="player" :opponent="opponent"></Scoreboard>
+                <chat-box class="col-3" />
             </div>
-            <div class="row  m-4">
-                <hand class="col-4" :hand="playerHand" v-if="playerHand.length > 0"></hand>
-                <deck class="col-1" :sk="gameDetails.deckSK" :deck-size="gameDetails.deckSize"></deck>
-                <div class="col-5 offset-2">
-                    <chat-box/>
-                </div>
+            <div class="row my-2">
+                <hand class="offset-2" :hand="playerHand" v-if="playerHand.length > 0"></hand>
             </div>
 
         </div>
@@ -76,7 +76,7 @@
 
                     // Adds the card to the score pile immediately to reduce perceived latency.
                     const scorePileCards = self.player.scorePiles[scorePile.color][scorePile.sk];
-                    if (scorePileCards[scorePileCards.length - 1].CardValue < self.selectedCard.card.CardValue) {
+                    if (scorePileCards.length === 0 || scorePileCards[scorePileCards.length - 1].CardValue < self.selectedCard.card.CardValue) {
                         self.player.scorePiles[scorePile.color][scorePile.sk].push(self.selectedCard.card);
                     }
                     self.selectedCard = null;
@@ -126,6 +126,7 @@
 
 <style scoped>
     #chat-box {
-        height: 175px;
+        height: 490px;
+        margin-top: 69px;
     }
 </style>

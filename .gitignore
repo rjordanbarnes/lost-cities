@@ -129,3 +129,4 @@ dist/
 config/sql.config.js
 config/token.config.js
 config/googleoath.config.js
+*.psd

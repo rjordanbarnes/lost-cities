@@ -1,10 +1,7 @@
 <template>
     <div>
         <div class="d-flex flex-wrap">
-            <card :card="card" :key="card.CardSK" v-for="card in hand.slice(0, 4)"></card>
-        </div>
-        <div class="d-flex flex-wrap mt-2">
-            <card :card="card" :key="card.CardSK" v-for="card in hand.slice(4, 9)"></card>
+            <card class="mx-1" :card="card" :key="card.CardSK" v-for="card in hand"></card>
         </div>
     </div>
 </template>

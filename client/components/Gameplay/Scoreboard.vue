@@ -1,8 +1,11 @@
 <template>
-    <div id="scoreboard" class="d-flex flex-column justify-content-between">
+    <div id="scoreboard" class="d-flex flex-column justify-content-between py-5">
         <div>
             <div class="game-member-info">
-                {{ opponent.username }} ({{ opponent.skillRating }})
+                {{ opponent.username }}
+            </div>
+            <div class="game-member-info">
+                Rating: {{ opponent.skillRating }}
             </div>
             <div class="total-score">
                 {{ opponentScore }}
@@ -27,7 +30,10 @@
         </div>
         <div>
             <div class="game-member-info">
-                {{ player.username }} ({{ player.skillRating }})
+                {{ player.username }}
+            </div>
+            <div class="game-member-info">
+                Rating: {{ player.skillRating }}
             </div>
             <div class="total-score">
                 {{ playerScore }}
@@ -94,7 +100,6 @@
     #scoreboard {
         align-items: center;
         justify-content: center;
-        padding: 15px;
     }
 
     .turn-info {

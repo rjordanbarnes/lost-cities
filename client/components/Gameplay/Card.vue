@@ -1,5 +1,5 @@
 <template>
-    <div v-bind:style="cardStyle" :class="selectedHighlight" class="mx-auto" v-on:click="emitCardClicked">
+    <div v-bind:style="cardStyle" :class="selectedHighlight" v-on:click="emitCardClicked">
         {{ cardDisplayText }}
     </div>
 </template>
