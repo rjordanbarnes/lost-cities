@@ -66,8 +66,10 @@
                 this.$router.push('../lobby');
             },
             gameSpectate(data) {
-                if (data.errors && data.errors.includes('Unable to join the game, password not supplied.')) {
+                if (data.errors && (data.errors.includes('password not supplied') || data.errors.includes('wrong password'))) {
                     this.$refs.gamePasswordPrompt.showPrompt();
+                } else {
+                    this.$refs.gamePasswordPrompt.hidePrompt();
                 }
             },
             gameEnd(data) {

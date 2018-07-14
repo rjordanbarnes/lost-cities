@@ -89,7 +89,7 @@
 
 <style scoped>
     header {
-        height: 60px;
+        height: 55px;
         display: flex;
         align-items: center;
     }
@@ -99,7 +99,11 @@
     }
 
     #brand-text {
-        font-size: 1.75rem;
+        font-size: 2rem;
+    }
+
+    .navbar {
+        height: 100%;
     }
 
     .nav-link {

@@ -8,7 +8,7 @@
             <b-btn id="submitButton" class="float-right" variant="primary" @click="onSubmitPassword">
                 Submit
             </b-btn>
-            <b-btn class="float-right" variant="secondary" @click="$refs.gamePasswordPrompt.hide()">
+            <b-btn class="float-right" variant="secondary" @click="hidePrompt">
                 Cancel
             </b-btn>
         </div>
@@ -39,6 +39,9 @@
             },
             showPrompt() {
                 this.$refs.gamePasswordPrompt.show();
+            },
+            hidePrompt() {
+                this.$refs.gamePasswordPrompt.hide();
             }
         }
     }

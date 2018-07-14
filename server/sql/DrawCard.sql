@@ -14,7 +14,7 @@
   Whether the draw card location is the deck or a discardpile. Either Deck or DiscardPile.
 
   @drawCardLocationSK
-  The location they're drawing from. Either a DeckSK or a DiscardPileSK
+  The draw location SK they're drawing from.
 
 */
 
