@@ -171,20 +171,80 @@ const drawCard = function(turnInput) {
     if (!Validations.isAuthenticated(self.socket))
         return;
 
-    sqlQueries.drawCard(self.socket.user.accountSK, turnInput.drawCardLocationType, turnInput.drawCardLocationSK, function (data) {
-        if (data.hasOwnProperty('errors')) {
-            console.log(data.errors.message);
+    sqlQueries.drawCard(self.socket.user.accountSK, turnInput.drawCardLocationType, turnInput.drawCardLocationSK, function (drawCardData) {
+        if (drawCardData.hasOwnProperty('errors')) {
+            console.log(drawCardData.errors.message);
         } else {
             console.log(self.socket.user.username + ' drew a card.');
 
-            if (data.isGameOver) {
-                console.log("Game ended.");
-                self.socket.server.in(data.game).emit('gameEnd', {winner: data.winner});
+            const winnerSK = determineWinner(drawCardData);
+
+            if (drawCardData[0].isGameOver) {
+                const winnerSK = determineWinner(drawCardData);
+
+                sqlQueries.endGame(drawCardData[0].game, winnerSK, function(endGameData) {
+                    console.log("Game ended.");
+                    self.socket.server.in(drawCardData[0].game).emit('gameEnd', {winner: endGameData.winner});
+                    Broadcast.refreshGameDetails(self.socket, drawCardData[0].game);
+                });
             }
 
-            Broadcast.refreshGameDetails(self.socket, data.game);
+            Broadcast.refreshGameDetails(self.socket, drawCardData[0].game);
         }
     });
+};
+
+// Determines which player won given a set of card data.
+const determineWinner = function(cardData) {
+    const account1 = cardData[0].AccountSK;
+    const account2 = cardData[cardData.length - 1].AccountSK;
+    const accounts = {  [account1]: { totalScore: 0,
+                                    ScorePiles: {
+                                        'Red': {score: -20, investments: 0, numberOfCards: 0},
+                                        'White': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Blue': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Yellow': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Green': {score: -20, investments: 0, numberOfCards: 0}
+                                    }},
+                        [account2]: { totalScore: 0,
+                                    ScorePiles: {
+                                        'Red': {score: -20, investments: 0, numberOfCards: 0},
+                                        'White': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Blue': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Yellow': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Green': {score: -20, investments: 0, numberOfCards: 0}
+                                    }}};
+
+    cardData.forEach(function(Card) {
+        if (Card.CardValue === null) {
+            accounts[Card.AccountSK].ScorePiles[Card.ScorePileColor].score = 0;
+        } else {
+            if (Card.CardValue !== 1) {
+                accounts[Card.AccountSK].ScorePiles[Card.ScorePileColor].score += Card.CardValue;
+            } else {
+                accounts[Card.AccountSK].ScorePiles[Card.ScorePileColor].investments++;
+            }
+            accounts[Card.AccountSK].ScorePiles[Card.ScorePileColor].numberOfCards++;
+        }
+    });
+
+    for (let account in accounts) {
+        for (let scorePile in accounts[account].ScorePiles) {
+            accounts[account].ScorePiles[scorePile].score *= accounts[account].ScorePiles[scorePile].investments + 1;
+            if (accounts[account].ScorePiles[scorePile].numberOfCards >= 8)
+                accounts[account].ScorePiles[scorePile].score += 20;
+
+            accounts[account].totalScore += accounts[account].ScorePiles[scorePile].score;
+        }
+    }
+
+    if (accounts[account1].totalScore > accounts[account2].totalScore) {
+        return account1;
+    } else if (accounts[account1].totalScore < accounts[account2].totalScore) {
+        return account2;
+    }
+
+    return 0;
 };
 
 module.exports = function(socket){

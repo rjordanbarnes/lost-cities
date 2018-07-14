@@ -325,8 +325,7 @@ module.exports = {
         });
     },
 
-    // Makes a turn
-    //
+    // Places a card
     placeCard(accountSK, playedCardSK, playedCardLocationType, playedCardLocationSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/PlaceCard"),
@@ -351,8 +350,7 @@ module.exports = {
         });
     },
 
-    // Makes a turn
-    //
+    // Draws a card
     drawCard(accountSK, drawCardLocationType, drawCardLocationSK, callback) {
         sql.execute({
             query: sql.fromFile("./sql/DrawCard"),
@@ -365,6 +363,25 @@ module.exports = {
                 },
                 drawCardLocationSK: {
                     val: drawCardLocationSK
+                }
+            }
+        }).then(function (results) {
+            callback(results);
+        }, function (err) {
+            callback({errors: err});
+        });
+    },
+
+    // Ends a game
+    endGame(gameSK, winnerSK, callback) {
+        sql.execute({
+            query: sql.fromFile("./sql/EndGame"),
+            params: {
+                gameSK: {
+                    val: gameSK
+                },
+                winnerSK: {
+                    val: winnerSK
                 }
             }
         }).then(function (results) {

@@ -8,7 +8,7 @@
 
 */
 
---DECLARE @gameSK INT = 'E7B9B09F-F24C-4958-9955-57DFC87C5D6E';
+--DECLARE @gameSK INT = (SELECT GameSK FROM Game);
 
 SELECT ScorePile.ScorePileSK, ScorePile.ScorePileColor, GameMember.GameMemberSK, Card.CardSK, Card.CardColor, Card.CardValue FROM ScorePile
 INNER JOIN GameMember ON (GameMember.GameMemberSK = ScorePile.PlayerSK)
