@@ -28,8 +28,7 @@
         width: 90px;
         font-weight: bold;
         font-size: 30px;
-        border-style: solid;
-        border-width: 1px;
+        border: 1px solid;
         display: flex;
         align-items: center;
         justify-content: center;

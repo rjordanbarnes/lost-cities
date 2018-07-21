@@ -34,8 +34,7 @@
 
 <style scoped>
     .discard-pile {
-        border-width: 3px;
-        border-style: dashed;
+        border: 3px dashed;
         border-radius: 5px;
         height: 65px;
         width: 95px;

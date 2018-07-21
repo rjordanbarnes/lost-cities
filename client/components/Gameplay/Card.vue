@@ -48,7 +48,7 @@
         justify-content: center;
         cursor: pointer;
         outline-style: none;
-        box-shadow: 1px 8px 6px -6px rgba(0, 0, 0, 0.4), inset 0px -1px 2px -1px rgba(0,0,0,0.2);
+        box-shadow: 1px 8px 6px -6px rgba(0, 0, 0, 0.4), inset 0 -1px 2px -1px rgba(0,0,0,0.2);
         /* Don't let the user highlight the text in the card. */
         user-select: none;
         -webkit-touch-callout: none;
