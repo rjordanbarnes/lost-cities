@@ -23,7 +23,7 @@ function create(gameInput) {
             if (NewGame && NewGame.hasOwnProperty('errors')) {
                 console.log(NewGame.errors.message);
             } else {
-                console.log(self.socket.user.username + ' created game ' + gameInput.gameName + ".");
+                console.log(`${self.socket.user.username} created game ${NewGame.gameSK}.`);
                 // Host joins game channel.
                 self.socket.join(NewGame.gameSK);
 
@@ -46,7 +46,7 @@ function join(gameInput) {
         if (data && data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(self.socket.user.username + ' joined a game as a player.');
+            console.log(`${self.socket.user.username} joined game ${gameInput.gameSK} as a player.`);
             // Joins game's socket.io channel.
             self.socket.join(gameInput.gameSK);
 
@@ -68,7 +68,7 @@ function spectate(gameInput) {
             self.socket.emit('gameSpectate', {errors: data.errors.message});
             console.log(data.errors.message);
         } else {
-            console.log(self.socket.user.username + ' joined a game as a spectator.');
+            console.log(`${self.socket.user.username} joined game ${gameInput.gameSK} as a spectator.`);
             // Joins game's socket.io channel.
             self.socket.join(gameInput.gameSK);
 
@@ -106,7 +106,7 @@ function leave(){
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(self.socket.user.username + ' left game.');
+            console.log(`${self.socket.user.username} left game ${data.currentGame}.`);
 
             self.socket.leave(data.currentGame);
 
@@ -143,7 +143,7 @@ function toggleReady() {
         if (User.hasOwnProperty('errors')) {
             console.log(User.errors.message);
         } else {
-            console.log(self.socket.user.username + ' readied up.');
+            console.log(`${self.socket.user.username} readied up in game ${User.currentGame}.`);
             Broadcast.refreshGameDetails(self.socket, User.currentGame);
         }
     });
@@ -159,7 +159,7 @@ function placeCard(turnInput) {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log(self.socket.user.username + ' placed a card.');
+            console.log(`${self.socket.user.username} placed a card in game ${data.game}.`);
             Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });
@@ -175,7 +175,7 @@ function drawCard(turnInput) {
         if (drawCardData.hasOwnProperty('errors')) {
             console.log(drawCardData.errors.message);
         } else {
-            console.log(self.socket.user.username + ' drew a card.');
+            console.log(`${self.socket.user.username} drew a card in game ${drawCardData[0].game}.`);
 
             const winnerSK = determineWinner(drawCardData);
 
@@ -183,7 +183,7 @@ function drawCard(turnInput) {
                 const winnerSK = determineWinner(drawCardData);
 
                 sqlQueries.endGame(drawCardData[0].game, winnerSK, function(endGameData) {
-                    console.log("Game ended.");
+                    console.log(`Game ${drawCardData[0].game} ended.`);
                     self.socket.server.in(drawCardData[0].game).emit('gameEnd', {winner: endGameData.winner});
                     Broadcast.refreshGameDetails(self.socket, drawCardData[0].game);
                 });
@@ -215,6 +215,7 @@ function determineWinner(cardData) {
                                         'Green': {score: -20, investments: 0, numberOfCards: 0}
                                     }}};
 
+    // Tallies variables required to calculate score.
     cardData.forEach(function(Card) {
         if (Card.CardValue === null) {
             accounts[Card.AccountSK].ScorePiles[Card.ScorePileColor].score = 0;
@@ -228,6 +229,7 @@ function determineWinner(cardData) {
         }
     });
 
+    // Computes score.
     for (let account in accounts) {
         for (let scorePile in accounts[account].ScorePiles) {
             accounts[account].ScorePiles[scorePile].score *= accounts[account].ScorePiles[scorePile].investments + 1;
@@ -238,6 +240,7 @@ function determineWinner(cardData) {
         }
     }
 
+    // Determines winner
     if (accounts[account1].totalScore > accounts[account2].totalScore) {
         return account1;
     } else if (accounts[account1].totalScore < accounts[account2].totalScore) {

@@ -52,10 +52,10 @@ function googleSigninSuccess(authorizationCode) {
                             avatarURL: User.avatarURL
                         });
 
-                        console.log(User.username + " signed in with Google.");
+                        console.log(`${User.username} signed in with Google.`);
                         self.socket.emit('userSigninSuccess');
                     } else {
-                        self.socket.emit('generalError', {error: 'Unable to sign in as ' + userData.emails[0].value});
+                        self.socket.emit('generalError', {error: `Unable to sign in as ${userData.emails[0].value}`});
                     }
                 });
             });
@@ -67,7 +67,7 @@ function googleSigninSuccess(authorizationCode) {
 function googleSignoutSuccess() {
     const self = this;
 
-    console.log(self.socket.user.username + " signed out.");
+    console.log(`${self.socket.user.username} signed out.`);
 
     self.socket.user = {
         accountSK: null,
@@ -82,7 +82,7 @@ function verifyToken(token) {
     jwt.verify(token, tokenConfig.secret, function(err, decoded) {
         if (err) {
             self.socket.emit('userToken',{errors: err.toString()});
-            console.log("Expired, invalid, or missing token.");
+            console.log("Socket attempted login with expired, invalid, or missing token.");
         } else {
             sqlQueries.verifyToken(decoded.accountSK, function(User) {
 
@@ -101,11 +101,11 @@ function verifyToken(token) {
                         avatarURL: User.avatarURL
                     });
 
-                    console.log(User.username + " token authenticated.");
+                    console.log(`${User.username} logged in with token.`);
                 } else {
                     // User information in token doesn't exist.
                     self.socket.emit('userToken',{errors: "Invalid token request."});
-                    console.log("Invalid token request for " + User.username + ".")
+                    console.log(`Socket made invalid token request for ${User.username}.`)
                 }
             });
         }
@@ -128,7 +128,7 @@ function changeName(newDetails) {
             // Triggers a new token to be created because the token contains the username
             self.socket.emit('userRequestToken');
 
-            console.log(User.oldUsername + ' changed their name to ' + User.newUsername + '.');
+            console.log(`${User.oldUsername} changed their name to ${User.newUsername}`);
         });
     }
 }
@@ -143,7 +143,7 @@ function disconnectSocket() {
         if (data.hasOwnProperty('errors')) {
             console.log(data.errors.message);
         } else {
-            console.log("User left game.");
+            console.log(`${self.socket.user.username} left game ${data.currentGame}.`);
 
             self.socket.leave(data.currentGame);
 

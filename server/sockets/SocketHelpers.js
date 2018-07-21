@@ -33,7 +33,7 @@ module.exports.Broadcast = {
                 }
             });
 
-            console.log('Server sent game details for ' + Game.gameName);
+            console.log(`Server sent game details for game ${gameSK}.`);
         });
     }
 };

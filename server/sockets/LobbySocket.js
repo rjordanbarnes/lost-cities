@@ -7,7 +7,7 @@ function getGames () {
     const self = this;
 
     sqlQueries.getGames(function (GameList) {
-        console.log('Sending game list to ' + self.socket.user.username);
+        console.log(`Sending game list to ${self.socket.user.username}.`);
         self.socket.emit('lobbyGameList', {games: GameList});
     });
 }

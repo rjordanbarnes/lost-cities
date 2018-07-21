@@ -9,7 +9,7 @@ function message(data) {
     if (data.gameSK) {
         // Send chat to user's game if that user is in the game.
         if (self.socket.rooms.hasOwnProperty(data.gameSK)) {
-            console.log(self.socket.user.username + ' sent a chat message to a room.');
+            console.log(`[Room ${data.gameSK}] ${self.socket.user.username}: ${data.message}`);
 
             self.socket.server.in(data.gameSK).emit('chatMessage', {
                 gameSK: data.gameSK,
@@ -19,7 +19,7 @@ function message(data) {
         }
     } else {
         // Send chat to lobby if game not specified.
-        console.log(self.socket.user.username + ' sent a chat message to the lobby.');
+        console.log(`[Lobby] ${self.socket.user.username}: ${data.message}`);
         self.socket.server.emit('chatMessage', {
             chatUsername: self.socket.user.username,
             chatMessage: data.message
