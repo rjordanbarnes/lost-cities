@@ -3,7 +3,7 @@ const Broadcast = require('./SocketHelpers.js').Broadcast;
 const Validations = require('./SocketHelpers.js').Validations;
 
 // Creates a new game with the current socket as the host.
-const create = function(gameInput) {
+function create(gameInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -33,10 +33,10 @@ const create = function(gameInput) {
             }
         });
     }
-};
+}
 
 // Causes the current socket to join the specified game as a player.
-const join = function(gameInput) {
+function join(gameInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -55,9 +55,9 @@ const join = function(gameInput) {
             Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
-};
+}
 
-const spectate = function(gameInput) {
+function spectate(gameInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -78,9 +78,9 @@ const spectate = function(gameInput) {
             Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
-};
+}
 
-const start = function() {
+function start() {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -93,10 +93,10 @@ const start = function() {
             Broadcast.refreshGameDetails(self.socket, data.gameSK);
         }
     });
-};
+}
 
 // Causes the socket to leave the game they're in.
-const leave = function(){
+function leave(){
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -130,10 +130,10 @@ const leave = function(){
             }
         }
     });
-};
+}
 
 // Toggles the user's ready status.
-const toggleReady = function() {
+function toggleReady() {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -147,9 +147,9 @@ const toggleReady = function() {
             Broadcast.refreshGameDetails(self.socket, User.currentGame);
         }
     });
-};
+}
 
-const placeCard = function(turnInput) {
+function placeCard(turnInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -163,9 +163,9 @@ const placeCard = function(turnInput) {
             Broadcast.refreshGameDetails(self.socket, data.game);
         }
     });
-};
+}
 
-const drawCard = function(turnInput) {
+function drawCard(turnInput) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -192,10 +192,10 @@ const drawCard = function(turnInput) {
             Broadcast.refreshGameDetails(self.socket, drawCardData[0].game);
         }
     });
-};
+}
 
 // Determines which player won given a set of card data.
-const determineWinner = function(cardData) {
+function determineWinner(cardData) {
     const account1 = cardData[0].AccountSK;
     const account2 = cardData[cardData.length - 1].AccountSK;
     const accounts = {  [account1]: { totalScore: 0,
@@ -245,7 +245,7 @@ const determineWinner = function(cardData) {
     }
 
     return 0;
-};
+}
 
 module.exports = function(socket){
     this.socket = socket;

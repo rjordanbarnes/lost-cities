@@ -9,7 +9,7 @@ const googleOathConfig = require('../../config/googleoath.config.js');
 
 
 // Gets user data from Google, links the user to the socket, and sends a new token.
-const googleSigninSuccess = function(authorizationCode) {
+function googleSigninSuccess(authorizationCode) {
     const self = this;
 
     const oauth2Client = new google.auth.OAuth2(
@@ -61,10 +61,10 @@ const googleSigninSuccess = function(authorizationCode) {
             });
         }
     });
-};
+}
 
 // Unlinks user from socket upon Google sign out.
-const googleSignoutSuccess = function() {
+function googleSignoutSuccess() {
     const self = this;
 
     console.log(self.socket.user.username + " signed out.");
@@ -73,10 +73,10 @@ const googleSignoutSuccess = function() {
         accountSK: null,
         username: null
     };
-};
+}
 
 // Checks if the passed token is valid.
-const verifyToken = function(token) {
+function verifyToken(token) {
     const self = this;
 
     jwt.verify(token, tokenConfig.secret, function(err, decoded) {
@@ -110,10 +110,10 @@ const verifyToken = function(token) {
             });
         }
     });
-};
+}
 
 // Changes the user's username
-const changeName = function(newDetails) {
+function changeName(newDetails) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket))
@@ -131,10 +131,10 @@ const changeName = function(newDetails) {
             console.log(User.oldUsername + ' changed their name to ' + User.newUsername + '.');
         });
     }
-};
+}
 
 // Performs cleanup when a socket disconnects.
-const disconnectSocket = function() {
+function disconnectSocket() {
     const self = this;
 
     console.log('Socket disconnected.');
@@ -172,7 +172,7 @@ const disconnectSocket = function() {
         accountSK: null,
         username: null
     };
-};
+}
 
 module.exports = function(socket){
     this.socket = socket;

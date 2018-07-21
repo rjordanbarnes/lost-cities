@@ -1,6 +1,6 @@
 const Validations = require('./SocketHelpers.js').Validations;
 
-const message = function(data) {
+function message(data) {
     const self = this;
 
     if (!Validations.isAuthenticated(self.socket) || data.message.trim().length < 1 || data.message.trim().length > 500)
@@ -25,7 +25,7 @@ const message = function(data) {
             chatMessage: data.message
         });
     }
-};
+}
 
 module.exports = function(socket){
     this.socket = socket;
