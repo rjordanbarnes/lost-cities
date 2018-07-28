@@ -1,21 +1,24 @@
 <template>
     <div id="lobby" class="container">
         <div class="row">
-            <div id="game-list" class="list-group col-9" v-if="games.length > 0">
-                <game-list-item
-                    v-for="game in games"
-                    :key="game.gameSK"
-                    :game-s-k="game.gameSK"
-                    :game-name="game.gameName"
-                    :game-host="game.gameHost"
-                    :game-player-count="game.gamePlayerCount"
-                    :is-password-protected="game.isPasswordProtected" />
+            <div class="col p-0">
+                <div id="game-list" class="list-group" v-if="games.length > 0">
+                    <game-list-item
+                        v-for="game in games"
+                        :key="game.gameSK"
+                        :game-s-k="game.gameSK"
+                        :game-name="game.gameName"
+                        :game-host="game.gameHost"
+                        :game-player-count="game.gamePlayerCount"
+                        :is-password-protected="game.isPasswordProtected" />
+                </div>
+                <div id="no-active-games" class="display-4 text-muted" v-else>No Active Games</div>
             </div>
-            <div id="no-active-games" class="col-9 display-4 text-muted" v-else>No Active Games</div>
 
-            <div class="col-3">
-                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" @click="$refs.createGamePrompt.show()">Create Game</b-btn>
-                <chat-box id="chat-box" class="mt-2"></chat-box>
+            <div class="col-5">
+                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" v-show="$store.getters.authenticated" @click="$refs.createGamePrompt.show()">Create Game</b-btn>
+                <online-players id="lobby-online-players" :online-players="onlinePlayers" />
+                <chat-box id="lobby-chat" class="mt-2" />
             </div>
 
         </div>
@@ -44,11 +47,13 @@
 <script>
     import GameListItem from '@/components/Lobby/GameListItem'
     import ChatBox from '@/components/ChatBox'
+    import OnlinePlayers from "@/components/Lobby/OnlinePlayers";
 
     export default {
         name: "Lobby",
         data() {
             return {
+                onlinePlayers: [],
                 games: [],
                 enteredGameName: '',
                 enteredGamePassword: ''
@@ -56,12 +61,13 @@
         },
         mounted() {
             if (this.games.length === 0) {
-                this.$socket.emit('lobbyGetGames');
+                this.$socket.emit('lobbyRefresh');
             }
         },
         sockets: {
-            lobbyGameList(data) {
+            lobbyRefresh(data) {
                 this.games = data.games;
+                this.onlinePlayers = data.onlinePlayers;
             },
             gameCreate(data) {
                 if (data.errors) {
@@ -96,6 +102,7 @@
             }
         },
         components: {
+            OnlinePlayers,
             GameListItem,
             ChatBox
         }
@@ -103,11 +110,14 @@
 </script>
 
 <style scoped>
-    #chat-box {
+    #lobby-chat {
         height: 490px;
     }
     #create-game-button {
         margin-top: 10px;
+    }
+    #lobby-online-players {
+        height: 200px;
     }
     #no-active-games {
         padding-left: 0;

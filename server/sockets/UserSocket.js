@@ -54,6 +54,7 @@ function googleSigninSuccess(authorizationCode) {
 
                         console.log(`${User.username} signed in with Google.`);
                         self.socket.emit('userSigninSuccess');
+                        Broadcast.lobbyRefresh(self.socket);
                     } else {
                         self.socket.emit('generalError', {error: `Unable to sign in as ${userData.emails[0].value}`});
                     }
@@ -73,6 +74,8 @@ function googleSignoutSuccess() {
         accountSK: null,
         username: null
     };
+
+    Broadcast.lobbyRefresh(self.socket);
 }
 
 // Checks if the passed token is valid.
@@ -102,6 +105,7 @@ function verifyToken(token) {
                     });
 
                     console.log(`${User.username} logged in with token.`);
+                    Broadcast.lobbyRefresh(self.socket);
                 } else {
                     // User information in token doesn't exist.
                     self.socket.emit('userToken',{errors: "Invalid token request."});
@@ -137,7 +141,7 @@ function changeName(newDetails) {
 function disconnectSocket() {
     const self = this;
 
-    console.log('Socket disconnected.');
+    console.log(`${self.socket.user.username} disconnected.`);
 
     sqlQueries.leaveGame(self.socket.user.accountSK, function (data) {
         if (data.hasOwnProperty('errors')) {
@@ -160,12 +164,12 @@ function disconnectSocket() {
                     }
                 });
 
-                Broadcast.refreshGameList(self.socket);
             } else {
                 Broadcast.refreshGameDetails(self.socket, data.currentGame);
-                Broadcast.refreshGameList(self.socket);
             }
         }
+
+        Broadcast.lobbyRefresh(self.socket);
     });
 
     self.socket.user = {

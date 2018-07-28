@@ -2,10 +2,22 @@ const sqlQueries = require('../sqlQueries.js');
 
 module.exports.Broadcast = {
     // Updates game list for all sockets.
-    refreshGameList(socket) {
+    lobbyRefresh(socket) {
         sqlQueries.getGames(function (GameList) {
-            console.log('Broadcasted game list.');
-            socket.server.emit('lobbyGameList', {games: GameList});
+            console.log('Refreshed lobby.');
+
+            playerNames = [];
+
+            // Gets all player names
+            Object.keys(socket.server.sockets.sockets).forEach(function(socketid) {
+                const clientsocket = socket.server.sockets.connected[socketid];
+
+                if (clientsocket.user.username !== null) {
+                    playerNames.push(clientsocket.user.username);
+                }
+            });
+
+            socket.server.emit('lobbyRefresh', {games: GameList, onlinePlayers: playerNames});
         });
     },
 

@@ -28,7 +28,7 @@ function create(gameInput) {
                 self.socket.join(NewGame.gameSK);
 
                 self.socket.emit('gameCreate', NewGame);
-                Broadcast.refreshGameList(self.socket);
+                Broadcast.lobbyRefresh(self.socket);
                 Broadcast.refreshGameDetails(self.socket, NewGame.gameSK);
             }
         });
@@ -51,7 +51,7 @@ function join(gameInput) {
             self.socket.join(gameInput.gameSK);
 
             self.socket.emit('gameJoin', {gameSK: gameInput.gameSK});
-            Broadcast.refreshGameList(self.socket);
+            Broadcast.lobbyRefresh(self.socket);
             Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
@@ -74,7 +74,7 @@ function spectate(gameInput) {
 
             self.socket.emit('gameSpectate', {gameSK: gameInput.gameSK});
 
-            Broadcast.refreshGameList(self.socket);
+            Broadcast.lobbyRefresh(self.socket);
             Broadcast.refreshGameDetails(self.socket, gameInput.gameSK);
         }
     });
@@ -123,10 +123,10 @@ function leave(){
                     }
                 });
 
-                Broadcast.refreshGameList(self.socket);
+                Broadcast.lobbyRefresh(self.socket);
             } else {
                 Broadcast.refreshGameDetails(self.socket, data.currentGame);
-                Broadcast.refreshGameList(self.socket);
+                Broadcast.lobbyRefresh(self.socket);
             }
         }
     });
