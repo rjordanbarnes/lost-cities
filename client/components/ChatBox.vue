@@ -1,13 +1,13 @@
 <template>
     <div id="chat-box" class="d-flex flex-column">
-        <div id="chat-line-container" class="border p-2 d-flex flex-column-reverse">
+        <div id="chat-line-container" class="border border-bottom-0 p-2 rounded d-flex flex-column-reverse">
             <chat-line
                 v-for="chatLine in chatLines"
                 :key=""
                 :chat-username="chatLine.chatUsername"
                 :chat-message="chatLine.chatMessage"/>
         </div>
-        <input type="text" class="form-control" id="chat-input" placeholder="Type your message here" @keyup.enter="onChatSubmit" v-model="chatInput">
+        <input type="text" class="form-control form-control-sm" id="chat-input" placeholder="Type your message here" @keyup.enter="onChatSubmit" v-model="chatInput">
     </div>
 </template>
 

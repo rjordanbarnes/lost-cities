@@ -4,7 +4,11 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand id="brand-text" to="/lobby">Lost Cities</b-navbar-brand>
+            <b-navbar-brand to="/lobby">Lost Cities</b-navbar-brand>
+
+            <b-navbar-nav>
+                <b-nav-item to="/lobby">Lobby</b-nav-item>
+            </b-navbar-nav>
 
             <b-collapse is-nav id="nav_collapse">
 
@@ -96,10 +100,6 @@
 
     img {
         margin-right: 15px;
-    }
-
-    #brand-text {
-        font-size: 2rem;
     }
 
     .navbar {

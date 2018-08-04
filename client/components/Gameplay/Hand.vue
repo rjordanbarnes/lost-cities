@@ -14,7 +14,11 @@
         props: ['hand'],
         data() {
             return {}
-        }, components: {
+        },
+        computed: {
+
+        },
+        components: {
             Card
         }
     }

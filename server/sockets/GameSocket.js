@@ -200,19 +200,19 @@ function determineWinner(cardData) {
     const account2 = cardData[cardData.length - 1].AccountSK;
     const accounts = {  [account1]: { totalScore: 0,
                                     ScorePiles: {
-                                        'Red': {score: -20, investments: 0, numberOfCards: 0},
-                                        'White': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Blue': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Yellow': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Green': {score: -20, investments: 0, numberOfCards: 0}
+                                        'Color3': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color2': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color5': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color1': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color4': {score: -20, investments: 0, numberOfCards: 0}
                                     }},
                         [account2]: { totalScore: 0,
                                     ScorePiles: {
-                                        'Red': {score: -20, investments: 0, numberOfCards: 0},
-                                        'White': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Blue': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Yellow': {score: -20, investments: 0, numberOfCards: 0},
-                                        'Green': {score: -20, investments: 0, numberOfCards: 0}
+                                        'Color3': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color2': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color5': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color1': {score: -20, investments: 0, numberOfCards: 0},
+                                        'Color4': {score: -20, investments: 0, numberOfCards: 0}
                                     }}};
 
     // Tallies variables required to calculate score.

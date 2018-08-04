@@ -77,11 +77,11 @@ BEGIN TRY
   ------- Creates the 5 discard piles -------
   INSERT INTO DiscardPile (DiscardPileColor, GameSK)
   VALUES
-    ('Red', @gameSK),
-    ('Green', @gameSK),
-    ('White', @gameSK),
-    ('Blue', @gameSK),
-    ('Yellow', @gameSK)
+    ('Color1', @gameSK),
+    ('Color2', @gameSK),
+    ('Color3', @gameSK),
+    ('Color4', @gameSK),
+    ('Color5', @gameSK)
 
   ----------------------------
 
@@ -91,16 +91,16 @@ BEGIN TRY
 
   INSERT INTO ScorePile (ScorePileColor, PlayerSK, GameSK)
   VALUES
-    ('Red', @gameMemberSK, @gameSK),
-    ('Green', @gameMemberSK, @gameSK),
-    ('White', @gameMemberSK, @gameSK),
-    ('Blue', @gameMemberSK, @gameSK),
-    ('Yellow', @gameMemberSK, @gameSK),
-    ('Red', @gameMemberSK2, @gameSK),
-    ('Green', @gameMemberSK2, @gameSK),
-    ('White', @gameMemberSK2, @gameSK),
-    ('Blue', @gameMemberSK2, @gameSK),
-    ('Yellow', @gameMemberSK2, @gameSK)
+    ('Color1', @gameMemberSK, @gameSK),
+    ('Color2', @gameMemberSK, @gameSK),
+    ('Color3', @gameMemberSK, @gameSK),
+    ('Color4', @gameMemberSK, @gameSK),
+    ('Color5', @gameMemberSK, @gameSK),
+    ('Color1', @gameMemberSK2, @gameSK),
+    ('Color2', @gameMemberSK2, @gameSK),
+    ('Color3', @gameMemberSK2, @gameSK),
+    ('Color4', @gameMemberSK2, @gameSK),
+    ('Color5', @gameMemberSK2, @gameSK)
 
   ----------------------------
 

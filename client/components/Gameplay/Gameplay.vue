@@ -7,11 +7,11 @@
                     <Scoreboard :game-details="gameDetails" :player="player" :opponent="opponent" />
                     <deck class="m-auto" :sk="gameDetails.deckSK" :deck-size="gameDetails.deckSize" />
                 </div>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.yellow" :opponent-score-pile="opponent.scorePiles.yellow" :discard-pile="gameDetails.discardPiles.yellow" color="yellow"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.white" :opponent-score-pile="opponent.scorePiles.white" :discard-pile="gameDetails.discardPiles.white" color="white"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.red" :opponent-score-pile="opponent.scorePiles.red" :discard-pile="gameDetails.discardPiles.red" color="red"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.green" :opponent-score-pile="opponent.scorePiles.green" :discard-pile="gameDetails.discardPiles.green" color="green"></BoardColumn>
-                <BoardColumn class="col" :player-score-pile="player.scorePiles.blue" :opponent-score-pile="opponent.scorePiles.blue" :discard-pile="gameDetails.discardPiles.blue" color="blue"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.color1" :opponent-score-pile="opponent.scorePiles.color1" :discard-pile="gameDetails.discardPiles.color1" color="color1"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.color2" :opponent-score-pile="opponent.scorePiles.color2" :discard-pile="gameDetails.discardPiles.color2" color="color2"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.color3" :opponent-score-pile="opponent.scorePiles.color3" :discard-pile="gameDetails.discardPiles.color3" color="color3"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.color4" :opponent-score-pile="opponent.scorePiles.color4" :discard-pile="gameDetails.discardPiles.color4" color="color4"></BoardColumn>
+                <BoardColumn class="col" :player-score-pile="player.scorePiles.color5" :opponent-score-pile="opponent.scorePiles.color5" :discard-pile="gameDetails.discardPiles.color5" color="color5"></BoardColumn>
                 <chat-box class="col-3" />
             </div>
             <div class="row my-2">

@@ -2,6 +2,7 @@
     <div id="lobby" class="container">
         <div class="row">
             <div class="col p-0">
+                <b-btn id="create-game-button" class="btn" variant="success" v-show="$store.getters.authenticated" @click="$refs.createGamePrompt.show()">Create Game</b-btn>
                 <div id="game-list" class="list-group" v-if="games.length > 0">
                     <game-list-item
                         v-for="game in games"
@@ -15,8 +16,7 @@
                 <div id="no-active-games" class="display-4 text-muted" v-else>No Active Games</div>
             </div>
 
-            <div class="col-5">
-                <b-btn id="create-game-button" class="btn-block btn-lg" variant="success" v-show="$store.getters.authenticated" @click="$refs.createGamePrompt.show()">Create Game</b-btn>
+            <div class="col-4">
                 <online-players id="lobby-online-players" :online-players="onlinePlayers" />
                 <chat-box id="lobby-chat" class="mt-2" />
             </div>
@@ -111,13 +111,10 @@
 
 <style scoped>
     #lobby-chat {
-        height: 490px;
+        height: 50vh;
     }
     #create-game-button {
         margin-top: 10px;
-    }
-    #lobby-online-players {
-        height: 200px;
     }
     #no-active-games {
         padding-left: 0;

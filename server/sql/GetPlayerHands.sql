@@ -14,4 +14,4 @@ SELECT Hand.HandSK, PlayerSK, Card.CardSK, Card.CardColor, Card.CardValue FROM H
 INNER JOIN HandCard ON (Hand.HandSK = HandCard.HandSK)
 INNER JOIN Card ON (Card.CardSK = HandCard.CardSK)
 WHERE Hand.GameSK = @gameSK
-ORDER BY HandSK, CardColor DESC, CardValue ASC
+ORDER BY HandSK, CardColor, CardValue

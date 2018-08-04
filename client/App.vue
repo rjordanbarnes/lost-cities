@@ -63,17 +63,17 @@
 
 <style>
     :root {
-        --score-pile-blue: #B0C0CF;
-        --score-pile-green: #A4F0DC ;
-        --score-pile-red: #F9C1CF ;
-        --score-pile-white: #FBF9FB;
-        --score-pile-yellow: #FFEEC7 ;
+        --score-pile-color1: rgba(243, 176, 199, 1);
+        --score-pile-color2: rgba(255, 199, 178, 1);
+        --score-pile-color3: rgba(255, 231, 178, 1);
+        --score-pile-color4: rgba(170, 212, 210, 1);
+        --score-pile-color5: rgba(208, 169, 198, 1);
 
-        --card-blue: #26547C;
-        --card-green: #06D6A0;
-        --card-red: #F0577C;
-        --card-white: #F5F0F6;
-        --card-yellow: #FFD166 ;
+        --card-color1: rgba(229, 82, 133, 1);
+        --card-color2: rgba(255, 132, 87, 1);
+        --card-color3: rgba(255, 204, 87, 1);
+        --card-color4: rgba(69, 162, 158, 1);
+        --card-color5: rgba(152, 67, 131, 1);
     }
 
     html {

@@ -15,5 +15,7 @@
 </script>
 
 <style scoped>
-
+    div {
+        font-size: .875rem;
+    }
 </style>
